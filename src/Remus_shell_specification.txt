@@ -1,0 +1,71 @@
+程序名称：Remus
+
+概要：remus <command> <objects> [options] [args]
+
+描述：
+	<command>是以下之一：
+	add
+	remove (rm)
+	edit
+	ls
+	tag
+	attrib
+
+	<objects>是以下之一：
+	tag
+	tagfamily (tf)
+	attribfamily (af)
+	resource (res)
+	container (cont)
+
+	前四个命令可操作全部种类的objects；tag和attrib命令只能用在resource和container上
+	command和objects都不区分大小写
+
+命令：
+	add：添加
+	remove：删除，此时多数参数会被忽略
+	edit：修改
+	ls：列出信息，若有args就列出对应对象的所有信息
+		当前ls命令功能还是比较简单的，不能做很多高级的查询
+		之后会慢慢添加功能。
+	tag：编辑对象的tag
+	attrib：编辑对象的属性
+
+参数：
+	tag：
+		-t <tagfamily>
+		指定tag的family，默认情况下tag无family
+		-n <tagname>
+		（用于edit）指定新的tagname
+		-alias <tagname>
+		指定tag的别名（别名tag必然和此tag属于同一family，故不用指出family）
+		-alian <tagname>[:<familyname>]
+		指定tag的联盟（只要给出联盟中的任意一个tag即可）
+		# -i
+		# <args>使用db中的idx来定位tag
+		-TA --tagalians
+		将联盟tag也打上
+
+		<args>使用<tagname>:<familyname>的方式命名，在tagname可以唯一确定tag时，冒号及familyname可省去
+		（注：可以有同名，但是不同类的tag）
+	tagfamily：
+		<args>即familyname
+		没有其他的选项
+
+	attribfamily：
+		-t INT|FLOAT|DATE
+		<args>即attribfamilyname
+
+	resource：
+		-a
+		添加tag/attribute
+		-r
+		删除（remove）tag/attribute
+		-t <tagname>[:<familyname>]
+		设定对resource进行tag操作的tag名称
+		-attr <attribfamily> <attribvalue>
+		<args>为resource的location
+	
+	container:
+		同resource
+
