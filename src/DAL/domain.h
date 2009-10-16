@@ -1,12 +1,13 @@
 #ifndef _REMUS_DATABASE_DOMAIN_CLASS_
 #define _REMUS_DATABASE_DOMAIN_CLASS_
 
-#include "int_type.h"
-#include "UniStr.h"
+#include "../core/int_type.h"
+#include "../core/UniStr.h"
 
 #include <boost/shared_ptr.hpp>
 
 class Tag;
+#if _PROTOTYPE_ > 2
 class TagFamily;
 class TagAliasGroup;
 class AttrFamily;
@@ -14,54 +15,74 @@ class Resource;
 class Container;
 class TagAttach;
 class Attr;
+#endif
 
 typedef int64_t index_t;
 
-class IndxeObject
+class IndexedObject
 {
 protected:
-	IndxeObject();
-	virtual ~IndxeObject();
-
+	IndexedObject();
+	virtual ~IndexedObject();
+public:
 	index_t idx() { return idx_; }
 	void set_idx(index_t idx) { idx_ = idx; }
 private:
 	int64_t idx_;
-}
+};
 
-class TagFamily
-	:public IndxeObject
+#if _PROTOTYPE_ > 2
+class Family
+	:public IndexedObject
 {
 public:
-	virtual ~TagFamily() = 0;
+	virtual ~Family() = 0;
 	virtual UniStr name() = 0;
 	virtual void set_name(const UniStr&) = 0;
 };
 
-typedef boost::shared_ptr<TagFamily> TagFamilyRef;
+#else
+class Family
+	:public IndexedObject
+{
+public:
+	Family();
+	UniStr name() { return name_; }
+	void set_name(const UniStr& name) { name_ = name; }
+private:
+	UniStr name_;
+};
+#endif
+typedef boost::shared_ptr<Family> FamilyRef;
 
 class Tag
-	:public IndxeObject
+	:public IndexedObject
 {
 public:
 	virtual ~Tag() = 0;
 	virtual UniStr name() = 0;
 	virtual void set_name(const UniStr&) = 0;
+#if _PROTOTYPE_ > 2
 	virtual TagFamilyRef family() = 0;
 	virtual void set_family(const TagFamily&) = 0;
 	virtual TagAliasGroupRef alias() = 0;
+#endif
+
+#if _PROTOTYPE_ > 3
 	/* 
 	 * These interfaces below shall be added future.
 	 */
-	// virtual TagRef allian_next() = 0;
-	// virtual TagRef allian_prev() = 0;
-	// virtual void ally(const Tag&) = 0; // set ally
-
-	virtual bool operator==(const Tag&) = 0;
+	virtual TagRef allian_next() = 0;
+	virtual TagRef allian_prev() = 0;
+	virtual void ally(const Tag&) = 0; // set ally
+#endif
+	// no means as we uses shared_ptr
+	// virtual bool operator==(const Tag&) = 0;
 };
 
-typedef boost::share_ptr<Tag> TagRef;
+typedef boost::shared_ptr<Tag> TagRef;
 
+#if _PROTOTYPE_ > 2
 class TagAliasGroup
 {
 public:
@@ -132,5 +153,6 @@ public:
 	virtual UniStr value() = 0;
 	virtual void set_value(const UniStr&) = 0;
 };
+#endif
 
 #endif

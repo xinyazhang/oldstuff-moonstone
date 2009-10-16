@@ -3,11 +3,12 @@
 
 #include "../DataBase.h"
 #include "sqlite3.h"
-#include "SQLiteRefCounter.h"
+#include "RefCounter.h"
 
 class SQLite
 	:public DataBase
 {
+	friend class SQLiteTagIterator;
 public:
 	SQLite(const UniStr&);
 	~SQLite();
@@ -15,23 +16,29 @@ public:
 	void initialize(); // initialize a db, if haven't done before
 	void close(); // close db connection or such thing.
 
-	Tag* create_tag();
-	Tag* create_tag(const UniStr& name, const UniStr& family, OpenFlag = flag_default);
+	TagRef create_tag(const UniStr& name, const UniStr& family, OpenFlag = flag_default);
 	void rm_tag(const UniStr& name, const UniStr& family);
-	void flush_tag(Tag* );
-	void kill_tag(Tag* );
-	void close_tag(Tag* );
+	void flush_tag(TagRef );
+	void kill_tag(TagRef& );
+	void close_tag(TagRef& );
 
 	TagIterator* create_tag_iterator();
-	Tag* read_tag(TagIterator*);
+	TagRef read_tag(TagIterator*);
+	void close_tag_iterator(TagIterator* );
 
-	TagFamily* create_family(const UniStr& name, OpenFlag = flag_default);
+	FamilyRef create_family(const UniStr& name, OpenFlag = flag_default);
 	void rm_family(const UniStr& name);
-	void close_family(TagFamily* );
-	void kill_family(TagFamily* );
+	void flush_family(FamilyRef );
+	void close_family(FamilyRef& );
+	void kill_family(FamilyRef& );
 private:
 	sqlite3* db_;
 	SQLiteRefCounter<SQLiteTag>* tagrc_;
+#if _PROTOTYPE_ > 2
+	SQLiteRefCounter<SQLiteFamily>* familyrc_;
+#else
+	SQLiteRefCounter<Family>* familyrc_;
+#endif
 };
 
 #endif

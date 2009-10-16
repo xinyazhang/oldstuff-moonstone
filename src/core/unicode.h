@@ -18,7 +18,8 @@
 #define uprintf wprintf
 #define sqlite3_open_u sqlite3_open16
 #define sqlite3_prepare_u sqlite3_prepare16_v2
-typedef wchar_t uchar
+#define sqlite3_column_unicode sqlite3_column_text16
+typedef wchar_t uchar;
 
 #define UT(x) L##x
 

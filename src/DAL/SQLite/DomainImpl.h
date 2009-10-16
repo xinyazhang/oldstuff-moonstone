@@ -3,21 +3,24 @@
 
 #include "../domain.h"
 
+template<typename T>
 class SQLiteRefCounter;
 
 class SQLiteTag
+	:public Tag
 {
 	friend class SQLiteTagDeleter;
 public:
-	SQLiteTag(SQLiteRefCounter* rc);
+	SQLiteTag(SQLiteRefCounter<SQLiteTag>* rc);
 	typedef SQLiteTagDeleter Deleter;
 private:
-	SQLiteRefCounter* rc_;
+	SQLiteRefCounter<SQLiteTag>* rc_;
 };
 
-struct SQLiteTagDeleter
+class SQLiteTagDeleter
 {
-	void operator(SQLiteTag* p);
+public:
+	void operator()(SQLiteTag* p);
 };
 
 #endif

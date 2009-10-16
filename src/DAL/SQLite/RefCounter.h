@@ -5,6 +5,8 @@
 #include "DomainImpl.h"
 #include <boost/weak_ptr.hpp>
 
+struct sqlite3;
+
 template<class T>
 class SQLiteRefCounter
 {
@@ -18,7 +20,7 @@ public:
 	void destroy(index_t idx);
 	void replace(Ref ref);
 private:
-	typedef std::map<index_t, Weak>::iterator MapIter;
+	typedef typename std::map<index_t, Weak>::iterator MapIter;
 	std::map<index_t, Weak> map_;
 	sqlite3* db_;
 };

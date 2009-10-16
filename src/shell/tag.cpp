@@ -4,6 +4,22 @@
 #include "../DAL/DataBase.h"
 #include "../DAL/SQLite/DataBase.h"
 
+DataBase *db;
+
+void split(const uchar* p, UniStr* tag, UniStr* family)
+{
+	UniStr str(p);
+	long pos = 0;
+	UniStr* op = tag;
+
+	while ( pos < str.size() )
+	{
+		(*op) += str[pos];
+		if ( str[pos] == UT(':') && op == tag )
+			op = family;
+	}
+}
+
 int work(int argc, uchar* argv[])
 {
 	UniStr cmd(argv[1]);
@@ -27,12 +43,9 @@ int work(int argc, uchar* argv[])
 		 * 	However, on some conditions we want to control the creating procedure
 		 *	more meticulously, the second method would becoome a better practice.
 		 *
-		 * p.s. if one wanner a temporary tag, call the db's factory class,
-		 * 	use: DataBase::factory to grain a pointer to a factory singleton.
-		 *
 		 * btw, kill_tag won't save the changes to a tag.
 		 */
-		Tag* tag = db->create_tag(tagname, tagfamily);
+		TagRef tag = db->create_tag(tagname, tagfamily);
 		db->close_tag(tag);
 		/*
 		 * Example code for the second practice
@@ -40,7 +53,7 @@ int work(int argc, uchar* argv[])
 		 * These codes won't create a tag for a non-existing family
 		 */
 #ifdef _SHOULD_NOT_BE_DEFINED_
-		Tag* tag = db->create_tag();
+		TagRef tag = db->create_tag();
 		tag->set_name(tagname);
 		/* 
 		 * create a family
@@ -62,7 +75,7 @@ int work(int argc, uchar* argv[])
 		db->rm_tag(tagname, tagfamily);
 	} else if (cmd == UT("ren"))
 	{
-		if (argv != 4)
+		if (argc != 4)
 		{
 			printf("invalid parameter\n");
 			return 0;
@@ -75,7 +88,7 @@ int work(int argc, uchar* argv[])
 		 * a non existing tag, using open_existing flag to estimate to create
 		 * a new tag
 		 */
-		Tag* tag = db->create_tag(tagname, tagfamily, db::open_existing);
+		TagRef tag = db->create_tag(tagname, tagfamily, DataBase::open_existing);
 		if ( !tag )
 		{
 			printf("such tag do not exist\n");
@@ -87,10 +100,11 @@ int work(int argc, uchar* argv[])
 		 */
 		split(argv[3], &tagname, &tagfamily);
 		tag->set_name(tagname);
+#if _PROTOTYPE_ > 2
 		/*
 		 * Set family is a little difficult...
 		 */
-		TagFamily* family = db->create_family(tagfamily, db::open_existing);
+		FamilyRef family = db->create_family(tagfamily, db::open_existing);
 		if ( !family )
 		{
 			printf("New tagfamily do not exist\n");
@@ -100,16 +114,21 @@ int work(int argc, uchar* argv[])
 		{
 			tag->set_family(tagfamily);
 		}
+#endif
 		db->close_tag(tag);
 	} else if (cmd == UT("list"))
 	{
 		uprintf(UT("%24s %24s\n"), UT("Tag name"), UT("Family name"));
 		uprintf(UT("================================================"));
 		DataBase::TagIterator* iter = db->create_tag_iterator();
-		Tag* tag = db->read_tag(iter);
+		TagRef tag = db->read_tag(iter);
 		while( tag )
 		{
+#if _PROTOTYPE_ > 2
 			uprintf(UT("%24s %24s\n"), tag->name(), tag->family()->name());
+#else
+			uprintf(UT("%s\n"), tag->name());
+#endif
 			db->kill_tag(tag);
 			tag = db->read_tag(iter);
 		}
@@ -120,7 +139,7 @@ int work(int argc, uchar* argv[])
 int umain(int argc, uchar* argv[])
 {
 	UniStr db_path(ugetenv(SYSTEM_CONFIG_PATH_ENV));
-	DataBase *db = new SQLiteDB(db_path+REMUS_CONFIG_RELATIVE_PATH);
+	db = new SQLite((db_path+REMUS_CONFIG_RELATIVE_PATH).c_str());
 	db->initialize();
 
 	work(argc, argv);
@@ -132,22 +151,3 @@ int umain(int argc, uchar* argv[])
 /*
  * tag [create|rm|ren|list] <tagname>[:<tagfamily>] [<tagname>[:tagfamily]]
  */
-/*
-create table remus_tag(
-	idx INTEGER PRIMARY KEY ASC AUTOINCREMENT,
-	name TEXT,
-	family INTEGER REFERENCES remus_tagfamily(idx) ON DELETE SET NULL,
-	alias INTEGER REFERENCES remus_alias_group(idx) ON DELETE SET NULL,
-	prev_alian INTEGER REFERENCES remus_tag(idx) ON DELETE SET NULL,
-	post_alian INTEGER REFERENCES remus_tag(idx) ON DELETE SET NULL, -- notice: software shall manually manage this, rather than left them to db.
-	UNIQUE (idx, family)
-);
-create table remus_alias_group(
-	idx INTEGER PRIMARY KEY ASC AUTOINCREMENT,
-	master INTEGER REFERENCES remus_tag(idx) ON DELETE SET NULL
-);
-create table remus_family(
-	idx INTEGER PRIMARY KEY ASC AUTOINCREMENT,
-	name TEXT UNIQUE
-);
-*/
