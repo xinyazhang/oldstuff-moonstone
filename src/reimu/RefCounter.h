@@ -2,28 +2,37 @@
 #define _REMUS_DAL_SQLITE_REF_COUNTER_
 
 #include <map>
-#include "DomainImpl.h"
+#include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include "CommonDeleter.h"
 
-struct sqlite3;
+class Category;
 
 template<class T>
-class SQLiteRefCounter
+class RefCounter
 {
+	friend class Category;
 public:
 	typedef boost::shared_ptr<T> Ref;
 	typedef boost::weak_ptr<T> Weak;
 
-	SQLiteRefCounter(sqlite3* db);
+	RefCounter(Category* cat, Database* db)
+		:cat_(cat), db_(db), mem_counter_(0) { }
 
 	Ref create(index_t idx);
 	void destroy(index_t idx);
-	void replace(Ref ref);
+	void replace(index_t old_idx, index_t new_idx);
 private:
 	typedef typename std::map<index_t, Weak>::iterator MapIter;
 	std::map<index_t, Weak> map_;
-	sqlite3* db_;
+	Category* cat_;
+	Database* db_;
+	boost::weak_ptr<RefCounter> self_;
+
+	index_t mem_counter_;
 };
+
+typedef template<class T> boost::shared_ptr< RefCounter<T> > RefCounterRef<T>;
 
 #include "RefCounter.cpp"
 

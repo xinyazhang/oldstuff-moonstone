@@ -2,47 +2,63 @@
 #define _REMUS_DAL_DATABASE_
 
 #include "../core/UniStr.h"
-#include "domain.h"
+#include <boost/shared_ptr.hpp>
 
+class SqlQuery;
+typedef boost::shared_ptr<SqlQuery> SqlQueryRef;
 
-class DataBase
+class Database
 {
 public:
-	enum OpenFlag
-	{
-		flag_default = 0,
-		open_existing = 1,
-	};
-
-	class TagIterator
-	{
-		friend class DataBase;
-	protected:
-		TagIterator();
-	public:
-		virtual ~TagIterator();
-		TagRef read_tag();
-	};
+	struct DBConnFalied {};
 public:
-	//DataBase(const UniStr&);
-	virtual ~DataBase();
+	Database();
+	virtual ~Database();
 
-	virtual void initialize() = 0; // initialize a db, if haven't done before
-	virtual void close() = 0; // close db connection or such thing.
+	virtual SqlQueryRef create_query() = 0;
+	virtual int exec(SqlQueryRef ) = 0;
+	virtual void close_query(SqlQueryRef&) = 0;
+};
+
+class SqlQuery
+{
+	friend class Database;
+pubcli:
+	struct SqlOperateSetFailed {};
+	enum SqlOperate
+	{
+		unknown,
+		search,
+		remove,
+		update,
+		insert,
+		query_max
+	};
+private:
+	virtual int exec() = 0;
+public:
+	virtual void set_operate(SqlOperate) = 0;
+	virtual void app_table(const char*) = 0;
 	
-	virtual TagRef create_tag(const UniStr& name = UniStr(), const UniStr& family = UniStr(), OpenFlag = flag_default) = 0;
-	virtual void rm_tag(const UniStr& name, const UniStr& family) = 0;
-	virtual void flush_tag(TagRef ) = 0;
-	virtual void close_tag(TagRef& ) = 0;
-	virtual void kill_tag(TagRef& ) = 0;
+	virtual void app_target(const char*, const UniStr&) = 0; // select(or delete) Value from Table where PARA1=PARA2
+	virtual void app_target(const char*, int64_t ) = 0; // select(or delete) Value from Table where PARA1=PARA2
+	virtual void app_target(const char* ) = 0; // select max(TARGET) from Table;
 
-	virtual TagIterator* create_tag_iterator() = 0;
-	virtual TagRef read_tag(TagIterator*) = 0;
+	virtual void app_value(const char*) = 0; // select PARA1 from Table where Target, or Insert/Delete PARA1 into Table
+	virtual void app_value(const UniStr&) = 0;
+	virtual void app_value(int64_t ) = 0;
+	virtual void app_value(const char*, const UniStr&) = 0; // update set PARA1=PARA2 where Target
+	virtual void app_value(const char*, int64_t) = 0;
 
-	virtual FamilyRef create_family(const UniStr& name, OpenFlag = flag_default) = 0;
-	virtual void rm_family(const UniStr& name) = 0;
-	virtual void close_family(FamilyRef& ) = 0;
-	virtual void kill_family(FamilyRef& ) = 0;
+	virtual void col(int idx, UniStr* ) = 0;
+	virtual void col(int idx, int64_t* ) = 0;
+	virtual void col(int idx, int* ) = 0;
+
+	virtual void next_row() = 0;
+
+	UniStr sql() const = 0;
+
+	int rows() const = 0;
 };
 
 #endif
