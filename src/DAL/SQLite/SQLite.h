@@ -16,7 +16,7 @@ public:
 	void initialize();
 
 	SqlQueryRef create_query();
-	int exec(SqlQueryRef);
+//int exec(SqlQueryRef ref);
 	void close_query(SqlQueryRef& );
 private:
 	sqlite3* db_;
@@ -31,8 +31,10 @@ private:
 	SQLiteQuery(sqlite3* db);
 	int exec();
 public:
+	~SQLiteQuery();
 	virtual void set_operate(SqlOperate);
 	virtual void app_table(const char*);
+	virtual void reset_query();
 	
 	virtual void app_target(const char*, const UniStr&); // select(or delete) Value from Table where PARA1=PARA2
 	virtual void app_target(const char*, int64_t ); // select(or delete) Value from Table where PARA1=PARA2
@@ -48,6 +50,8 @@ public:
 	virtual void col(int idx, int64_t* );
 	virtual void col(int idx, int* );
 
+	virtual void next_row();
+
 	UniStr sql() const;
 
 	int rows() const;
@@ -56,20 +60,19 @@ private:
 	SqlOperate op_;
 	sqlite3_stmt* stmt_;
 	sqlite3* db_;
-	UniStr sql_;
 	int rows_;
 
 	std::vector<UniStr> table_, target_, value_;
 
 private:
 	UniStr escape(const UniStr&);
-	void compose(UniStr&, const std::vector<UniStr>);
+	void compose(UniStr&, const std::vector<UniStr>) const;
 
-	void sql_select();
-	void sql_remove();
-	void sql_update();
-	void sql_insert();
-	void sql_max();
+	UniStr sql_select() const;
+	UniStr sql_remove() const;
+	UniStr sql_update() const;
+	UniStr sql_insert() const;
+	UniStr sql_max() const;
 };
 
 #endif

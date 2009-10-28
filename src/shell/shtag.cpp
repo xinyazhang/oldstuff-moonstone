@@ -1,10 +1,11 @@
 #include "../core/UniStr.h"
 #include "../core/PlatformSpec.h"
-#include "../DAL/domain.h"
 #include "../DAL/DataBase.h"
-#include "../DAL/SQLite/DataBase.h"
+#include "../DAL/SQLite/SQLite.h"
+#include "../reimu/Defines.h"
 
-DataBase *db;
+Database *cat;
+Category *cat;
 
 void split(const uchar* p, UniStr* tag, UniStr* family)
 {
@@ -45,26 +46,26 @@ int work(int argc, uchar* argv[])
 		 *
 		 * btw, kill_tag won't save the changes to a tag.
 		 */
-		TagRef tag = db->create_tag(tagname, tagfamily);
-		db->close_tag(tag);
+		TagRef tag = cat->create_tag(tagname, tagfamily);
+		cat->close_tag(tag);
 		/*
 		 * Example code for the second practice
 		 *
 		 * These codes won't create a tag for a non-existing family
 		 */
 #ifdef _SHOULD_NOT_BE_DEFINED_
-		TagRef tag = db->create_tag();
+		TagRef tag = cat->create_tag();
 		tag->set_name(tagname);
 		/* 
 		 * create a family
 		 */
-		TagFamily* family = db->create_family(tagfamily, db::open_existing);
+		TagFamily* family = cat->create_family(tagfamily, cat::open_existing);
 		if ( !family )
-			db->kill_tag(tag);
+			cat->kill_tag(tag);
 		else
 		{
 			tag->set_family(family);
-			db->close_tag(tag);
+			cat->close_tag(tag);
 		}
 #endif
 	} else if (cmd == UT("rm"))
@@ -72,7 +73,7 @@ int work(int argc, uchar* argv[])
 		UniStr tagname, tagfamily;
 		split(argv[2], &tagname, &tagfamily);
 
-		db->rm_tag(tagname, tagfamily);
+		cat->rm_tag(tagname, tagfamily);
 	} else if (cmd == UT("ren"))
 	{
 		if (argc != 4)
@@ -88,7 +89,7 @@ int work(int argc, uchar* argv[])
 		 * a non existing tag, using open_existing flag to estimate to create
 		 * a new tag
 		 */
-		TagRef tag = db->create_tag(tagname, tagfamily, DataBase::open_existing);
+		TagRef tag = cat->create_tag(tagname, tagfamily, DataBase::open_existing);
 		if ( !tag )
 		{
 			printf("such tag do not exist\n");
@@ -104,24 +105,24 @@ int work(int argc, uchar* argv[])
 		/*
 		 * Set family is a little difficult...
 		 */
-		FamilyRef family = db->create_family(tagfamily, db::open_existing);
+		FamilyRef family = cat->create_family(tagfamily, cat::open_existing);
 		if ( !family )
 		{
 			printf("New tagfamily do not exist\n");
-			db->kill_tag(tag);
+			cat->kill_tag(tag);
 			return 0;
 		} else 
 		{
 			tag->set_family(tagfamily);
 		}
 #endif
-		db->close_tag(tag);
+		cat->close_tag(tag);
 	} else if (cmd == UT("list"))
 	{
 		uprintf(UT("%24s %24s\n"), UT("Tag name"), UT("Family name"));
 		uprintf(UT("================================================"));
-		DataBase::TagIterator* iter = db->create_tag_iterator();
-		TagRef tag = db->read_tag(iter);
+		DataBase::TagIterator* iter = cat->create_tag_iterator();
+		TagRef tag = cat->read_tag(iter);
 		while( tag )
 		{
 #if _PROTOTYPE_ > 2
@@ -129,8 +130,8 @@ int work(int argc, uchar* argv[])
 #else
 			uprintf(UT("%s\n"), tag->name());
 #endif
-			db->kill_tag(tag);
-			tag = db->read_tag(iter);
+			cat->kill_tag(tag);
+			tag = cat->read_tag(iter);
 		}
 	}
 	return 0;
@@ -139,12 +140,13 @@ int work(int argc, uchar* argv[])
 int umain(int argc, uchar* argv[])
 {
 	UniStr db_path(ugetenv(SYSTEM_CONFIG_PATH_ENV));
-	db = new SQLite((db_path+REMUS_CONFIG_RELATIVE_PATH).c_str());
-	db->initialize();
+	cat = new SQLite((db_path+REMUS_CONFIG_RELATIVE_PATH).c_str());
+	cat->initialize();
 
 	work(argc, argv);
 
-	db->close();
+	//cat->close();
+	delete cat;
 	delete db;
 	return 0;
 }

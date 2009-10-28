@@ -1,17 +1,18 @@
 #include "Category.h"
 #include "Tag.h"
 #include "TagIterator.h"
+#include "../DAL/Database.h"
 
 Category::Category(Database* db)
 	:db_(db)
 {
-	tagrc_ = RefCounterRef<Tag>(new RefCounter<TagRef>(this, db));
+	tagrc_ = RefCounter<Tag>::RCRef(new RefCounter<Tag>(this, db));
 	tagrc_->self_ = tagrc_;
 }
 
 TagRef Category::create_tag(
-		const UniStr& name = UniStr(), 
-		const UniStr& family = UniStr(), 
+		const UniStr& name, 
+		const UniStr& family, 
 		OpenFlag flag)
 {
 	index_t idx = 0;
@@ -49,7 +50,7 @@ TagRef Category::create_tag(
 	return ref;
 }
 
-void Category::create_tag(index_t idx)
+TagRef Category::create_tag(index_t idx)
 {
 	TagRef ref;
 
@@ -74,14 +75,15 @@ void Category::rm_tag(const UniStr& name, const UniStr& family)
 	{
 		SqlQueryRef query = db_->create_query();
 		query->set_operate(SqlQuery::remove);
-		query->set_table_name("remus_tag");
-		query->set_target("idx", tag->idx());
+		query->app_table("remus_tag");
+		query->app_target("idx", tag->idx());
 		db_->exec(query);
 	}
 }
 
 FamilyRef Category::create_family(const UniStr& name, OpenFlag flag)
 {
+	/*
 	FamilyRef ref;
 	SqlQueryRef query = db_->create_query();
 
@@ -96,11 +98,13 @@ FamilyRef Category::create_family(const UniStr& name, OpenFlag flag)
 		index_t idx;
 		query->col(0, &idx);
 		ref = familyrc_->create(idx);
-	}
+	}*/
+	return FamilyRef();
 }
 
 FamilyRef Category::create_family(index_t idx)
 {
+	/*
 	FamilyRef ref;
 	SqlQueryRef query = db_->create_query();
 
@@ -114,4 +118,6 @@ FamilyRef Category::create_family(index_t idx)
 	{
 		ref = familyrc_->create(idx);
 	}
+	*/
+	return FamilyRef();
 }

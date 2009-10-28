@@ -13,6 +13,10 @@ class UniStr
 public:
 	UniStr();
 	UniStr(const uchar* uni);
+	UniStr(const std::basic_string<uchar>& us);
+#ifdef REMUS_UNICODE_UTF16LE
+	UniStr(const char* ascii);
+#endif
 	// This works a little different
 	// use int to construct sames to itoa
 	UniStr(int64_t value);

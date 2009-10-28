@@ -12,18 +12,17 @@ class Database
 public:
 	struct DBConnFalied {};
 public:
-	Database();
-	virtual ~Database();
+	virtual ~Database() {};
 
 	virtual SqlQueryRef create_query() = 0;
-	virtual int exec(SqlQueryRef ) = 0;
+	int exec(SqlQueryRef ref);
 	virtual void close_query(SqlQueryRef&) = 0;
 };
 
 class SqlQuery
 {
 	friend class Database;
-pubcli:
+public:
 	struct SqlOperateSetFailed {};
 	enum SqlOperate
 	{
@@ -35,9 +34,11 @@ pubcli:
 		query_max
 	};
 private:
+	//int call_exec() { return exec(); }
 	virtual int exec() = 0;
 public:
 	virtual void set_operate(SqlOperate) = 0;
+	virtual void reset_query() = 0;
 	virtual void app_table(const char*) = 0;
 	
 	virtual void app_target(const char*, const UniStr&) = 0; // select(or delete) Value from Table where PARA1=PARA2
@@ -56,9 +57,11 @@ public:
 
 	virtual void next_row() = 0;
 
-	UniStr sql() const = 0;
+	virtual UniStr sql() const = 0;
 
-	int rows() const = 0;
+	virtual int rows() const = 0;
 };
+
+inline int Database::exec(SqlQueryRef ref) { return ref->exec(); }
 
 #endif

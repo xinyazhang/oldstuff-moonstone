@@ -171,11 +171,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\DAL\SQLite\DataBase.cpp"
+				RelativePath="..\reimu\Category.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\SQLite\RefCounter.cpp"
+				RelativePath="..\reimu\RefCounter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\shtag.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\DAL\SQLite\SQLite.cpp"
 				>
 			</File>
 			<File
@@ -187,15 +195,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\SQLite\SQLiteTag.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tag.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DAL\SQLite\TagIterator.cpp"
+				RelativePath="..\reimu\Tag.cpp"
 				>
 			</File>
 			<File
@@ -209,11 +209,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\reimu\Category.h"
+				>
+			</File>
+			<File
+				RelativePath="..\reimu\CommonDeleter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\DAL\DataBase.h"
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\SQLite\DataBase.h"
+				RelativePath="..\reimu\Declares.h"
 				>
 			</File>
 			<File
@@ -221,11 +229,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\domain.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DAL\SQLite\DomainImpl.h"
+				RelativePath="..\reimu\IndexedObject.h"
 				>
 			</File>
 			<File
@@ -237,11 +241,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\SQLite\RefCounter.h"
+				RelativePath="..\reimu\RefCounter.h"
 				>
 			</File>
 			<File
 				RelativePath="..\DAL\SQLite\SQL.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DAL\SQLite\SQLite.h"
 				>
 			</File>
 			<File
@@ -257,7 +265,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DAL\SQLite\TagIterator.h"
+				RelativePath="..\reimu\Tag.h"
+				>
+			</File>
+			<File
+				RelativePath="..\reimu\TagIterator.h"
 				>
 			</File>
 			<File

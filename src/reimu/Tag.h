@@ -4,12 +4,13 @@
 #include "IndexedObject.h"
 #include "Declares.h"
 #include "RefCounter.h"
+#include "CommonDeleter.h"
 
 class Tag
 	:public IndexedObject
 {
 public:
-	Tag(index_t idx, Category* cat, Database* db, RefCounterRef<Tag> rc);
+	Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>::RCRef rc);
 	UniStr name() const;
 	void set_name(const UniStr&);
 	void load();
@@ -21,7 +22,7 @@ public:
 	friend class Deleter;
 private:
 	UniStr name_;
-	RefCounterRef<Tag> rc_;
+	RefCounter<Tag>::RCRef rc_;
 	index_t family_;
 	mutable FamilyRef family_ref_;
 };

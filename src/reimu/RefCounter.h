@@ -4,15 +4,18 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include "../core/int_type.h"
 #include "CommonDeleter.h"
 
 class Category;
+class Database;
 
 template<class T>
 class RefCounter
 {
 	friend class Category;
 public:
+	typedef boost::shared_ptr< RefCounter<T> > RCRef;
 	typedef boost::shared_ptr<T> Ref;
 	typedef boost::weak_ptr<T> Weak;
 
@@ -20,8 +23,8 @@ public:
 		:cat_(cat), db_(db), mem_counter_(0) { }
 
 	Ref create(index_t idx);
-	void destroy(index_t idx);
-	void replace(index_t old_idx, index_t new_idx);
+	void destroy(index_t idx, T*);
+	void move(index_t old_idx, index_t new_idx);
 private:
 	typedef typename std::map<index_t, Weak>::iterator MapIter;
 	std::map<index_t, Weak> map_;
@@ -32,8 +35,7 @@ private:
 	index_t mem_counter_;
 };
 
-typedef template<class T> boost::shared_ptr< RefCounter<T> > RefCounterRef<T>;
-
+//template <typename T> typedef  boost::shared_ptr< RefCounter<T> > RefCounterRef<T>;
 #include "RefCounter.cpp"
 
 #endif

@@ -1,7 +1,9 @@
 #include "Tag.h"
 #include "../DAL/Database.h"
+#include "Category.h"
+//#include "Family.h"
 
-Tag::Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>* rc)
+Tag::Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>::RCRef rc)
 	:IndexedObject(idx, cat, db), rc_(rc)
 {
 }
@@ -18,11 +20,11 @@ void Tag::set_name(const UniStr& str)
 
 void Tag::load()
 {
-	if ( idx_ <= 0 )
+	if ( idx() <= 0 )
 		return;
 
-	Database::SqlQueryRef query = db_->create_query();
-	query->set_operate(SqlQuery::select);
+	SqlQueryRef query = db_->create_query();
+	query->set_operate(SqlQuery::search);
 	query->app_table("remus_tag");
 	query->app_target("idx", idx_);
 	query->app_value("*");
@@ -30,12 +32,12 @@ void Tag::load()
 	db_->exec(query);
 	query->col(1, &name_);
 	query->col(2, &family_);
-	db_->close(query);
+	db_->close_query(query);
 }
 
 void Tag::store()
 {
-	if ( idx_ > 0 )
+	if ( idx() > 0 )
 	{
 		SqlQueryRef query = db_->create_query();
 
@@ -47,15 +49,15 @@ void Tag::store()
 		query->app_value("name", name());
 
 		db_->exec(query);
-		db_->close(query);
+		db_->close_query(query);
 	} else
 	{
-		db_->begin_transaction();
+		//db_->begin_transaction();
 		
 		SqlQueryRef query = db_->create_query();
 
 		// set opearte
-		query->set_opearte(SqlQuery::insert);
+		query->set_operate(SqlQuery::insert);
 		// set table
 		query->app_table("remus_tag");
 		// for insert
@@ -64,12 +66,12 @@ void Tag::store()
 
 		db_->exec(query);
 
-		db_->reset_query(query);
-		db_->set_opearte(SqlQuery::query_max);
+		query->reset_query();
+		query->set_operate(SqlQuery::query_max);
 		// for query_max(a common usage opearte)
-		db_->app_table("remus_tag");
+		query->app_table("remus_tag");
 		// target means the column we want to know the maximum
-		db_->app_target("idx");
+		query->app_target("idx");
 
 		db_->exec(query);
 
@@ -82,7 +84,7 @@ void Tag::store()
 
 		db_->close_query(query);
 
-		db_->end_transaction();
+		//db_->end_transaction();
 	}
 }
 
@@ -95,6 +97,8 @@ FamilyRef Tag::family() const
 
 void Tag::set_family(FamilyRef family_ref)
 {
+	/*
 	family_ref_ = family_ref;
 	family_ = family_ref->idx();
+	*/
 }

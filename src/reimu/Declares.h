@@ -1,6 +1,7 @@
 #ifndef _KERNEL_DECLARES_
 #define _KERNEL_DECLARES_
 
+#include "../core/UniStr.h"
 #include <boost/shared_ptr.hpp>
 
 class Tag;
@@ -28,5 +29,6 @@ class Attr;
 typedef boost::shared_ptr<Attr> AttrRef;
 
 class Database;
+class Category;
 
 #endif

@@ -8,12 +8,12 @@
 class IndexedObject
 {
 protected:
-	IndexedObject(index_t idx, Database* db, Category* cat)
+	IndexedObject(index_t idx, Category* cat, Database* db)
 		:idx_(idx), db_(db), cat_(cat){}
-	virtual ~IndexedObject();
+	virtual ~IndexedObject() {};
 public:
 	index_t idx() { return idx_; }
-private:
+protected:
 	int64_t idx_;
 	Database* db_;
 	Category* cat_;

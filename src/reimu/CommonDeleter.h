@@ -5,9 +5,9 @@ template<class T>
 class CommonDeleter
 {
 public:
-	operator()(T* ptr)
+	void operator()(T* ptr)
 	{
-		ptr->rc_->destroy(ptr->idx());
+		ptr->rc_->destroy(ptr->idx(), ptr);
 	}
 };
 

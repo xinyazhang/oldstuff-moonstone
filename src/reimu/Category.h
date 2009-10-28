@@ -2,6 +2,7 @@
 #define _KERNEL_CATEGORY_
 
 #include "Declares.h"
+#include "RefCounter.h"
 
 class TagIterator;
 /*
@@ -31,7 +32,7 @@ public:
 
 private:
 	Database* db_;
-	RefCounterRef<Tag> tagrc_;
+	RefCounter<Tag>::RCRef tagrc_;
 };
 
 #endif

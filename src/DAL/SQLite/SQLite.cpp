@@ -27,29 +27,39 @@ void SQLite::initialize()
 
 SqlQueryRef SQLite::create_query()
 {
-	SqlQueryRef ref = SqlQueryRef(new SQLiteQuery);
+	SqlQueryRef ref(new SQLiteQuery(db_));
+	return ref;
 }
 
+/*
 int SQLite::exec(SqlQueryRef ref)
 {
-	ref->exec();
+	ref->call_exec();
 }
+*/
 
 void SQLite::close_query(SqlQueryRef& ref)
 {
 	ref.reset();
 }
 
-SQLiteQuery SQLiteQuery::SQLiteQuery(sqlite3* db)
-	:db_(db), op_(unknown)
+SQLiteQuery::SQLiteQuery(sqlite3* db)
+	:db_(db), op_(unknown), stmt_(0)
 {
 }
 
 int SQLiteQuery::exec()
 {
 	sqlite3_prepare_u(db_, sql().c_str(), -1, &stmt_, NULL);
-	sqlite3_step(stmt_);
+	int ret = sqlite3_step(stmt_);
 	rows_ = sqlite3_column_count(stmt_);
+	return ret;
+}
+
+SQLiteQuery::~SQLiteQuery()
+{
+	if ( stmt_ )
+		sqlite3_finalize(stmt_);
 }
 
 void SQLiteQuery::set_operate(SqlOperate op)
@@ -57,6 +67,16 @@ void SQLiteQuery::set_operate(SqlOperate op)
 	if ( op == unknown )
 		throw SqlOperateSetFailed();
 	op_ = op;
+}
+
+void SQLiteQuery::reset_query()
+{
+	if ( stmt_ )
+		sqlite3_reset(stmt_);
+	table_.clear();
+	target_.clear();
+	value_.clear();
+	rows_ = 0;
 }
 
 void SQLiteQuery::app_table(const char* table)
@@ -106,7 +126,7 @@ void SQLiteQuery::app_value(const char* para1, int64_t para2)
 
 void SQLiteQuery::col(int idx, UniStr* val)
 {
-	*val = UniStr(sqlite3_column_text16(stmt_, idx));
+	*val = UniStr((const wchar_t*)sqlite3_column_text16(stmt_, idx));
 }
 
 void SQLiteQuery::col(int idx, int64_t* val)
@@ -124,7 +144,7 @@ void SQLiteQuery::next_row()
 	sqlite3_step(stmt_);
 }
 
-UniStr SQLiteQuery::sql()
+UniStr SQLiteQuery::sql() const
 {
 	switch (op_)
 	{
@@ -148,7 +168,7 @@ UniStr SQLiteQuery::sql()
 	}
 }
 
-int SQLiteQuery::rows()
+int SQLiteQuery::rows() const
 {
 	return rows_;
 }
@@ -158,7 +178,7 @@ UniStr SQLiteQuery::escape(const UniStr& org)
 	UniStr ret;
 	for ( int i = 0; i < org.size(); i++ )
 	{
-		if ( org[i] == UT(''') )
+		if ( org[i] == UT('\'') )
 			ret += UT("''");
 		else
 			ret += org[i];
@@ -166,12 +186,12 @@ UniStr SQLiteQuery::escape(const UniStr& org)
 	return ret;
 }
 
-void SQLiteQuery::compose(UniStr& str, const std::vector<UniStr> pairs)
+void SQLiteQuery::compose(UniStr& str, const std::vector<UniStr> pairs) const
 {
 	str += UT(' ');
 
 	for( std::vector<UniStr>::const_iterator iter = pairs.begin();
-			(iter+1) != pariss.end();
+			(iter+1) != pairs.end();
 			iter++)
 	{
 		str += *iter;
@@ -184,7 +204,7 @@ void SQLiteQuery::compose(UniStr& str, const std::vector<UniStr> pairs)
 	str += UT(' ');
 }
 
-void SQLiteQuery::sql_select()
+UniStr SQLiteQuery::sql_select() const
 {
 	UniStr ret("SELECT");
 	compose(ret, value_);
@@ -198,7 +218,7 @@ void SQLiteQuery::sql_select()
 	return ret;
 }
 
-void SQLiteQuery::sql_remove()
+UniStr SQLiteQuery::sql_remove() const
 {
 	UniStr ret("DELETE FROM");
 	compose(ret, table_);
@@ -208,7 +228,7 @@ void SQLiteQuery::sql_remove()
 	return ret;
 }
 
-void SQLiteQuery::sql_update()
+UniStr SQLiteQuery::sql_update() const
 {
 	UniStr ret("UPDATE");
 	compose(ret, table_);
@@ -220,7 +240,7 @@ void SQLiteQuery::sql_update()
 	return ret;
 }
 
-void SQLiteQuery::sql_insert()
+UniStr SQLiteQuery::sql_insert() const
 {
 	UniStr ret("INSERT");
 	compose(ret, value_);
@@ -230,10 +250,10 @@ void SQLiteQuery::sql_insert()
 	return ret;
 }
 
-void SQLiteQuery::sql_max()
+UniStr SQLiteQuery::sql_max() const
 {
 	UniStr ret("SELECT MAX(");
-	compose(ret, target);
+	compose(ret, target_);
 	ret += UT(") FROM");
 	compose(ret, table_);
 
