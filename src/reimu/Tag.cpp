@@ -22,17 +22,21 @@ void Tag::load()
 {
 	if ( idx() <= 0 )
 		return;
+	load(db_);
+}
 
-	SqlQueryRef query = db_->create_query();
+void Tag::load(Database* db)
+{
+	SqlQueryRef query = db->create_query();
 	query->set_operate(SqlQuery::search);
 	query->app_table("remus_tag");
 	query->app_target("idx", idx_);
 	query->app_value("*");
 
-	db_->exec(query);
+	db->exec(query);
 	query->col(1, &name_);
 	query->col(2, &family_);
-	db_->close_query(query);
+	db->close_query(query);
 }
 
 void Tag::store()

@@ -18,6 +18,7 @@ public:
 	};
 
 	Category(Database* db);
+	~Category();
 
 	TagRef create_tag(const UniStr& name = UniStr(), const UniStr& family = UniStr(), OpenFlag = flag_default);
 	TagRef create_tag(index_t idx);
@@ -31,7 +32,11 @@ public:
 	void close_tag_iterator(TagIterator* );
 
 private:
+	index_t find_tag_in_db(Database* db, const UniStr& name, const UniStr& family);
+
+private:
 	Database* db_;
+	Database* memdb_;
 	RefCounter<Tag>::RCRef tagrc_;
 };
 

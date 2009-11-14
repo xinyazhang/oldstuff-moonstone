@@ -7,6 +7,9 @@
 class Tag;
 typedef boost::shared_ptr<Tag> TagRef;
 
+class TagNode;
+typedef boost::shared_ptr<TagNode> TagRef;
+
 class Family;
 typedef boost::shared_ptr<Family> FamilyRef;
 
