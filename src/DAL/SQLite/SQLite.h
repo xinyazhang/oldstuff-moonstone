@@ -61,10 +61,12 @@ private:
 	sqlite3_stmt* stmt_;
 	sqlite3* db_;
 	int rows_;
+	bool done_;
 
 	std::vector<UniStr> table_, target_, value_;
 
 private:
+	void check_done(int );
 	UniStr escape(const UniStr&);
 	void compose(UniStr&, const std::vector<UniStr>) const;
 

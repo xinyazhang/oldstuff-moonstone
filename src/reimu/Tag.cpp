@@ -3,6 +3,8 @@
 #include "Category.h"
 //#include "Family.h"
 
+const Tag::RCRef Category::* rc = Category::get_tagrc_ptr();
+
 Tag::Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>::RCRef rc)
 	:IndexedObject(idx, cat, db), rc_(rc)
 {

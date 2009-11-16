@@ -44,7 +44,7 @@ void SQLite::close_query(SqlQueryRef& ref)
 }
 
 SQLiteQuery::SQLiteQuery(sqlite3* db)
-	:db_(db), op_(unknown), stmt_(0)
+	:db_(db), op_(unknown), stmt_(0), done(false)
 {
 }
 
@@ -53,6 +53,7 @@ int SQLiteQuery::exec()
 	sqlite3_prepare_u(db_, sql().c_str(), -1, &stmt_, NULL);
 	int ret = sqlite3_step(stmt_);
 	rows_ = sqlite3_column_count(stmt_);
+	check_done(ret);
 	return ret;
 }
 
@@ -77,6 +78,7 @@ void SQLiteQuery::reset_query()
 	target_.clear();
 	value_.clear();
 	rows_ = 0;
+	done = false;
 }
 
 void SQLiteQuery::app_table(const char* table)
@@ -89,6 +91,11 @@ void SQLiteQuery::app_target(const char* para1, const UniStr& para2)
 	target_.push_back(UniStr(para1)+UT("=")+escape(para2));
 }
 
+void SQLiteQuery::app_target(const UniStr& para1, const UniStr& para2)
+{
+	target_.push_back(para1+UT("=")+escape(para2));
+}
+
 void SQLiteQuery::app_target(const char* para1, int64_t value)
 {
 	target_.push_back(UniStr(para1)+UT("=")+UniStr(value));
@@ -97,6 +104,11 @@ void SQLiteQuery::app_target(const char* para1, int64_t value)
 void SQLiteQuery::app_target(const char* para)
 {
 	target_.push_back(UT("MAX(")+UniStr(para)+UT(")"));
+}
+
+void SQLiteQuery::app_target(const UniStr& para)
+{
+	target_.push_back(para);
 }
 
 void SQLiteQuery::app_value(const char* para)
@@ -141,7 +153,7 @@ void SQLiteQuery::col(int idx, int* val)
 
 void SQLiteQuery::next_row()
 {
-	sqlite3_step(stmt_);
+	check_done(sqlite3_step(stmt_));
 }
 
 UniStr SQLiteQuery::sql() const
@@ -212,8 +224,11 @@ UniStr SQLiteQuery::sql_select() const
 		ret += UT("*");
 	ret += UT("FROM");
 	compose(ret, table_);
-	ret += UT("WHERE");
-	compose(ret, target_);
+	if ( !target_.empty() )
+	{
+		ret += UT("WHERE");
+		compose(ret, target_);
+	}
 	
 	return ret;
 }

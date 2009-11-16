@@ -8,7 +8,10 @@ class Tag;
 typedef boost::shared_ptr<Tag> TagRef;
 
 class TagNode;
-typedef boost::shared_ptr<TagNode> TagRef;
+typedef boost::shared_ptr<TagNode> TagNodeRef;
+
+class TagIterator;
+//typedef boost::shared_ptr<TagIterator> TagIteratorRef;
 
 class Family;
 typedef boost::shared_ptr<Family> FamilyRef;
@@ -33,5 +36,6 @@ typedef boost::shared_ptr<Attr> AttrRef;
 
 class Database;
 class Category;
+class Parameters;
 
 #endif

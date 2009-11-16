@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\reimu\CategoryT.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\reimu\RefCounter.cpp"
 				>
 			</File>
