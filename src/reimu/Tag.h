@@ -16,26 +16,19 @@ class Tag
 	friend class Category;
 public:
 	Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>::RCRef rc);
-	UniStr name() const;
-	index_t inode() const;
-	void set_name(const UniStr&);
-	void load();
-	void store();
-	FamilyRef family() const;
-	void set_family(FamilyRef );
 
-	// Static part
-public:
-	typedef CommonDeleter<Tag> Deleter;
-	friend class Deleter;
-	// typedef part
-public:
-	typedef RefCounter<Tag>::RCRef RCRef;
-	typedef boost::shared_ptr<Tag> Ref;
-	typedef TagIterator Iterator;
-	typedef boost::shared_ptr<TagIterator> IteratorRef;
-	typedef TagParameters Para;
-	static const char* table_name;
+	// attributes
+	index_t inode() const;
+	UniStr name() const;
+	FamilyRef family() const;
+	bool primary() const;
+
+	void load(); // synchronize from db
+	void store(); // synchronize to db
+
+	bool chname(const UniStr&, const FamilyRef);
+	bool chname(const UniStr&);
+	bool setprimary();
 private:
 	UniStr name_;
 	RefCounter<Tag>::RCRef rc_;
@@ -46,6 +39,20 @@ private:
 
 private:
 	void load(Database* );
+
+	// Static part
+public:
+	typedef CommonDeleter<Tag> Deleter;
+	static TagParameters Para();
+	friend class Deleter;
+	// typedef part
+public:
+	typedef RefCounter<Tag>::RCRef RCRef;
+	typedef boost::shared_ptr<Tag> Ref;
+	typedef TagIterator Iterator;
+	typedef boost::shared_ptr<TagIterator> IteratorRef;
+	typedef TagParameters Para;
+	static const char* table_name;
 };
 
 class TagParameters

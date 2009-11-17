@@ -52,17 +52,30 @@ template<class T>
 }
 
 template<class P>
-	void rm(P args)
+	int mklink(P args1, P args2)
+{
+	P::Ref ref = create(args2, open_existing);
+	if( ref )
+	{
+	} else
+		return -1;
+}
+
+template<class P>
+	int rm(P args)
 {
 	P::Ref ref = create(args, open_existing);
-	if ( ref )
+	if ( ref.unique() )
 	{
 		SqlQueryRef query = db_->create_query();
 		query->set_operate(SqlQuery::remove);
 		query->app_table(table_prefix_ + P::table_name);
 		query->app_target("idx", ref->idx());
 		db_->exec(query);
-	}
+
+		return 0;
+	} else
+		return -1;
 }
 
 template<class T>

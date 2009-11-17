@@ -1,9 +1,15 @@
 #include "Tag.h"
 #include "../DAL/Database.h"
 #include "Category.h"
-//#include "Family.h"
+#include "Family.h"
+#include "CommonT.h"
 
 const Tag::RCRef Category::* rc = Category::get_tagrc_ptr();
+
+TagParameters Tag::Para()
+{
+	return TagParameters();
+}
 
 Tag::Tag(index_t idx, Category* cat, Database* db, RefCounter<Tag>::RCRef rc)
 	:IndexedObject(idx, cat, db), rc_(rc)
@@ -15,10 +21,13 @@ UniStr Tag::name() const
 	return name_;
 }
 
-void Tag::set_name(const UniStr& str)
+FamilyRef Tag::family() const
 {
-	name_ = str;
+	if ( !family_ref_ && family_ )
+		family_ref_ = cat_->create_family(family_);
+	return family_ref_;
 }
+
 
 void Tag::load()
 {
@@ -69,36 +78,17 @@ void Tag::store()
 		// for insert
 		query->app_value("NULL");
 		query->app_value(name());
+		query->app_value(family()->idx());
 
 		db_->exec(query);
 
 		query->reset_query();
-		query->set_operate(SqlQuery::query_max);
-		// for query_max(a common usage opearte)
+
+		// Re-index
 		query->app_table("remus_tag");
-		// target means the column we want to know the maximum
-		query->app_target("idx");
-
-		db_->exec(query);
-
-		index_t idx_new;
-		// easy interface to gain result
-		query->col(0, &idx_new);
-
-		rc_->move(idx_, idx_new);
-		idx_ = idx_new;
-
+		reidx(rc_, query, idx_);
 		db_->close_query(query);
-
-		//db_->end_transaction();
 	}
-}
-
-FamilyRef Tag::family() const
-{
-	if ( !family_ref_ && family_ )
-		family_ref_ = cat_->create_family(family_);
-	return family_ref_;
 }
 
 void Tag::set_family(FamilyRef family_ref)

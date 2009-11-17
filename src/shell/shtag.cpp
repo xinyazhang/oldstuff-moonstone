@@ -29,45 +29,14 @@ int work(int argc, uchar* argv[])
 		UniStr tagname, tagfamily;
 		split(argv[2], &tagname, &tagfamily);
 		/*
-		 * There are two methods to create a new tag:
-		 * 1. provide tagname and tagfamily and calls create_tag
-		 * 	it would create a new tag
-		 * 2. call create_tag without any parameter, it would return
-		 * 	a pointer point to a temporary tag, change its tagname and
-		 * 	tagfamily, and calls close_tag 
-		 *
-		 * Why there are two methods?
-		 * 	the first one uses donmain layer's default action: create all necessary
-		 * 	data, that means if the tag family do not exist, the domain layer's logic would 
-		 * 	create a new one
-		 *
-		 * 	However, on some conditions we want to control the creating procedure
-		 *	more meticulously, the second method would becoome a better practice.
-		 *
-		 * btw, kill_tag won't save the changes to a tag.
+		 * Create Tag:
+		 * 1. Generate a TagParameter object to store parameters 
+		 * 2. Call template function "create" of Category object
+		 * 3. change the returned tag.
+		 * 4. store tag.
 		 */
-		TagRef tag = cat->create_tag(tagname, tagfamily);
-		cat->close_tag(tag);
-		/*
-		 * Example code for the second practice
-		 *
-		 * These codes won't create a tag for a non-existing family
-		 */
-#ifdef _SHOULD_NOT_BE_DEFINED_
-		TagRef tag = cat->create_tag();
-		tag->set_name(tagname);
-		/* 
-		 * create a family
-		 */
-		TagFamily* family = cat->create_family(tagfamily, cat::open_existing);
-		if ( !family )
-			cat->kill_tag(tag);
-		else
-		{
-			tag->set_family(family);
-			cat->close_tag(tag);
-		}
-#endif
+		TagRef tag = cat->create(Tag::Para().arg(tagname).arg_family(tag_family));
+		tag->store();
 	} else if (cmd == UT("rm"))
 	{
 		UniStr tagname, tagfamily;
@@ -89,7 +58,7 @@ int work(int argc, uchar* argv[])
 		 * a non existing tag, using open_existing flag to estimate to create
 		 * a new tag
 		 */
-		TagRef tag = cat->create_tag(tagname, tagfamily, DataBase::open_existing);
+		TagRef tag = cat->create(tagname, tagfamily, Category::open_existing);
 		if ( !tag )
 		{
 			printf("such tag do not exist\n");
@@ -100,12 +69,10 @@ int work(int argc, uchar* argv[])
 		 * if user don't provice a tagfamily, it shouldn't modify tagfamiy
 		 */
 		split(argv[3], &tagname, &tagfamily);
-		tag->set_name(tagname);
-#if _PROTOTYPE_ > 2
 		/*
 		 * Set family is a little difficult...
 		 */
-		FamilyRef family = cat->create_family(tagfamily, cat::open_existing);
+		FamilyRef family = cat->create_family(tagfamily, Category::open_existing);
 		if ( !family )
 		{
 			printf("New tagfamily do not exist\n");
@@ -113,25 +80,17 @@ int work(int argc, uchar* argv[])
 			return 0;
 		} else 
 		{
-			tag->set_family(tagfamily);
+			tag->chname(tagname, tagfamily);
 		}
-#endif
-		cat->close_tag(tag);
 	} else if (cmd == UT("list"))
 	{
 		uprintf(UT("%24s %24s\n"), UT("Tag name"), UT("Family name"));
 		uprintf(UT("================================================"));
-		DataBase::TagIterator* iter = cat->create_tag_iterator();
-		TagRef tag = cat->read_tag(iter);
-		while( tag )
+		Tag::Iterator* iter = cat->create_iterator<Tag>();
+		while( !iter->done() )
 		{
-#if _PROTOTYPE_ > 2
+			TagRef tag = iter->read();
 			uprintf(UT("%24s %24s\n"), tag->name(), tag->family()->name());
-#else
-			uprintf(UT("%s\n"), tag->name());
-#endif
-			cat->kill_tag(tag);
-			tag = cat->read_tag(iter);
 		}
 	}
 	return 0;

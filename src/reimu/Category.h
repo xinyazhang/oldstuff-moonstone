@@ -25,7 +25,9 @@ public:
 	template<class T>
 		typename T::Ref create(index_t idx);
 	template<class P>
-		void rm(P args);
+		int mklink(P args1, P args2);
+	template<class P>
+		int rm(P args);
 
 	template<class T>
 		typename T::IteratorRef create_iterator();
