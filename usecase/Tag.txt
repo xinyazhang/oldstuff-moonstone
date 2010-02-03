@@ -1,0 +1,85 @@
+[Architecture]
+* tag施行类似文件系统的inode方式管理，这里成为tnode（tag node）
+* 多个tag可以指向同一个tnode（参见tnode.txt）
+* 由于使用tnode表示概念，所以tag只有名和tnode index，其余信息于tnode中存储
+* 并且，由于tnode的引入，表示"tag"关系所用的是tnode index，而非tag名，所以tag表中不需要一个idx字段
+* tag可以重名
+* 同一个tnode不能有同名的tag，即：(tag_name, tnode_idx)是primary key
+* 可以以hardlink的方式创建tnode的其他tag，也可借用merge的方式将多个tag的tnode合并为一个，
+  并让这些tag指向这个合并后的tnode
+* tag可以修饰tag
+* tag可以修饰文件
+* tag可以修饰container
+* tag可以implies另一个tag，即打了tag A，那么A implies的tag也会被打上
+	- 考虑可能会有implies chaining，实现的时候要确确实实的在relation table中添加这个tag。
+
+[Table]
+tag(name TEXT, tnode INTEGER)
+PRIMARY KEY (name, tnode)
+tnode REFERENCES tnode(idx)
+
+[Relations]
+无，虽然表示"tagging"关系的表很多，但是都是在引用tnode(idx)字段
+参见tnode.txt
+
+/******下面是用例部分******/
+[Create]
+* Use case
+	1. 用户输入待创建的tag名称，并确定
+	2. 系统于数据库中创建tag
+* Technologies
+	1. Lazy Creation: 系统并不在创建tag后立刻创建其tnode，直到需要tnode时才会去创建
+		- 什么时候需要tnode？
+			@ 修改tnode字段时
+			@ tagging时
+* Core SQL
+	1. INSERT INTO tag values(name, 0)
+		- 设tnode为0来启用Lazy Creation技术
+* Implementation
+	- 读取设置的tag表prefix，以此获得真实的tag表名称
+	- 建立数据库连接
+	- 转调DAL，执行SQL语句
+
+[Locate]
+* Use case
+	1. 用户输入查询字符串
+	2. 系统根据查询字符串列出所有符合的tag
+		- 查询细节还是需要确定
+		- 暂时采用P22的方案
+	3. 用户选择一个tag作为选定tag
+* Technologies
+	1. GUI Specify, CUI交互有问题……
+* Core SQL
+	1. select * from tag where name = str[0] or name = str[n]; <1>
+		- this is called directly hit (first or last)
+		- 记得合并tnode相同的结果
+	2. 当参数多于两个时……
+		select tnode from tag where name = str[1] or name = str[2] or ... or name = str[n-1]; <2>
+		select tnode from tagtag where taggee in <1> and tagger in <2>; <3>
+		select * from tag where tnode in <3>;
+		- 剩余处理同1
+* Implementation
+	- 读取设置的tag表prefix，以此获得真实的tag名称
+	- 分析查询字符串
+	- 执行SQL
+	- 输出给GUI
+
+[Delete]
+* Use case
+	1. 用户定位tag
+		- 定位tag的同时也定位了tnode
+		- 定位tag见上
+	2. 用户执行删除
+		- 一个tnode的各个tag相当于hardlink
+		- tnode需要维护一个引用计数
+* Technologies
+	1. 引用计数的维护，以及transaction
+* Core SQL
+	1. delete from tag where name = <sel1> and tnode = <sel2>;
+	2. update tnode set refc -= 1 where tnode = <sel2>;
+	3. delete from tnode where tnode = <sel2> and refc = 0;
+
+[Add Comment]
+
+* Technologies
+	1. 尝试获得tnode时就要做好tnode的lazy initialization工作

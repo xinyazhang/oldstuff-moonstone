@@ -1,0 +1,30 @@
+[Architecture]
+* 每个tnode以index唯一确定；
+* tnode的实际意义是唯一确定一个概念，tag只是这些概念的一个（或多个）名字而已；
+* tnode的唯一性由用户保证，计算机系统尚没有确认概念唯一性的智能。
+* tnode需要的字段：
+	* comment TEXT
+		- 对这个概念的注释，例如iPad: 石头都有多点触摸，它却没有
+	* refc
+		- 对tnode的引用计数，只计算tag的，
+		- 减到0后删除
+
+[Table]
+* tnode(idx TEXT AUTOINCREMENT, comment TEXT)
+	PRIMARY KEY (idx)
+
+// 原先设计中的tnode字段多数被转移到了Relations中
+
+[Relations]
+* tagtag(tagger, taggee)
+	PRIMARY KEY (tagger, taggee)
+	tagger REFERENCES tnode(idx)
+	taggee REFERENCES tnode(idx)
+	tagger ON DELETE CASCADE
+	taggee ON DELETE CASCADE
+
+* tagfile(tagger, file)
+	PRIMARY KEY (tagger, file)
+	tagger REFERENCES tnode(idx)
+	file REFERENCES file(idx)
+	tagger ON DElETE CASCADE
