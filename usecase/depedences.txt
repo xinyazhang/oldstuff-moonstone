@@ -1,0 +1,55 @@
+[Cross Platform Foundation]
+* uchar, its array stores the unicode string. On windows, it's wchar_t(UTF-16). On linux, it's char(UTF-8)
+	- Other locals other than UTF-8 under Linux is not supported.
+	- It should be noticed that uchar is defined as "uchar* is the pointer to the native unicode string",
+		not the single character——it can't be achived unless we use UTF-32(UCS-4)
+* UniStr, stores the native String 
+* Abstract UTF-16 and UTF-8 Version API
+	- for example: SQLite's UTF-8 and UTF-16 functions
+* standard int
+* How to open URL use default browser in the system?
+
+[Abstract Database Layer]
+* database connection class
+* SQL execution layer
+* Database depedent SQL statements
+	- Create table and data type
+	- Parameter binding may differ from db to db, so, every SQL must be changable between db.
+* SQL parameter binding
+* Transaction support
+
+[Domain Layer]
+* db link(name may change)
+	- represents a query and modify session
+	- it constructs many *Managers with itself(see below)
+	- *Managers get each other from this class(Intermediate Pattern? maybe)
+	! CPF
+	! ADL
+* TagManager, works on platform indepedent database operations, created with a db link
+	- create()
+	- locate()
+		$ returns a object represents possible tags
+			% the name of this class haven't been decided.
+			% TagList?
+	- delete()
+	! CPF
+	！ADL
+* Tag, stores the tag data
+	- name();
+	- tnode();
+	- note: Tag don't care about database
+* TnodeManager, same as TagManager
+	- no "delete", use reduce_reference_counter() instead.
+		$ a better function name...
+* Tnode, stores the tnode data, and dirty bit
+	- but it don't stores the reference counter -- it's dangerous when update
+* Associator, assosciate two objects
+	- associate();
+		+ associate(Tag, Tag);
+		+ associate(Tag, File);
+	- deassociate();
+* AttributeManager, same as TagManager
+
+[困境]
+CPF和ADL是其他大多数程序的基础
+但是CPF和ADL的所需接口的原型又需要其他程序来确定

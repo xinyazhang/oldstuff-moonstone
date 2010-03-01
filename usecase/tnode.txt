@@ -28,3 +28,26 @@
 	tagger REFERENCES tnode(idx)
 	file REFERENCES file(idx)
 	tagger ON DElETE CASCADE
+
+[Create]
+* Use case
+	1. 获取请求
+	2. 创建tnode
+	3. 返回tnode的idx
+* Technologies
+	1. AUTOINCREMENT supported by database
+* Core SQL
+	1. INSERT INTO tnode VALUES('', 1);
+
+[Delete]
+
+[Add Comment]
+* Use case
+	1. 用户定位tag
+	2. 用户修改comment
+		- 此用例可能触发tnode的[Create]用例
+* Technologies
+	1. 尝试获得tnode时就要做好tnode的lazy initialization工作
+* Core SQL
+	1. UPDATE tnode SET comment = <comment> WHERE idx = <sel>;
+* Implementation

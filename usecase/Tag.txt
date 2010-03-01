@@ -2,6 +2,10 @@
 * tag施行类似文件系统的inode方式管理，这里成为tnode（tag node）
 * 多个tag可以指向同一个tnode（参见tnode.txt）
 * 由于使用tnode表示概念，所以tag只有名和tnode index，其余信息于tnode中存储
+	- 带来的问题，想给"苹果"打上"中文名"，"Apple"打上"英文名"的tag是不可能了……
+	- 考虑更加勥的结构？
+	- enhanchement/workaround不是没有，用tnode, name, tagger即可为单独一个tag打tag
+	- 问题解决，有需求再说。
 * 并且，由于tnode的引入，表示"tag"关系所用的是tnode index，而非tag名，所以tag表中不需要一个idx字段
 * tag可以重名
 * 同一个tnode不能有同名的tag，即：(tag_name, tnode_idx)是primary key
@@ -50,13 +54,13 @@ tnode REFERENCES tnode(idx)
 * Technologies
 	1. GUI Specify, CUI交互有问题……
 * Core SQL
-	1. select * from tag where name = str[0] or name = str[n]; <1>
-		- this is called directly hit (first or last)
+	1. SELECT * FROM tag WHERE name = str[0] OR name = str[n]; <1>
+		- this is called directly hit (first OR last)
 		- 记得合并tnode相同的结果
 	2. 当参数多于两个时……
-		select tnode from tag where name = str[1] or name = str[2] or ... or name = str[n-1]; <2>
-		select tnode from tagtag where taggee in <1> and tagger in <2>; <3>
-		select * from tag where tnode in <3>;
+		SELECT tnode FROM tag WHERE name = str[1] OR name = str[2] OR ... OR name = str[n-1]; <2>
+		SELECT tnode FROM tagtag WHERE taggee in <1> and tagger in <2>; <3>
+		SELECT * FROM tag WHERE tnode IN <3>;
 		- 剩余处理同1
 * Implementation
 	- 读取设置的tag表prefix，以此获得真实的tag名称
@@ -75,11 +79,9 @@ tnode REFERENCES tnode(idx)
 * Technologies
 	1. 引用计数的维护，以及transaction
 * Core SQL
-	1. delete from tag where name = <sel1> and tnode = <sel2>;
-	2. update tnode set refc -= 1 where tnode = <sel2>;
-	3. delete from tnode where tnode = <sel2> and refc = 0;
+	1. DELETE FROM tag WHERE name = <sel1> AND tnode = <sel2>;
+	2. UPDATE tnode SET refc -= 1 WHERE tnode = <sel2>;
+	3. DELETE FROM tnode WHERE tnode = <sel2> AND refc = 0;
 
-[Add Comment]
-
-* Technologies
-	1. 尝试获得tnode时就要做好tnode的lazy initialization工作
+[Alias]
+[Rename]
