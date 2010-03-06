@@ -1,9 +1,0 @@
-#ifndef _REMUS_DAL_SQLITE_DEFINES_
-#define _REMUS_DAL_SQLITE_DEFINES_
-
-#define ATTR_INT_VALUE 0
-#define ATTR_FLOAT_VALUE 1
-#define ATTR_DATE_VALUE 2
-
-
-#endif
