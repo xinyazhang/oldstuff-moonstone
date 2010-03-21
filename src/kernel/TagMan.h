@@ -1,0 +1,28 @@
+#ifndef KERNEL_TAGMAN_H
+#define KERNEL_TAGMAN_H
+
+class Database;
+
+class TagMan
+{
+public:
+	TagMan(Database* );
+public:
+	tag_t create(const unistr&);
+	tag_t hardlink(tag_t&, const unistr&);// may modify the tag's tnode
+	taglist_t locate(const unistr_list&);
+	bool update(const tag_t& old_tag, const tag_t& new_tag);
+	tnode_t access_tnode(tag_t& ); // the same as hardlink
+	bool del(const tag_t&);
+	bool setas_mastername(tag_t&);
+	int errno() const;
+
+	static bool invalid(tag_t);
+private:
+	Database* db_;
+	int err_;
+	bool create(const unistr&, idx_t);
+	bool touch_tnode(tag_t* );
+};
+
+#endif

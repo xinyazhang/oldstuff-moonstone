@@ -1,0 +1,8 @@
+20100321
+* Write a Builder to 
+	+ construct concrete DatabaseInterface objects
+	+ Using XML drivers to access Master Preference Table.
+
+* Design Master database table, purpose:
+	+ store program's configurations
+	+ store known databases' connection methods
