@@ -3,7 +3,8 @@
 
 #include "sql_stmt_interface.h"
 
-class sqlite3_stmt;
+struct sqlite3_stmt;
+struct sqlite3;
 
 class stmt_sqlite_impl
 	:public sql_stmt_interface
@@ -11,6 +12,7 @@ class stmt_sqlite_impl
 public:
 	stmt_sqlite_impl(sqlite3_stmt* ,sqlite3* );
 	~stmt_sqlite_impl();
+	virtual void bind(int c);
 	virtual void bind(int c, idx_t );
 	virtual void bind(int c, const unistr&);
 	virtual int execute();

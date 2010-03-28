@@ -4,11 +4,13 @@
 struct tnode_t
 {
 	idx_t idx; 
-		static const char* idxcol = "idx";
+	idx_t refc;
+//		static const char* idxcol = "idx";
 	unistr mastername; 
-		static const char* masternamecol = "mastername";
+//		static const char* masternamecol = "mastername";
 	unistr comment;
-		static const char* commentcol = "comment";
+//		static const char* commentcol = "comment";
+	tnode_t():idx(0), refc(0){}
 };
 
 #define TNODE_COLUMN_NUMBER 3

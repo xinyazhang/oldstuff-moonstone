@@ -1,8 +1,31 @@
 20100321
-* Write a Builder to 
+* (Pending)Write a Builder to 
 	+ construct concrete DatabaseInterface objects
 	+ Using XML drivers to access Master Preference Table.
 
-* Design Master database table, purpose:
+* (Pending)Design Master database table, purpose:
 	+ store program's configurations
 	+ store known databases' connection methods
+
+* Virtual Destructors![done]
+
+20100322
+* Program Architecture
+	+ main function create Master object
+	+ Create UI Layer accroding to Mater's preferences.
+	+ (Required by UI Layer) Master object create database connection session
+	+ UI Layer acqurie the pointer to Database object
+	+ (Required by UI Layer) take actions, Using Database::*man().
+
+20100325
+* Testcases
+* Foundmentals
+	+ [done]unistr:
+		unistr::number
+		unistr:unistr(char*);
+	+ taglist_t
+		[done]taglist_t::add_distinct;
+
+20100325
+* Database::last_serial
+

@@ -5,7 +5,7 @@
 
 #define TABLE_NUMBER 2
 
-const Database::unistr table_name_postfix_[] =
+const unistr Database::table_name_postfix_[] =
 {
 	"tnode",
 	"tag"
@@ -26,6 +26,28 @@ Database::~Database()
 	delete tnodeman_;
 }
 
+bool Database::initialized() const
+{
+	return db_->initialized();
+}
+
+bool Database::initialize()
+{
+	db_->begin_transaction();
+	int sqln = db_->initialize_sql_number();
+	for(int i = 0; i < sqln; i++)
+	{
+		sql_stmt stmt = db_->create_stmt(db_->initialize_sqls(i));
+		if ( stmt.execute() != 0 )
+		{
+			db_->abort_transaction();
+			return false;
+		}
+	}
+	db_->final_transaction();
+	return true;
+}
+
 void Database::begin_transaction()
 {
 	mutex_.lock();
@@ -44,14 +66,21 @@ void Database::final_transaction()
 	mutex_.unlock();
 }
 
+static unistr insert_content[] =
+{
+	UT("(refc, mastername, comment)"),
+	UT("(name, tnode)")
+};
+
 sql_stmt Database::create_insert_stmt(TableSelector ts, int col_number)
 {
 	unistr sql("insert into ");
 	sql += table(ts);
+	sql += insert_content[ts];
 	sql += " values($1";
 	for(int i = 2; i <= col_number; i++)
 	{
-		sql += ",$";
+		sql += ", $";
 		sql += unistr::number(i);
 	}
 	sql += ");";
@@ -66,7 +95,7 @@ sql_stmt Database::create_simsel_stmt(TableSelector s, const unistr& locator, co
 	sql += table(s);
 	sql += " WHERE ";
 	sql += locator;
-	sql += "=$1";
+	sql += "=$1;";
 	return create_stmt_ex(sql);
 }
 
@@ -86,7 +115,7 @@ sql_stmt Database::create_update_stmt(TableSelector s, const unistr& locator, in
 	}
 	sql += " WHERE ";
 	sql += locator;
-	sql += "=$1";
+	sql += "=$1;";
 
 	return create_stmt_ex(sql);
 }
@@ -105,6 +134,7 @@ sql_stmt Database::create_del_stmt(TableSelector s, int locatorn, const char* lo
 		sql += "=$";
 		sql += unistr::number(i);
 	}
+	sql += ";";
 
 	return create_stmt_ex(sql);
 }
@@ -127,4 +157,9 @@ TagMan* Database::tagman()
 TnodeMan* Database::tnodeman()
 {
 	return tnodeman_;
+}
+
+idx_t Database::last_serial()
+{
+	return db_->last_insert();
 }

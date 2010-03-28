@@ -14,14 +14,14 @@ public:
 	bool update(const tnode_t&);
 	bool refcinc(idx_t );
 	bool refcdec(idx_t );
-	int errno() const;
+	int eno() const;
 
 private:
 	Database* db_;
 	int err_;
 public:
 	static bool invalid(const tnode_t& );
-	static tnode_t invalid_tnode() const;
+	static tnode_t invalid_tnode();
 };
 
 #endif

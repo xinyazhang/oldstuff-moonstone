@@ -1,8 +1,14 @@
 #include "sql_stmt.h"
+#include "../dal/sql_stmt_interface.h"
 
 sql_stmt::sql_stmt(sql_stmt_interface* i)
 	:internal_(i)
 {
+}
+
+void sql_stmt::bind(int c)
+{
+	internal_->bind(c);
 }
 
 void sql_stmt::bind(int c, idx_t value)

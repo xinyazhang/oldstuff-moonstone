@@ -3,7 +3,7 @@
 
 inline bool judge(int j) // judge if success or not
 {
-	return j < 0;
+	return j <= 0;
 }
 
 inline bool judge_and_replace(int j, int& r) // return false on error

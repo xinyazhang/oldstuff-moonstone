@@ -1,6 +1,8 @@
 #include "common.h"
+const char* tag_t::namecol="name";
+const char* tag_t::tnodecol="tnode";
 
-static bool TagMan::invalid(tag_t tag)
+bool TagMan::invalid(tag_t tag)
 {
 	return tag.tnode == 0 && tag.name.empty();
 }
@@ -12,7 +14,7 @@ TagMan::TagMan(Database* db)
 
 tag_t TagMan::create(const unistr& name)
 {
-	return create(name, 0);
+	return create(name, 0); // lazy initialization
 }
 
 tag_t TagMan::create(const unistr& name, idx_t idx)
@@ -20,7 +22,7 @@ tag_t TagMan::create(const unistr& name, idx_t idx)
 	db_->begin_transaction();
 	sql_stmt stmt = db_->create_insert_stmt(Database::TagTable, TAG_COLUMN_NUMBER);
 	stmt.bind(1, name);
-	stmt.bind(2, idx); // lazy initialization
+	stmt.bind(2, idx);
 	
 	int err = stmt.execute();
 	bool suceess = judge_and_replace(err, err_);
@@ -48,6 +50,7 @@ bool load_tags(sql_stmt& stmt, taglist_t& tagl)
 		stmt.col(2, t.tnode);
 		tagl.add_distinct(t);
 	}
+	return true;
 }
 
 taglist_t TagMan::locate(const unistr_list& l)
@@ -98,11 +101,12 @@ tnode_t TagMan::access_tnode(tag_t& tag) // the same as hardlink
 {
 	if ( touch_tnode(&tag) )
 		return db_->tnodeman()->locate(tag.tnode);
+	return tnode_t();
 }
 
 bool TagMan::update(const tag_t& old_tag, const tag_t& new_tag)
 {
-	TransactionFinaler(db_);
+	TransactionFinaler f(db_);
 	
 	sql_stmt stmt = db_->create_stmt_ex("UPDATE "+db_->table(Database::TagTable)+" set name = $1, tnode = $2 where name = $3 and tnode = $4");
 	stmt.bind(1, new_tag.name);
@@ -114,7 +118,7 @@ bool TagMan::update(const tag_t& old_tag, const tag_t& new_tag)
 	return judge_and_replace(err, err_);
 }
 
-static const char* deletinglocator[] =
+static const char* deletinglocators[] =
 {
 	tag_t::namecol,
 	tag_t::tnodecol
@@ -130,31 +134,31 @@ bool TagMan::del(const tag_t& t)
 	stmt.bind(2, t.tnode); // lazy initialization
 	
 	int err = stmt.execute();
-	bool suceess = judge_and_replace(err, err_);
+	bool success = judge_and_replace(err, err_);
 	if ( success )
 	{
 		db_->tnodeman()->refcdec(t.tnode);
 	}
 
 	db_->final_transaction();
-	return suceess;
+	return success;
 }
 
 bool TagMan::setas_mastername(tag_t& tag)
 {
 	tnode_t tnode = access_tnode(tag);
 	tnode.mastername = tag.name;
-	db_->tnodeman()->update(tnode);
+	return db_->tnodeman()->update(tnode);
 }
 
-int TagMan::errno() const
+int TagMan::eno() const
 {
 	return err_;
 }
 
 bool TagMan::touch_tnode(tag_t* tag)
 {
-	if ( tag.tnode == 0 )
+	if ( tag->tnode == 0 )
 	{
 		TnodeMan* tnodeman = db_->tnodeman();
 		if ( 0 == tnodeman->create(tag, unistr()) )

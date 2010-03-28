@@ -8,22 +8,32 @@
 #include "DatabaseInterface.h"
 #include <vector>
 
-class sqlite3;
+struct sqlite3;
 
 class db_sqlite_impl
 	:public DatabaseInterface
 {
 public:
-	db_sqlite_impl(sqlite3* handle, const unistr& prefix);
+	db_sqlite_impl(const unistr& filename, const unistr& prefix);
 	~db_sqlite_impl();
+	bool connect();
+
+	virtual void begin_transaction();
+	virtual void final_transaction();
+	virtual void abort_transaction();
+
 	sql_stmt_interface* create_stmt(const unistr& );
-	unistr initialize_sqls() const;
+	unistr initialize_sqls(int ) const;
 	int initialize_sql_number() const;
 	void complete_initialize();
+	idx_t last_insert();
 private:
+	unistr filename_;
 	sqlite3* handle_;
 
 	void check_version(); 
 	void build_sqls();
-	std::vector<unistr> sqls_;
+	unistr_list sqls_;
 };
+
+#endif

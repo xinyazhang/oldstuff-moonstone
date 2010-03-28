@@ -1,5 +1,10 @@
 #include "common.h"
 
+tnode_t TnodeMan::invalid_tnode()
+{
+	return tnode_t();
+}
+
 bool TnodeMan::invalid(const tnode_t& tnode)
 {
 	return tnode.idx == 0;
@@ -24,7 +29,7 @@ idx_t TnodeMan::create(tag_t* master, const unistr& comment)
 	 * stmt provides auto_pointer to real database related stmt instance
 	 */
 	sql_stmt stmt = db_->create_insert_stmt(Database::TnodeTable, TNODE_COLUMN_NUMBER);
-	stmt.bind(1);
+	stmt.bind(1, 1);//refc = 1
 	if ( master )
 		stmt.bind(2, master->name);
 	else
@@ -36,7 +41,8 @@ idx_t TnodeMan::create(tag_t* master, const unistr& comment)
 	if ( judge_and_replace(err, err_) )
 	{
 		ret = db_->last_serial();
-		master->tnode = idx;
+		if ( master )
+			master->tnode = ret;
 	}
 	db_->final_transaction();
 
@@ -56,16 +62,19 @@ tnode_t TnodeMan::locate(idx_t idx)
 		return invalid_tnode();
 	tnode_t tnode;
 	stmt.col(1, tnode.idx);
-	stmt.col(2, tnode.mastername);
-	stmt.col(3, tnode.comment);
+	stmt.col(2, tnode.refc);
+	stmt.col(3, tnode.mastername);
+	stmt.col(4, tnode.comment);
 	db_->final_transaction();
+
+	return tnode;
 }
 
 static const char* updatecontent[2] =
 {
-	tnode_t::masternamecol,
-	tnode_t::commentcol
-}
+	"mastername",
+	"comment"
+};
 
 bool TnodeMan::update(const tnode_t& tnode)
 {
@@ -90,7 +99,7 @@ bool TnodeMan::update(const tnode_t& tnode)
 
 bool TnodeMan::refcinc(idx_t idx)
 {
-	sql_stmt stmt = db_->create_stmt_ex("update "+db_->table(Database::TnodeTable)+" set refc+=1 where idx=$1");
+	sql_stmt stmt = db_->create_stmt_ex("UPDATE "+db_->table(Database::TnodeTable)+" SET refc=refc+1 WHERE idx=$1;");
 	stmt.bind(1, idx);
 	stmt.execute();
 	
@@ -100,16 +109,16 @@ bool TnodeMan::refcinc(idx_t idx)
 bool TnodeMan::refcdec(idx_t idx)
 {
 	db_->begin_transaction();
-	sql_stmt stmt = db_->create_stmt_ex("update "+db_->table(Database::TnodeTable)+" set refc-=1 where idx=$1");
+	sql_stmt stmt = db_->create_stmt_ex("UPDATE "+db_->table(Database::TnodeTable)+" SET refc=refc-1 WHERE idx=$1;");
 	stmt.bind(1, idx);
 	stmt.execute();
-	stmt = db_->create_stmt_ex("delete from "+db_->table(Database::TnodeTable)+" where refc=0");
+	stmt = db_->create_stmt_ex("DELETE FROM "+db_->table(Database::TnodeTable)+" WHERE refc=0;");
 	stmt.execute();
 	db_->final_transaction();
 	return true;
 }
 
-int TnodeMan::errno() const
+int TnodeMan::eno() const
 {
 	return err_;
 }

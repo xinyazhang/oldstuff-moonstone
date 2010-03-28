@@ -2,6 +2,7 @@
 #define KERNEL_TAGMAN_H
 
 class Database;
+#include "taglist.h"
 
 class TagMan
 {
@@ -15,13 +16,13 @@ public:
 	tnode_t access_tnode(tag_t& ); // the same as hardlink
 	bool del(const tag_t&);
 	bool setas_mastername(tag_t&);
-	int errno() const;
+	int eno() const;
 
 	static bool invalid(tag_t);
 private:
 	Database* db_;
 	int err_;
-	bool create(const unistr&, idx_t);
+	tag_t create(const unistr&, idx_t);
 	bool touch_tnode(tag_t* );
 };
 

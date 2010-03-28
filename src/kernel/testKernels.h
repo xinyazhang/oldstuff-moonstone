@@ -3,6 +3,7 @@
 
 #include <QtTest/QtTest>
 #include "../pal/stdtype.h"
+#include "common_declare.h"
 
 class TagMan;
 class TnodeMan;
@@ -11,7 +12,14 @@ class TnodeMan;
  * Assuming the database has been tested.
  */
 class TestKernels
+	:public QObject
 {
+	Q_OBJECT;
+public:
+	TestKernels()
+	{
+		//initTestCase();
+	}
 private slots:
 	void initTestCase();
 	void test010_tnode_create();

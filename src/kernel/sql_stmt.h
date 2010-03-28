@@ -21,6 +21,7 @@ class sql_stmt
 public:
 	sql_stmt(sql_stmt_interface* );
 
+	void bind(int c);//bind void;
 	void bind(int c, idx_t );
 	void bind(int c, const unistr&);
 

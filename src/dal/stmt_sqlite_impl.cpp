@@ -11,41 +11,47 @@ stmt_sqlite_impl::~stmt_sqlite_impl()
 	sqlite3_finalize(stmt_);
 }
 
-virtual void stmt_sqlite_impl::bind(int c, idx_t idx)
+void stmt_sqlite_impl::bind(int c)
+{
+	sqlite3_bind_null(stmt_, c);
+}
+
+void stmt_sqlite_impl::bind(int c, idx_t idx)
 {
 	sqlite3_bind_idx(stmt_, c, idx);
 }
 
-virtual void stmt_sqlite_impl::bind(int c, const unistr& str)
+void stmt_sqlite_impl::bind(int c, const unistr& str)
 {
-	sqlite3_bind_text_native(stmt_, c, str.native());
+	int ret = sqlite3_bind_text_native(stmt_, c, str.native(), -1, SQLITE_TRANSIENT);
 }
 
-virtual int stmt_sqlite_impl::execute()
+int stmt_sqlite_impl::execute()
 {
 	int ret = sqlite3_step(stmt_);
-	while (SQLITE_DONE != ret && SQLITE_ERROR != ret)
+	while (SQLITE_DONE != ret && SQLITE_ROW == ret)
 	{
 		ret = sqlite3_step(stmt_);
 	}
-	if ( ret = SQLITE_DONE )
+	if ( ret == SQLITE_DONE )
 		return 0;
 	else
 		return sqlite3_errcode(db_);
 }
 
-virtual bool stmt_sqlite_impl::step()
+bool stmt_sqlite_impl::step()
 {
-	return SQLITE_ROW == sqlite3_step(stmt_);
+	int ret = sqlite3_step(stmt_);
+	return SQLITE_ROW == ret;
 }
 
-virtual void stmt_sqlite_impl::col(int c, unistr& value)
+void stmt_sqlite_impl::col(int c, unistr& value)
 {
-	value = (unichar*)sqlite3_column_native(stmt_, c);
+	value = (unichar*)sqlite3_column_native(stmt_, c - 1);
 }
 
-virtual void stmt_sqlite_impl::col(int c, idx_t& value)
+void stmt_sqlite_impl::col(int c, idx_t& value)
 {
-	value = sqlite3_column_idx(stmt_, c);
+	value = sqlite3_column_idx(stmt_, c - 1);
 }
 

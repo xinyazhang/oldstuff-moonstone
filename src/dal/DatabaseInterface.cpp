@@ -9,6 +9,10 @@ DatabaseInterface::DatabaseInterface(const unistr& prefix)
 {
 }
 
+DatabaseInterface::~DatabaseInterface()
+{
+}
+
 void DatabaseInterface::begin_transaction()
 {
 	db_lock_.lock();
