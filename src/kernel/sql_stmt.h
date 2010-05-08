@@ -16,7 +16,7 @@
 
 class sql_stmt_interface;
 
-class sql_stmt
+class EXPORT_TO_DLL sql_stmt
 {
 public:
 	sql_stmt(sql_stmt_interface* );

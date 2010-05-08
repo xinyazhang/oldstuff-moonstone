@@ -9,6 +9,7 @@ typedef unsigned __int16 uint16_t;
 typedef __int64 int64_t;
 typedef __int32 int32_t;
 typedef __int16 int16_t;
+#define EXPORT_TO_DLL __declspec(dllexport)
 #endif
 
 #endif

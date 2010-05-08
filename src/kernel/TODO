@@ -29,3 +29,9 @@
 20100325
 * Database::last_serial
 
+20100501
+* Add merge to merge two tag groups
+	- each group share the same tnode
+
+20100508
+* Impl. all tag_edit_action's subclass and theirs factory methods

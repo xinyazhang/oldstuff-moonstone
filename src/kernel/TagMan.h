@@ -4,7 +4,7 @@
 class Database;
 #include "taglist.h"
 
-class TagMan
+class EXPORT_TO_DLL TagMan
 {
 public:
 	TagMan(Database* );
@@ -18,12 +18,14 @@ public:
 	bool setas_mastername(tag_t&);
 	int eno() const;
 
-	static bool invalid(tag_t);
+	static bool invalid(const tag_t&);
 private:
 	Database* db_;
 	int err_;
 	tag_t create(const unistr&, idx_t);
 	bool touch_tnode(tag_t* );
 };
+
+bool load_tags(sql_stmt& stmt, taglist_t& tagl);
 
 #endif

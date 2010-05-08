@@ -1,0 +1,65 @@
+2010/03/21
+* (Pending)Write a Builder to 
+	+ construct concrete DatabaseInterface objects
+	+ Using XML drivers to access Master Preference Table.
+
+* (Pending)Design Master database table, purpose:
+	+ store program's configurations
+	+ store known databases' connection methods
+
+* Virtual Destructors![done]
+
+2010/03/22
+* Program Architecture
+	+ main function create Master object
+	+ Create UI Layer accroding to Mater's preferences.
+	+ (Required by UI Layer) Master object create database connection session
+	+ UI Layer acqurie the pointer to Database object
+	+ (Required by UI Layer) take actions, Using Database::*man().
+
+2010/03/25
+* Testcases
+* Foundmentals
+	+ [done]unistr:
+		unistr::number
+		unistr:unistr(char*);
+	+ taglist_t
+		[done]taglist_t::add_distinct;
+
+2010/03/25
+* Database::last_serial
+
+2010/04/21
+- System Configurations?
+- Change Widget related to Database from Editor to Viewer [done@0501]
+- Build bridges between UI and kernel, Considering MVC
+
+2010/05/01
+* Add merge to merge two tag groups
+	- each group share the same tnode
+
+2010/05/01
+- A toolbar is needed for TabEdit [done@0502]
+- Drag&Drop support, design binary layout for tag_t, tnode_t, etc.
+- Consider TagEditor's implementation, inherit QAbstractItemView? Written a QWidget's subclass? [done@0502, QWidget's subclass]
+- SQL generator for Edit actions, that also means we must log actions. Action Pattern should be used. [withdrawed@0502, see 0502-01]
+
+2010/05/02
+- (0502-01) Design unified "New/Update" action process for TagEdit. 
+- Write another layer beyond ***Man class, for undo/redo support
+	- log sql sentences is enough
+	- don't use transactions as we want all sql lang don't send to sql layer until saves
+		+ However, a problem: non-relative modification
+
+
+2010/05/08
+* Impl. all tag_edit_action's subclass and theirs factory methods [done]
+* adjust code to remove "primary name"
+* add icon to actions in gui
+* add load data to gui
+* add model to viewer.
+	- tag search result model.
+	- alias model.
+* test undo/redo, db rollback
+* MIME type and kernel object's binary layout
+* we may need a exception model ...

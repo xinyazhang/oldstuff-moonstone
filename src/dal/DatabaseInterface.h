@@ -6,7 +6,7 @@
 
 class sql_stmt_interface;
 
-class DatabaseInterface
+class EXPORT_TO_DLL DatabaseInterface
 {
 public:
 	DatabaseInterface(const unistr& prefix);
@@ -16,12 +16,15 @@ public:
 	virtual void begin_transaction() = 0;
 	virtual void final_transaction() = 0;
 	virtual void abort_transaction() = 0;
+
 	virtual sql_stmt_interface* create_stmt(const unistr& ) = 0;
 	bool initialized() const { return initialized_; } 
 	virtual unistr initialize_sqls(int ) const = 0;
 	virtual int initialize_sql_number() const = 0;
 	virtual void complete_initialize() = 0;
 	virtual idx_t last_insert() = 0;
+	void quick_sql_execute(const unistr& );
+	unistr prefix() const { return prefix_; }
 protected:
 	boost::mutex db_lock_;
 	unistr prefix_;

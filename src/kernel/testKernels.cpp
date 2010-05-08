@@ -11,7 +11,7 @@
 void TestKernels::initTestCase()
 {
 	db_sqlite_impl* p;
-	db_ = new Database(p = new db_sqlite_impl(":memory:", ""), "");
+	db_ = new Database(p = new db_sqlite_impl(":memory:", ""));
 	p->connect();
 	if ( !db_->initialized() )
 		QVERIFY(db_->initialize());

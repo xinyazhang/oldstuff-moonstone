@@ -2,13 +2,13 @@
 #define KERNEL_TAGLIST_H
 
 #include <vector>
-#include <tag.h>
+#include "tag.h"
 
 class taglist_t
 	:public std::vector<tag_t>
 {
 public:
-	void add_distinct(const tag_t&);
+	void EXPORT_TO_DLL add_distinct(const tag_t&);
 };
 
 #endif

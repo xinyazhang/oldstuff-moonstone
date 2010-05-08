@@ -15,15 +15,18 @@ db_sqlite_impl::db_sqlite_impl(const unistr& filename, const unistr& prefix)
 void db_sqlite_impl::begin_transaction()
 {
 	DatabaseInterface::begin_transaction();
+	quick_sql_execute("BEGIN TRANSACTION;");
 }
 
 void db_sqlite_impl::final_transaction()
 {
+	quick_sql_execute("COMMIT;");
 	DatabaseInterface::final_transaction();
 }
 
 void db_sqlite_impl::abort_transaction()
 {
+	quick_sql_execute("ROLLBACK;");
 	DatabaseInterface::final_transaction();
 }
 

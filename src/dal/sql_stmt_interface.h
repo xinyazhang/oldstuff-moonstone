@@ -3,7 +3,7 @@
 
 #include "../pal/stdtype.h"
 
-class sql_stmt_interface
+class EXPORT_TO_DLL sql_stmt_interface
 {
 public:
 	~sql_stmt_interface() {}

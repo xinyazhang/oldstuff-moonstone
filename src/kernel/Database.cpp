@@ -11,13 +11,13 @@ const unistr Database::table_name_postfix_[] =
 	"tag"
 };
 
-Database::Database(DatabaseInterface* i, const unistr& prefix)
-	:db_(i), prefix_(prefix), nest_(0)
+Database::Database(DatabaseInterface* i)
+	:db_(i), prefix_(i->prefix()), nest_(0)
 {
 	tagman_ = new TagMan(this);
 	tnodeman_ = new TnodeMan(this);
 	for(int i = 0; i < TABLE_NUMBER; i++)
-		table_name_.push_back(prefix + table_name_postfix_[i]);
+		table_name_.push_back(prefix_ + table_name_postfix_[i]);
 }
 
 Database::~Database()
@@ -52,8 +52,21 @@ void Database::begin_transaction()
 {
 	mutex_.lock();
 	if ( nest_ == 0 )
+	{
+		breaked_ = false;
 		db_->begin_transaction(); // default: blocked if have another transaction...
+	}
 	nest_++;
+	mutex_.unlock();
+}
+
+void Database::abort_transaction()
+{
+	mutex_.lock();
+	nest_--;
+	breaked_ = true;
+	if ( nest_ == 0 )
+		db_->abort_transaction();
 	mutex_.unlock();
 }
 
@@ -62,7 +75,12 @@ void Database::final_transaction()
 	mutex_.lock();
 	nest_--;
 	if ( nest_ == 0 )
-		db_->final_transaction();
+	{
+		if ( breaked_ )
+			db_->abort_transaction();
+		else 
+			db_->final_transaction();
+	}
 	mutex_.unlock();
 }
 

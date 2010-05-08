@@ -7,4 +7,6 @@
 #define SYSTEM_CONFIG_PATH_ENV UT("AppData")
 #define REMUS_CONFIG_RELATIVE_PATH UT("/Remus/testdb.sqlite")
 
+#define EXPORT_TO_DLL __declspec(dllexport)
+
 #endif

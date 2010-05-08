@@ -1,10 +1,12 @@
 #ifndef KERNEL_TNODEMAN_H
 #define KERNEL_TNODEMAN_H
 
+#include <vector>
 #include "common_declare.h"
 #include "tnode.h"
+#include "taglist.h"
 
-class TnodeMan
+class EXPORT_TO_DLL TnodeMan
 {
 public:
 	TnodeMan(Database*);
@@ -14,6 +16,7 @@ public:
 	bool update(const tnode_t&);
 	bool refcinc(idx_t );
 	bool refcdec(idx_t );
+	taglist_t names(idx_t );
 	int eno() const;
 
 private:

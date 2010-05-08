@@ -10,11 +10,11 @@
 
 struct sqlite3;
 
-class db_sqlite_impl
+class EXPORT_TO_DLL db_sqlite_impl
 	:public DatabaseInterface
 {
 public:
-	db_sqlite_impl(const unistr& filename, const unistr& prefix);
+	db_sqlite_impl(const unistr& filename, const unistr& prefix = unistr());
 	~db_sqlite_impl();
 	bool connect();
 

@@ -54,7 +54,7 @@ tnode REFERENCES tnode(idx)
 * Technologies
 	1. GUI Specify, CUI交互有问题……
 * Core SQL
-	1. SELECT * FROM tag WHERE name = str[0] OR name = str[n]; <1>
+	1. SELECT * FROM tag WHERE name = str[0] OR name = str[n-1]; <1>
 		- this is called directly hit (first OR last)
 		- 记得合并tnode相同的结果
 	2. 当参数多于两个时……

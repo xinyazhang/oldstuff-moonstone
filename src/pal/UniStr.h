@@ -9,16 +9,17 @@
 
 //typedef basic_string<uchar> unistr;
 
-class unistr
+class EXPORT_TO_DLL unistr
 	:public std::wstring
 	//:public QString
 {
 public:
 	unistr();
 	unistr(const wchar_t* uni);
-	unistr(const std::basic_string<unichar>& stdstr):basic_string(stdstr) {}
+	unistr(const std::wstring& stdstr):std::wstring(stdstr) {}
 	unistr(const unistr& another);
 	unistr(const char* ascii);
+	unistr(const QString&);
 	//unistr(const QString& );
 	//bool empty() const {return isEmpty();}
 
@@ -26,6 +27,8 @@ public:
 
 	unistr& operator+=(const char* p) { this->append(unistr(p)); return *this; }
 	unistr& operator+=(const unistr& another) { this->append(another.native()); return *this; }
+
+	operator QString() { return QString::fromWCharArray(native()); }
 
 	static unistr number(int n);
 	// This works a little different
@@ -36,23 +39,23 @@ class unistr_list
 	:public std::vector<unistr>
 {
 public:
-	void push_back(const unistr& u) { insert(end(), 1, u); }
+	//void push_back(const unistr& u) { push_back(u); }
 
 	unistr_list() {}
 	unistr_list(const unistr& u) { push_back(u); }
 	template<typename T>
-	unistr_list(T cs) { push_back(unistr(cs)); }
+		unistr_list(T cs) { push_back(unistr(cs)); }
 };
-
-inline const unistr operator+(const unistr s1, const unistr s2)
+/*
+inline unistr operator+(const unistr s1, const unistr s2)
 {
 	unistr ret(s1);
 	return ret+=s2;
 }
-
+*/
 template
-<typename T1, typename T2>
-const unistr operator+(T1 s1, T2 s2)
+<typename T1>
+const unistr operator+(T1 s1, const unistr& s2)
 {
 	unistr ret(s1);
 	return ret+=s2;

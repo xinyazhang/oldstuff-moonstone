@@ -13,10 +13,10 @@
 #include <boost/thread/mutex.hpp>
 class DatabaseInterface;
 
-class Database
+class EXPORT_TO_DLL Database
 {
 public:
-	Database(DatabaseInterface* , const unistr& prefix);
+	Database(DatabaseInterface*);
 	~Database();
 
 	enum TableSelector
@@ -30,6 +30,7 @@ public:
 
 	void begin_transaction();
 	void final_transaction();
+	void abort_transaction();
 	sql_stmt create_insert_stmt(Database::TableSelector, int col_number);
 	sql_stmt create_simsel_stmt(TableSelector, const unistr& locator, const unistr& selcontent);
 	sql_stmt create_update_stmt(TableSelector, const unistr& locator, int updatecoln, const char* updatecols[]);
@@ -49,10 +50,11 @@ private:
 	TnodeMan* tnodeman_;
 
 	int nest_;
+	bool breaked_;
 	boost::mutex mutex_;
 };
 
-class TransactionFinaler
+class EXPORT_TO_DLL TransactionFinaler
 {
 public:
 	TransactionFinaler(Database* d):d_(d){}

@@ -1,7 +1,7 @@
 #ifndef KERNEL_TNODE_H
 #define KERNEL_TNODE_H
 
-struct tnode_t
+struct EXPORT_TO_DLL tnode_t
 {
 	idx_t idx; 
 	idx_t refc;

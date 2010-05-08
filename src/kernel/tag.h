@@ -4,7 +4,7 @@
 #include "common_declare.h"
 #include <vector>
 
-struct tag_t
+struct EXPORT_TO_DLL tag_t
 {
 	unistr name; 
 		static const char* namecol;

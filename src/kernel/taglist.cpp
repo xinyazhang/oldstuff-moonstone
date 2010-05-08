@@ -9,5 +9,6 @@ void taglist_t::add_distinct(const tag_t& t)
 		if (t == *iter)
 			return;
 	}
-	this->insert(end(), 1, t); // workaround for cl compiler bug
+	//this->insert(end(), 1, t); // workaround for cl compiler bug
+	this->push_back(t);
 }

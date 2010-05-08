@@ -2,7 +2,7 @@
 const char* tag_t::namecol="name";
 const char* tag_t::tnodecol="tnode";
 
-bool TagMan::invalid(tag_t tag)
+bool TagMan::invalid(const tag_t& tag)
 {
 	return tag.tnode == 0 && tag.name.empty();
 }

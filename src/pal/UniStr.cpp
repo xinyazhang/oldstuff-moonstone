@@ -3,7 +3,24 @@
 #include <QtCore/QString>
 using std::wstring;
 
+//std::vector<unistr> unistrvectortest;
+//
+//class EXPORT_TO_DLL unistr_list
+//	:public std::vector<unistr>
+//{
+//public:
+//	template<typename T>
+//		unistr_list(T cs) { push_back(unistr(cs)); }
+//};
+//
+//unistr_list test("1");
+
 unistr::unistr()
+{
+}
+
+unistr::unistr(const QString& qs)
+	:wstring(qs.utf16())
 {
 }
 

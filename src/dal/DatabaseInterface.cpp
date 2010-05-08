@@ -1,4 +1,5 @@
 #include "DatabaseInterface.h"
+#include "sql_stmt_interface.h"
 
 /*
  * Transaction's default implementations
@@ -21,4 +22,11 @@ void DatabaseInterface::begin_transaction()
 void DatabaseInterface::final_transaction()
 {
 	db_lock_.unlock();
+}
+
+void DatabaseInterface::quick_sql_execute(const unistr& sql)
+{
+	sql_stmt_interface* stmt = create_stmt(sql);
+	stmt->execute();
+	delete stmt;
 }
