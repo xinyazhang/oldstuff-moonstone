@@ -106,7 +106,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d:\Qt\4.6.2.vc10\lib\QtTestd4.lib;d:\Qt\4.6.2.vc10\lib\QtGuid4.lib;d:\Qt\4.6.2.vc10\lib\QtCored4.lib;.\debug\kernel.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d:\Qt\4.6.2.vc10\lib\QtTestd4.lib;d:\Qt\4.6.2.vc10\lib\QtGuid4.lib;d:\Qt\4.6.2.vc10\lib\QtCored4.lib;$(SolutionDir)$(Configuration)\kernel.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>d:\Qt\4.6.2.vc10\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>

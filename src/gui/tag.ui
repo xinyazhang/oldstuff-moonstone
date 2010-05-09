@@ -17,10 +17,10 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="searchline"/>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="searchbutton">
        <property name="text">
         <string>Search</string>
        </property>
@@ -51,9 +51,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QToolbar" name="toolbar" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-        </widget>
+        <widget class="QToolBar" name="toolbar"/>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox">
@@ -169,39 +167,67 @@
   <action name="actionNewTag">
    <property name="icon">
     <iconset resource="uiresource.qrc">
-     <normaloff>:/root/filenew.png</normaloff>:/root/filenew.png</iconset>
+     <normaloff>:/root/icos/tag-new-4.png</normaloff>:/root/icos/tag-new-4.png</iconset>
    </property>
    <property name="text">
     <string>NewTag</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionSaveTag">
    <property name="icon">
     <iconset resource="uiresource.qrc">
-     <normaloff>:/root/filesave.png</normaloff>:/root/filesave.png</iconset>
+     <normaloff>:/root/icos/document-save-2.png</normaloff>:/root/icos/document-save-2.png</iconset>
    </property>
    <property name="text">
     <string>SaveTag</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionGlobalUndo">
+   <property name="icon">
+    <iconset resource="uiresource.qrc">
+     <normaloff>:/root/icos/edit-undo-4.png</normaloff>:/root/icos/edit-undo-4.png</iconset>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
   </action>
   <action name="actionGlobalRedo">
+   <property name="icon">
+    <iconset resource="uiresource.qrc">
+     <normaloff>:/root/icos/edit-redo-4.png</normaloff>:/root/icos/edit-redo-4.png</iconset>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionRevert">
+   <property name="icon">
+    <iconset resource="uiresource.qrc">
+     <normaloff>:/root/icos/discard.png</normaloff>:/root/icos/discard.png</iconset>
+   </property>
+   <property name="text">
+    <string>Revert</string>
+   </property>
+   <property name="toolTip">
+    <string>Discard all unsaved changes</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QToolbar</class>
-   <extends>QWidget</extends>
-   <header>qtoolbar.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="uiresource.qrc"/>
  </resources>

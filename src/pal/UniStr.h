@@ -28,7 +28,7 @@ public:
 	unistr& operator+=(const char* p) { this->append(unistr(p)); return *this; }
 	unistr& operator+=(const unistr& another) { this->append(another.native()); return *this; }
 
-	operator QString() { return QString::fromWCharArray(native()); }
+	operator QString() const { return QString::fromWCharArray(native()); }
 
 	static unistr number(int n);
 	// This works a little different
@@ -46,19 +46,27 @@ public:
 	template<typename T>
 		unistr_list(T cs) { push_back(unistr(cs)); }
 };
-/*
-inline unistr operator+(const unistr s1, const unistr s2)
+
+inline unistr operator+(const unistr& s1, const unistr& s2)
 {
 	unistr ret(s1);
 	return ret+=s2;
 }
-*/
+
 template
 <typename T1>
 const unistr operator+(T1 s1, const unistr& s2)
 {
 	unistr ret(s1);
 	return ret+=s2;
+}
+
+template
+<typename T>
+const unistr operator+(const unistr& s1, const T s2)
+{
+	unistr ret(s1);
+	return ret+=unistr(s2);
 }
 
 #endif

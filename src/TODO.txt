@@ -54,12 +54,30 @@
 
 2010/05/08
 * Impl. all tag_edit_action's subclass and theirs factory methods [done]
-* adjust code to remove "primary name"
-* add icon to actions in gui
-* add load data to gui
+* adjust code to remove "primary name" [done@09]
+* add icon to actions in gui [done@09]
+* add load data to gui [part]
 * add model to viewer.
-	- tag search result model.
+	- tag search result model. [done]
 	- alias model.
 * test undo/redo, db rollback
 * MIME type and kernel object's binary layout
 * we may need a exception model ...
+
+2010/05/09
+* enhance tag search result model
+	- fix a small bug for showing mastername
+* adjust GUI
+	- easier to use and understand
+	- current design is too narrow to use
+* enhance load data to gui function
+	- extensible
+* fix bugs in TagEditContext and TagEdit
+	- many bugs, such as dumplicated triggered signals
+* test undo/redo, db rollback
+	- foundation to next work
+* MIME type and kernel object's binary layout
+	- foundation of drag&drop
+		- drag&drop is the base of facility of alias and tagging
+* merging's implementation.
+* add model to alias viewer

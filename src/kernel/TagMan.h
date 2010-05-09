@@ -16,6 +16,7 @@ public:
 	tnode_t access_tnode(tag_t& ); // the same as hardlink
 	bool del(const tag_t&);
 	bool setas_mastername(tag_t&);
+	unistr mastername(const tag_t&);
 	int eno() const;
 
 	static bool invalid(const tag_t&);

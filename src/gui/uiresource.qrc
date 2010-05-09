@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="root">
+    <file>icos/discard.png</file>
+    <file>icos/document-save-2.png</file>
+    <file>icos/tag-new-4.png</file>
+    <file>icos/edit-redo-4.png</file>
+    <file>icos/edit-undo-4.png</file>
+  </qresource>
+</RCC>

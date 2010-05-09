@@ -1,21 +1,24 @@
 #include "TagEdit.h"
 #include "ui_tag.h"
 #include "TagSearchResultModel.h"
+#include "../kernel/TagManContext.h"
+#include "../kernel/common.h"
 
 TagEdit::TagEdit(QWidget* parent)
 	:ui(new Ui::TagEdit), 
 	QWidget(parent), 
-	search_model_(new TagSearchModel(tagman)),
 	context_(NULL)
 {
 	ui->setupUi(this);
 	ui->retranslateUi(this);
-	ui->tag_search_result->setModel(search_model_);
+	//ui->tag_search_result->setModel(search_model_);
 
 	ui->toolbar->addAction(ui->actionNewTag);
 	ui->toolbar->addAction(ui->actionSaveTag);
+	ui->toolbar->addAction(ui->actionRevert);
+	ui->toolbar->addAction(ui->actionGlobalUndo);
+	ui->toolbar->addAction(ui->actionGlobalRedo);
 
-	connect(search_model_, SIGNAL(selectionChanged()), this, SLOT(edit_another()));
 
 	makeSigSlotConnections();
 }
@@ -31,6 +34,9 @@ void TagEdit::setup(Database* db)
 {
 	db_ = db;
 	delete context_;
+	search_model_ = new TagSearchResultModel(db->tagman());
+	ui->tag_search_result->setModel(search_model_);
+	//connect(search_model_, SIGNAL(selectionChanged()), this, SLOT(edit_another()));
 	context_ = new TagManContext(db);
 }
 
@@ -60,19 +66,29 @@ void TagEdit::edit_another()
 #endif
 }
 
+void TagEdit::search()
+{
+	search_model_->search(ui->searchline->text());
+}
+
 void TagEdit::makeSigSlotConnections()
 {
 	connect(ui->actionNewTag, SIGNAL(triggered()), this, SLOT(new_guitag()));
 	connect(ui->actionSaveTag, SIGNAL(triggered()), this, SLOT(save_to_dbtag()));
+	connect(ui->actionRevert, SIGNAL(triggered()), this, SLOT(revert()));
 	connect(ui->actionGlobalUndo, SIGNAL(triggered()), this, SLOT(undo()));
 	connect(ui->actionGlobalRedo, SIGNAL(triggered()), this, SLOT(redo()));
 	connect(ui->name, SIGNAL(editingFinished()), this, SLOT(change_tag_name()));
+	connect(ui->searchbutton, SIGNAL(released()), this, SLOT(search()));
+#if 0
 	connect(ui->pname, SIGNAL(currentIndexChanged(const QString& text )),
 			this, SLOT(change_tag_pname(const QString&)));
+#endif
 	// notice the undo and redo have been provided by QLineEdit and QTextEdit
 	// See QtDesigner, don't conflict in gui design
 }
 
+#if 0
 bool TagEdit::switch_state(TagEdit::State state)
 {
 	if ( edited_ )
@@ -96,6 +112,7 @@ bool TagEdit::switch_state(TagEdit::State state)
 	}
 	return true;
 }
+#endif
 
 void TagEdit::load_data_to_gui()
 {
@@ -106,12 +123,20 @@ void TagEdit::load_data_to_gui()
 
 void TagEdit::change_tag_name()
 {
-	context_->chname(ui->name->text());
+	context_->chname(ui->name->text().trimmed());
 }
 
+#if 0
 void TagEdit::change_tag_pname(const QString& pname)
 {
 	context_->chpname(pname);
+}
+#endif
+
+void TagEdit::revert()
+{
+	context_->start_context(editing_tag_);
+	load_data_to_gui();
 }
 
 void TagEdit::undo()
@@ -128,6 +153,15 @@ void TagEdit::redo()
 
 void TagEdit::update_unredo_actions()
 {
-	ui->actionGlobalUndo->setEnable(context_->undoable());
-	ui->actionGlobalRedo->setEnable(context_->redoable());
+	ui->actionGlobalUndo->setEnabled(context_->undoable());
+	ui->actionGlobalRedo->setEnabled(context_->redoable());
+}
+
+void TagEdit::saveguard()
+{
+}
+
+void TagEdit::save_to_dbtag()
+{
+	context_->commit_changes();
 }

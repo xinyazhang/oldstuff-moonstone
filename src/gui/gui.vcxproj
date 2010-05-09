@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="DbInfoModel.cpp" />
     <ClCompile Include="DbSelModel.cpp" />
+    <ClCompile Include="debug\moc_TagSearchResultModel.cpp" />
     <ClCompile Include="debug\qrc_uiresource.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="OpenedDBList.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="release\moc_sessionwindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="TagSearchResultModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="DbInfoModel.h">
@@ -217,7 +219,14 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC sessionwindow.h</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_sessionwindow.cpp;%(Outputs)</Outputs>
     </CustomBuild>
+    <ClInclude Include="DatabaseSelectionModel.h" />
     <ClInclude Include="OpenedDBList.h" />
+    <CustomBuild Include="TagSearchResultModel.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I"d:\Qt\4.6.2.vc10\include\QtCore" -I"d:\Qt\4.6.2.vc10\include\QtGui" -I"d:\Qt\4.6.2.vc10\include" -I"." -I"d:\Qt\4.6.2.vc10\include\ActiveQt" -I"debug" -I"." -Id:\Qt\4.6.2.vc10\mkspecs\default -D_MSC_VER=1500 -DWIN32 TagSearchResultModel.h -o debug\moc_TagSearchResultModel.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC TagSearchResultModel.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_TagSearchResultModel.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe;TagSearchResultModel.h;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
     <ClInclude Include="ui_Session.h" />
     <ClInclude Include="ui_mainwindow.h" />
     <ClInclude Include="ui_tag.h" />
@@ -255,8 +264,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="filenew.png" />
-    <None Include="filesave.png" />
     <CustomBuild Include="uiresource.qrc">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Qt\4.6.2.vc10\bin\rcc.exe -name uiresource uiresource.qrc -o $(ConfigurationName)\qrc_uiresource.cpp</Command>

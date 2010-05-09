@@ -11,7 +11,8 @@ namespace Ui
 };
 
 class Database;
-
+class TagSearchResultModel;
+class TagManContext;
 /*
  * This class receive request from user, and manipulate TagMan object for work
  */
@@ -21,7 +22,7 @@ class TagEdit
 {
 	Q_OBJECT;
 public:
-	TagEdit(TagMan*, QWidget* parent = NULL);
+	TagEdit(QWidget* parent = NULL);
 	~TagEdit();
 
 	void setup(Database* db); // should be call only once!
@@ -43,14 +44,16 @@ private:
 	TagSearchResultModel* search_model_;
 	TagManContext* context_;
 
-	makeSigSlotConnections();
+	void makeSigSlotConnections();
 
+#if 0
 	enum State
 	{
 		NEW_TAG,
 		EDIT_TAG
 	} state_;
 	bool switch_state(State state);
+#endif
 
 	enum Info
 	{
@@ -67,7 +70,8 @@ private:
 private slots:
 	void change_tag_name();
 	//void change_tag_pname(const QString&);
-	void make_primary();
+	void revert();
+	//void make_primary();
 	void undo();
 	void redo();
 private:
