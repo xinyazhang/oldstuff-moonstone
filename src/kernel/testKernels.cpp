@@ -4,6 +4,7 @@
 #include "TagMan.h"
 #include "Tnode.h"
 #include "TnodeMan.h"
+//#include "TagManContext.h"
 
 #include "Database.h"
 #include "../dal/db_sqlite_impl.h"
@@ -18,6 +19,8 @@ void TestKernels::initTestCase()
 
 	tagman_ = db_->tagman();
 	tnodeman_ = db_->tnodeman();
+	relman_ = db_->relman();
+	//tmc_ = new TagManContext(db_);
 }
 
 void TestKernels::cleanupTestCase()
@@ -131,4 +134,42 @@ void TestKernels::test120_tag_delete()
 	QVERIFY(TnodeMan::invalid(final));
 }
 
- QTEST_MAIN(TestKernels);
+#if 0
+void TestKernels::test200_tmc_clean_start()
+{
+	tmc_->start_context();
+	tmc_->chname("tmc_test1");
+	QVERIFY(1 == 1);
+}
+#endif
+
+void TestKernels::test300_ttr_create()
+{
+	tag_t tagger = tagman_->create("tagger");
+	QVERIFY( !TagMan::invalid(tagger) );
+	tag_t taggee = tagman_->create("taggee");
+	QVERIFY( !TagMan::invalid(taggee) );
+
+	QVERIFY( relman_->tag(tagger, taggee) );
+	tmptag1 = tagger;
+	tmptag2 = taggee;
+}
+
+void TestKernels::test310_ttr_probe()
+{
+	tag_t ftagger = tagman_->create("fake1");
+	QVERIFY( !TagMan::invalid(ftagger) );
+	tag_t ftaggee = tagman_->create("fake2");
+	QVERIFY( !TagMan::invalid(ftaggee) );
+
+	QVERIFY( !relman_->hastag(ftagger, ftaggee) );
+
+	QVERIFY( relman_->hastag(tmptag1, tmptag2) );
+}
+
+void TestKernels::test320_ttr_remove()
+{
+	relman_->detag(tmptag1, tmptag2);
+	QVERIFY( !relman_->hastag(tmptag1, tmptag2) );
+}
+QTEST_MAIN(TestKernels);

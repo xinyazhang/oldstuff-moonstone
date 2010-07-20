@@ -13,6 +13,11 @@ struct EXPORT_TO_DLL tnode_t
 	tnode_t():idx(0), refc(0){}
 };
 
+inline bool operator==(const tnode_t& l, const tnode_t& r)
+{
+	return l.idx == r.idx;
+}	
+
 #define TNODE_COLUMN_NUMBER 3
 
 #endif

@@ -1,8 +1,9 @@
 #ifndef KERNEL_TAGMAN_H
 #define KERNEL_TAGMAN_H
 
-class Database;
-#include "taglist.h"
+
+#include "common_declare.h"
+#include "kernellist.h"
 
 class EXPORT_TO_DLL TagMan
 {

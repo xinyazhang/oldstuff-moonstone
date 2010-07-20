@@ -8,6 +8,6 @@ class TagMan;
 class TnodeMan;
 class Database;
 class sql_stmt;
-class taglist_t;
+class RelationMan;
 
 #endif

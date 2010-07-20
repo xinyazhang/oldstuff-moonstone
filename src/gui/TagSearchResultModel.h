@@ -5,7 +5,7 @@
 
 class TagMan;
 #include "../kernel/common_declare.h"
-#include "../kernel/taglist.h"
+#include "../kernel/kernellist.h"
 
 class TagSearchResultModel
 	:public QAbstractTableModel 

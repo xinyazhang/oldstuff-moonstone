@@ -137,13 +137,12 @@
     <ClCompile Include="..\dal\stmt_sqlite_impl.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="..\dal\DatabaseInterface.cpp" />
+    <ClCompile Include="RelationMan.cpp" />
     <ClCompile Include="TagMan.cpp" />
-    <ClCompile Include="TagManContext.cpp" />
     <ClCompile Include="tag_edit_action.cpp" />
     <ClCompile Include="TnodeMan.cpp" />
     <ClCompile Include="metadb.cpp" />
     <ClCompile Include="sql_stmt.cpp" />
-    <ClCompile Include="taglist.cpp" />
     <ClCompile Include="..\pal\unistr.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +154,8 @@
     <ClInclude Include="Database.h" />
     <ClInclude Include="..\dal\DatabaseInterface.h" />
     <ClInclude Include="Master.h" />
+    <ClInclude Include="RelationMan.h" />
     <ClInclude Include="TagMan.h" />
-    <ClInclude Include="TagManContext.h" />
     <ClInclude Include="tag_edit_action.h" />
     <ClInclude Include="TnodeMan.h" />
     <ClInclude Include="common.h" />

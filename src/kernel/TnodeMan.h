@@ -4,7 +4,7 @@
 #include <vector>
 #include "common_declare.h"
 #include "tnode.h"
-#include "taglist.h"
+#include "kernellist.h"
 
 class EXPORT_TO_DLL TnodeMan
 {

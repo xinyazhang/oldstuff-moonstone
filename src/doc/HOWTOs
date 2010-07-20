@@ -1,0 +1,15 @@
+1. How to add new management module in kernel
+	- Writing a implement class, say class NewMan { ... };
+	- add its declare in common_declare.h
+	- #include its header in common.h
+	- add pointer in Database.h
+	- add creation codes in Database.cpp
+	- add member function to access NewMan object of the Database object.
+	- see "How to add a table in database" if a new table is needed.
+
+2. How to add a table in database
+	- add new element in TableSelector enum in Database.h
+	- change TABLE_NUMBER macro in Database.cpp
+	- add table name to table_name_postfix_ array in Database.cpp
+	- add Table Creation SQL(s) in sql_**_impl, you may need to modify more than one implementation.
+	- change initialize_sql_number() member function

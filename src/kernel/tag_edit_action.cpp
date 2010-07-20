@@ -86,6 +86,7 @@ public:
 			if ( 0 == idx )
 				return false;
 			tnode_->idx = idx;
+			tag_->tnode = idx;
 		}
 		tnode_->mastername = n_;
 		return db->tnodeman()->update(*tnode_);
@@ -102,24 +103,28 @@ tag_edit_action tag_edit_action::chpname_action(tnode_t* tnode, tag_t* tag)
 	return tag_edit_action(new tag_chpname_action(tnode, tag));
 }
 
+#if 0
 class tag_merge_action
 	:public tag_edit_action_impl
 {
 public:
-	tag_merge_action(vector<idx_t>* vec, idx_t idx)
+	tag_merge_action(vector<idx_t>* vec, idx_t tnode)
 		:vec_(vec),
-		i_(idx)
+		i_(tnode)
 	{
+		tagnoroot_ = (i_ == 0);
 		duplicated_ = (std::find(vec_->begin(), vec_->end(), i_) != vec_->end());
 	}
 
 	void undo()
 	{
 		if ( !duplicated_ )
+		{
 			vec_->erase(std::find(
 						vec_->begin(),
 						vec_->end(),
 						i_));
+		}
 	}
 
 	void redo()
@@ -146,10 +151,11 @@ private:
 	vector<idx_t>* vec_;
 	idx_t i_;
 	bool duplicated_;
+	bool tagnoroot_;
 };
 
 tag_edit_action tag_edit_action::merge_action(vector<idx_t>* vec, idx_t idx)
 {
 	return tag_edit_action(new tag_merge_action(vec, idx));
 }
-
+#endif

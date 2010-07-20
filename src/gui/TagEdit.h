@@ -38,6 +38,7 @@ public slots:
 	void save_to_dbtag();
 	void edit_another();
 	void search();
+	void clear_focus();
 private:
 	Ui::TagEdit* ui;
 	Database* db_;

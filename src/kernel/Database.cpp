@@ -3,12 +3,13 @@
 #include "../dal/DatabaseInterface.h"
 //#include <boost/static_assert.hpp>
 
-#define TABLE_NUMBER 2
+#define TABLE_NUMBER 3
 
 const unistr Database::table_name_postfix_[] =
 {
 	"tnode",
-	"tag"
+	"tag",
+	"tagtag_relation"
 };
 
 Database::Database(DatabaseInterface* i)
@@ -16,6 +17,8 @@ Database::Database(DatabaseInterface* i)
 {
 	tagman_ = new TagMan(this);
 	tnodeman_ = new TnodeMan(this);
+	relman_ = new RelationMan(this);
+
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
 }

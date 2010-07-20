@@ -1,0 +1,46 @@
+Global precond:
+	- A tag edit context was started.
+
+use cases:
+* change tag's name
+* make pname
+* add alias
+* rename alias
+* remove alias
+* tear down alias
+* edit comment
+* tagging
+* untagging
+
+Alias subsystem:
+1. taglized alias: alias existed in database
+2. new added alias: tags haven't been written to database.
+
+Use Case 1: Change tag's name
+	Precond: 
+		- LineEdit commit changes
+		- No alias confliction
+			+ Writing a hash function and use hash_set
+	Postcond: 
+		- current tag name changed
+		- an action was pushed to undo/redo stack
+
+Use Case 2: Execute change tag's name
+	Precond:
+		- a tag was given, information below is sufficient
+			+ tag name
+			+ tag's tnode
+	Postcond:
+		- An SQL was executed to update data in db
+		- the action was poped
+
+Use Case 3: Add alias (Type 1)
+	Precond:
+		- Add alias button was clicked
+		- Alias name was written
+	Postcond:
+		- Alias was added (but not the name)
+			+ impl: hash_set for search, list for root, vector for list(of model)
+		- An action was push ( using TagMan::hardlink to implement execution )
+			+ action's undo: record the hash_set
+	

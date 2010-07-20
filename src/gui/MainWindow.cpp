@@ -12,13 +12,14 @@ MainWindow::MainWindow()
 	:ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	showMaximized();
 	ui->retranslateUi(this);
 
 	ui->wi_dock_dblist->setVisible(true);
 	ui->wi_dbinfo->setVisible(true);
 	ui->wi_dblist->setVisible(true);
 
-	QXmlStreamReader reader("<MetaDB><Database Type=\"SQLite\"><Name>MemoryDB</Name><File>:memory:</File></Database><Database Type=\"SQLite\"><Name>MemoryAlias</Name><File>:memory:</File></Database></MetaDB>");
+	QXmlStreamReader reader("<MetaDB><Database Type=\"SQLite\"><Name>MemoryDB</Name><File>:memory:</File></Database><Database Type=\"SQLite\"><Name>MemoryAlias</Name><File>:memory:</File></Database><Database Type=\"SQLite\"><Name>Imperishable</Name><File>Imperishable</File></Database></MetaDB>");
 	metadb_ = shared_ptr<metadb_t>(new metadb_t(reader));
 	sel_model_ = new DbSelModel(metadb_);
 	info_model_ = new DbInfoModel(metadb_);

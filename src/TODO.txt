@@ -66,18 +66,64 @@
 
 2010/05/09
 * enhance tag search result model
-	- fix a small bug for showing mastername
-* adjust GUI
+	- fix a small bug for showing mastername [done@20, TagMan.cpp, mistake judgement on no tnode tag]
+* adjust GUI [pending]
 	- easier to use and understand
+		+ passed, need future design [@20]
 	- current design is too narrow to use
-* enhance load data to gui function
+		+ remove one tageditor [@20]
+		+ future optimization is needed
+* enhance load data to gui function [pending@20]
 	- extensible
 * fix bugs in TagEditContext and TagEdit
 	- many bugs, such as dumplicated triggered signals
-* test undo/redo, db rollback
+		+ fix: forgot to clear undo stack after commit changes
+		+ fix: redo-undo's intraction with ui
+		+ fix: focus issue, making it easier to switch LineEdit's undo-redo and TagEdit's undo-redo
+* test undo/redo, db rollback [delayed]
 	- foundation to next work
-* MIME type and kernel object's binary layout
+* MIME type and kernel object's binary layout [done@20]
 	- foundation of drag&drop
 		- drag&drop is the base of facility of alias and tagging
-* merging's implementation.
+* merging's implementation. [delayed]
+* add model to alias viewer [delayed]
+
+2010/05/20
+* enhance load data to gui function
+	- extensible
+* test undo/redo, db rollback
+	- foundation to next work
+		+ fix: comment edition [done@22]
+	- problem: test what?
+		+ no merge, no test..
+* merging's implementation. [removed@22]
 * add model to alias viewer
+* Drag&Drop Support
+
+2010/05/22
+* Writing GUI's usecase!
+	- f**k I can't coding because GUI's usecases are always changing!
+* Redesign TagManContext
+* As UI redesigned, following function shall be changed:
+	- chpname shall be removed
+	- alias shall be enhanced to meet GUI's model part's need
+	- more predicted change protocol
+	- Redo/Undo System shall be improved, dumplicated SQL executions can't be dimissed in current design.
+
+2010/06/27
+下一步目标：
+[kernel]编写tag之间tag的功能
+	- written @ 07/18, untested
+	- testcase written @ 07/20, compile passed but still untested
+[kernel]编写基于tagging搜索的功能，加入部分搜索功能
+	ps：SQLITE竟然支持REGEXP！
+[gui]编写alias的添加删除界面
+[gui]使用diff代替步进操作的undo/redo
+[gui]分离各个编辑窗口的undo/redo功能，善用GUI Widget自己提供的Undo/Redo来降低编程复杂度
+	- 已经将TagEditContext从kernel项目中移除，下一步是将其从版本库中移除。
+[gui]采用编辑|查找|查看的分栏方式
+[gui]编写tag tag的功能
+[gui]drag drop支持
+	- pending, 作为一个preview/alpha这还太高级了
+	- 作为更高级的tagtag UI，在之后的版本实现
+[kernel] 确定文件对象的结构——也即此程序认识资源的方法。

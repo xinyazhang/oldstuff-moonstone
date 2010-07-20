@@ -13,7 +13,7 @@ SessionWindow::SessionWindow(boost::shared_ptr<DatabaseInterface> dbi, QWidget* 
 	ui->retranslateUi(this);
 
 	ui->widget->setup(db_);
-	ui->widget_2->setup(db_);
+	//ui->widget_2->setup(db_);
 
 	if (!db_->initialized())
 		db_->initialize();

@@ -153,7 +153,7 @@ bool TagMan::setas_mastername(tag_t& tag)
 
 unistr TagMan::mastername(const tag_t& tag)
 {
-	if ( invalid(tag) )
+	if ( tag.tnode == 0 )
 		return tag.name;
 	else
 		return db_->tnodeman()->locate(tag.tnode).mastername;

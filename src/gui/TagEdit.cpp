@@ -71,6 +71,11 @@ void TagEdit::search()
 	search_model_->search(ui->searchline->text());
 }
 
+void TagEdit::clear_focus()
+{
+	clearFocus();
+}
+
 void TagEdit::makeSigSlotConnections()
 {
 	connect(ui->actionNewTag, SIGNAL(triggered()), this, SLOT(new_guitag()));
@@ -79,6 +84,7 @@ void TagEdit::makeSigSlotConnections()
 	connect(ui->actionGlobalUndo, SIGNAL(triggered()), this, SLOT(undo()));
 	connect(ui->actionGlobalRedo, SIGNAL(triggered()), this, SLOT(redo()));
 	connect(ui->name, SIGNAL(editingFinished()), this, SLOT(change_tag_name()));
+	connect(ui->name, SIGNAL(editingFinished()), this, SLOT(clear_focus()));
 	connect(ui->searchbutton, SIGNAL(released()), this, SLOT(search()));
 #if 0
 	connect(ui->pname, SIGNAL(currentIndexChanged(const QString& text )),
@@ -117,8 +123,8 @@ bool TagEdit::switch_state(TagEdit::State state)
 void TagEdit::load_data_to_gui()
 {
 	edited_ = false;
-	ui->name->setText(editing_tag_.name);
-	ui->comment->setText(editing_tnode_.comment);
+	ui->name->setText(context_->name());
+	ui->comment->setText(context_->comment());
 }
 
 void TagEdit::change_tag_name()
@@ -143,12 +149,14 @@ void TagEdit::undo()
 {
 	context_->undo();
 	update_unredo_actions();
+	load_data_to_gui();
 }
 
 void TagEdit::redo()
 {
 	context_->redo();
 	update_unredo_actions();
+	load_data_to_gui();
 }
 
 void TagEdit::update_unredo_actions()

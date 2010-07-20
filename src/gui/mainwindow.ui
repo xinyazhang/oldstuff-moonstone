@@ -108,6 +108,18 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
      <item row="4" column="0" colspan="2">
@@ -182,6 +194,22 @@
     <hint type="destinationlabel">
      <x>377</x>
      <y>43</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wi_dblist</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>wi_btn_connect</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>183</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>288</x>
+     <y>341</y>
     </hint>
    </hints>
   </connection>

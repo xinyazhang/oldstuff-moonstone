@@ -34,9 +34,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="TagEdit" name="widget_2" native="true"/>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">

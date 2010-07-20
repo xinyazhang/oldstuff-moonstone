@@ -32,7 +32,7 @@ public:
 	 * put idx into merge_list
 	 * take care: dumplicated value
 	 */
-	static tag_edit_action merge_action(std::vector<idx_t>* , idx_t );
+	//static tag_edit_action merge_action(std::vector<idx_t>* , idx_t );
 
 	void redo() { p_->redo(); }
 	void undo() { p_->undo(); }

@@ -17,10 +17,13 @@ class DatabaseInterface;
 class OpenedDBList
 	:public QTabWidget
 {
+	Q_OBJECT;
 public:
 	OpenedDBList(QWidget *parent = NULL);
 
 	void opendb(shared_ptr<dbmeta_t> );
+public slots:
+	void closedb(int );
 private:
 	std::vector< shared_ptr<DatabaseInterface> > odlist_; //Opened Database LIST
 	std::vector< shared_ptr<dbmeta_t> > odmlist_;  // Opened Database Meta LIST

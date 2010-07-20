@@ -22,7 +22,8 @@ public:
 	enum TableSelector
 	{
 		TnodeTable = 0,
-		TagTable = 1
+		TagTable = 1,
+		TagTagRelationTable = 2
 	};
 public:
 	bool initialized() const;
@@ -41,6 +42,7 @@ public:
 
 	TagMan* tagman();
 	TnodeMan* tnodeman();
+	RelationMan* relman();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this
@@ -48,6 +50,7 @@ private:
 	DatabaseInterface *db_;
 	TagMan* tagman_;
 	TnodeMan* tnodeman_;
+	RelationMan* relman_;
 
 	int nest_;
 	bool breaked_;
