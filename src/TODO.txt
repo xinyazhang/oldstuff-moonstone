@@ -127,3 +127,17 @@
 	- pending, 作为一个preview/alpha这还太高级了
 	- 作为更高级的tagtag UI，在之后的版本实现
 [kernel] 确定文件对象的结构——也即此程序认识资源的方法。
+	- considerations:
+		+ 此结构是否需要对文件系统有更深的认识？例如识别inode？
+		+ 记录HASH值是必须有的特性，不过这个计算是不是消耗大了点……并且这需要依赖库cryptopp
+			* 准备研究cryptopp的文档
+		+ 一个关键问题是如何管理“文件”和“资源”之间的关系
+			* 对于解包的EAC来说，必然出现一组文件才代表一个资源的问题
+			* 另一个问题则是由分卷压缩包造成的。
+		+ 另一个关键问题在于如何设计“Collector”，或者“容器”这个概念。
+			* 容器，是接受一类tag的目录
+	- structure for file:
+		+ unistr filename——文件名，使用unistr保持跨平台性
+		+ last modification date——精确到秒以保证可移植性
+		+ CRC32/sha-1/256/384/...checksum
+		+ RFID，Registered File ID, 注册文件编号

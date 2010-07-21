@@ -9,6 +9,7 @@
 
 2. How to add a table in database
 	- add new element in TableSelector enum in Database.h
+	- add new element in insert_content array in Database.cpp
 	- change TABLE_NUMBER macro in Database.cpp
 	- add table name to table_name_postfix_ array in Database.cpp
 	- add Table Creation SQL(s) in sql_**_impl, you may need to modify more than one implementation.

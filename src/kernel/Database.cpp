@@ -90,7 +90,8 @@ void Database::final_transaction()
 static unistr insert_content[] =
 {
 	UT("(refc, mastername, comment)"),
-	UT("(name, tnode)")
+	UT("(name, tnode)"),
+	UT("(tagger, taggee)")
 };
 
 sql_stmt Database::create_insert_stmt(TableSelector ts, int col_number)
@@ -150,7 +151,7 @@ sql_stmt Database::create_del_stmt(TableSelector s, int locatorn, const char* lo
 	sql += "=$1";
 	for(int i = 2; i <= locatorn; i++)
 	{
-		sql += ",";
+		sql += " AND ";
 		sql += locators[i-1];
 		sql += "=$";
 		sql += unistr::number(i);
@@ -178,6 +179,11 @@ TagMan* Database::tagman()
 TnodeMan* Database::tnodeman()
 {
 	return tnodeman_;
+}
+
+RelationMan* Database::relman()
+{
+	return relman_;
 }
 
 idx_t Database::last_serial()

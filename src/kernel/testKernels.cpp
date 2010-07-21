@@ -172,4 +172,5 @@ void TestKernels::test320_ttr_remove()
 	relman_->detag(tmptag1, tmptag2);
 	QVERIFY( !relman_->hastag(tmptag1, tmptag2) );
 }
+
 QTEST_MAIN(TestKernels);
