@@ -10,5 +10,6 @@
 #include "RelationMan.h"
 #include "sql_stmt.h"
 #include "error_handle.h"
+#include "fsoman.h"
 
 #endif

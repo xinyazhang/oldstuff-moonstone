@@ -3,7 +3,7 @@
 	- add its declare in common_declare.h
 	- #include its header in common.h
 	- add pointer in Database.h
-	- add creation codes in Database.cpp
+	- add creation and deletion codes in Database.cpp
 	- add member function to access NewMan object of the Database object.
 	- see "How to add a table in database" if a new table is needed.
 
@@ -12,5 +12,5 @@
 	- add new element in insert_content array in Database.cpp
 	- change TABLE_NUMBER macro in Database.cpp
 	- add table name to table_name_postfix_ array in Database.cpp
-	- add Table Creation SQL(s) in sql_**_impl, you may need to modify more than one implementation.
+	- add Table Creation SQL(s) in db_**_impl, you may need to modify more than one implementation.
 	- change initialize_sql_number() member function

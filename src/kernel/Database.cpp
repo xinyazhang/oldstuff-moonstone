@@ -3,13 +3,14 @@
 #include "../dal/DatabaseInterface.h"
 //#include <boost/static_assert.hpp>
 
-#define TABLE_NUMBER 3
+#define TABLE_NUMBER 4
 
 const unistr Database::table_name_postfix_[] =
 {
 	"tnode",
 	"tag",
-	"tagtag_relation"
+	"tagtag_relation",
+	"fso"
 };
 
 Database::Database(DatabaseInterface* i)
@@ -18,6 +19,7 @@ Database::Database(DatabaseInterface* i)
 	tagman_ = new TagMan(this);
 	tnodeman_ = new TnodeMan(this);
 	relman_ = new RelationMan(this);
+	fsoman_ = new FsoMan(this);
 
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
@@ -27,6 +29,8 @@ Database::~Database()
 {
 	delete tagman_;
 	delete tnodeman_;
+	delete relman_;
+	delete fsoman_;
 }
 
 bool Database::initialized() const
@@ -91,7 +95,8 @@ static unistr insert_content[] =
 {
 	UT("(refc, mastername, comment)"),
 	UT("(name, tnode)"),
-	UT("(tagger, taggee)")
+	UT("(tagger, taggee)"),
+	UT("(fsoid, parentid, name, size, fs_date, recusive_date, hash_algo, hash)")
 };
 
 sql_stmt Database::create_insert_stmt(TableSelector ts, int col_number)
@@ -118,6 +123,25 @@ sql_stmt Database::create_simsel_stmt(TableSelector s, const unistr& locator, co
 	sql += " WHERE ";
 	sql += locator;
 	sql += "=$1;";
+	return create_stmt_ex(sql);
+}
+
+sql_stmt Database::create_selall_stmt(TableSelector s, int locatorn, const char* locators[])
+{
+	unistr sql("SELECT * FROM ");
+	sql += table(s);
+	sql += " WHERE ";
+	for(int i = 0; i < locatorn - 1; i++)
+	{
+		sql += locators[i];
+		sql += "=$";
+		sql += unistr::number(i+1);
+		sql += " AND ";
+	}
+	sql += locators[locatorn - 1];
+	sql += "=$";
+	sql += unistr::number(locatorn);
+
 	return create_stmt_ex(sql);
 }
 
@@ -184,6 +208,11 @@ TnodeMan* Database::tnodeman()
 RelationMan* Database::relman()
 {
 	return relman_;
+}
+
+FsoMan* Database::fsoman()
+{
+	return fsoman_;
 }
 
 idx_t Database::last_serial()

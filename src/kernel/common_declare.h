@@ -9,5 +9,6 @@ class TnodeMan;
 class Database;
 class sql_stmt;
 class RelationMan;
+class FsoMan;
 
 #endif

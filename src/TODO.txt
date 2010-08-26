@@ -126,6 +126,7 @@
 [gui]drag drop支持
 	- pending, 作为一个preview/alpha这还太高级了
 	- 作为更高级的tagtag UI，在之后的版本实现
+[kernel] 编写Attribute
 [kernel] 确定文件对象的结构——也即此程序认识资源的方法。
 	- considerations:
 		+ 此结构是否需要对文件系统有更深的认识？例如识别inode？
@@ -136,8 +137,93 @@
 			* 另一个问题则是由分卷压缩包造成的。
 		+ 另一个关键问题在于如何设计“Collector”，或者“容器”这个概念。
 			* 容器，是接受一类tag的目录
+		+ 还有一个关键是与系统其他部分的整合，很多管理任务用TC、甚至双Explorer都能做的很好
+			* 监视系统变更是不可避免的
+	- design:
+		+ 3 level
+		+ bottom: file
+			* 最基本的单元，提供基础的文件访问功能
+		+ medium: resource
+			* 本系统处理的原子对象，可以是文件，也可以是目录及其中的所有文件系统对象(recursive)
+			* 判定resource的原则为
+				- 相比directory其中的对象不会再提供更多的tag
+				- 其中的对象提供的tag本质相同，如一个“Futakoi Alternative”目录的所有文件都只有KTXP和Futakoi_Alternative两个tag
+					+ 有些人（如书店）喜欢把某个话题（如SisterPricess）的所有相关资源都堆在一个目录中
+					+ 需要提供accidental的tag，用来标识次要的tag，使其不影响resource组合算法
+					+ 不过最给力的应该还是手动处理划分的方法了吧……
+				- attribute不受影响
+			* 这样做的好处：
+				- 排除“卷”（单行本）属性的影响
+				- 结果与automatic tagger息息相关
+				- UI中要提供打散文件夹resource的功能
+				- 不支持嵌套资源，提供将误放入一个resource文件夹的另一个resource提出的功能
+			* 可以为resource打tag
+			* 注意：没有resource-file这个relation，resource-file的关系由文件系统维护
+			* file仅是为校验功能而存在的
+		+ top: container
+			* 资源的集合
+			* container可以嵌套
+			* container分为可写和不可写的
+				- 可写container可以接受资源，可以移出资源
+				- 只读container只能从中复制资源
+			* container分为几种：
+				- source，可以是ro，也可以是rw的，系统不会往其中放入resource
+				- cart，source到collector的中转站，存放下载后暂时不要归类的文件（如新番，都直接归类了找个毛啊）
+				- collector，rw，系统不会从中挪出resource
 	- structure for file:
-		+ unistr filename——文件名，使用unistr保持跨平台性
+		+ unistr filename——文件名，使用unistr保持跨平台性，注意超长（256+）路径的处理
 		+ last modification date——精确到秒以保证可移植性
 		+ CRC32/sha-1/256/384/...checksum
 		+ RFID，Registered File ID, 注册文件编号
+	- 工作的scenario 1: 自动分类
+		+ auto tagger为source container中的文件打tag
+		+ 在tagging的过程中，系统将综合出resource，加入到resource系统中
+		+ 执行masker，排除暂时不需要（或者无法）归类的资源。
+		+ 遍历collector，执行acceptor确定每个resource应该在的位置
+		+ 将resource放入对应的collector中
+	- Scenario 2: 资源查找
+		+ 给出几个tag名
+		+ 查找出相关度最大的一批tnode
+		+ 用tnode定位资源
+	- Scenario 3:自动重命名
+		+ 以tag来为资源重命名，注意，若资源名已经提供了足够的tag，那么就不需要这么做
+[kernel] 文件对象结构的重新理解
+	- resource
+		* 结构：
+			+ rid
+			+ 路径
+			+ last modification date
+	- file
+		* 结构
+			+ rfid
+			+ belong resource, reference resource(rid)
+			+ path（相对于resource）
+			+ type: dir/file
+			+ last modification date
+			+ optional: HASH nullable
+	- container
+
+2010/08/25
+[kernel] 文件系统的再次理解
+	分为几张表：
+	+ fso pool，存储文件系统对象，表示目录和文件
+		fsoid, parentid, name, size, fs date, cascade date, hash algo, hash.
+		操作：
+		- add(path, flag{RECURSIVE,...})
+		- move(fsoid, pathnew) ( call chroot internally )
+		- cp (fsoid, pathnew ) ( call add(pathnew, RECURSIVE) internally )
+		- chroot(fsoid, newpath)
+		- del(fsoid, flag{RECURSIVE,...})
+	+ tag relation，表示对文件系统对象的tag
+		tnode, fsoid
+		操作：
+		- 大家都懂的
+	+ 各个fs相关的子系统有各自的id，有一张共同的表储存这些每个fssubsys关心的fsoid
+		fssubsysid, fsoid
+		fssubsysid, name, type, loadinginfo, prio, deps(这两个设计是用来解决先后关系的，不能没有tag就classify）, comment
+		- 以此支持python
+		例如检查更新就是一个fssubsys，监视一定数量的fso，并将更新写回fso pool
+		自动归档是另一个fssubsys
+	+ 下面就是fs子系统的设计了，如何设计出一个flexible的子系统，并且还要加上python支持？
+
+[TODO] 基本定下来了，先写fso pool吧

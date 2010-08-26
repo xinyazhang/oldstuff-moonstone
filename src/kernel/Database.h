@@ -23,7 +23,8 @@ public:
 	{
 		TnodeTable = 0,
 		TagTable = 1,
-		TagTagRelationTable = 2
+		TagTagRelationTable = 2,
+		FsoTable = 3
 	};
 public:
 	bool initialized() const;
@@ -34,6 +35,7 @@ public:
 	void abort_transaction();
 	sql_stmt create_insert_stmt(Database::TableSelector, int col_number);
 	sql_stmt create_simsel_stmt(TableSelector, const unistr& locator, const unistr& selcontent);
+	sql_stmt create_selall_stmt(TableSelector, int locatorn, const char* locators[])
 	sql_stmt create_update_stmt(TableSelector, const unistr& locator, int updatecoln, const char* updatecols[]);
 	sql_stmt create_del_stmt(TableSelector, int locatorn, const char* locators[]);
 	sql_stmt create_stmt_ex(const unistr& );
@@ -43,6 +45,7 @@ public:
 	TagMan* tagman();
 	TnodeMan* tnodeman();
 	RelationMan* relman();
+	FsoMan* fsoman();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this
@@ -51,6 +54,7 @@ private:
 	TagMan* tagman_;
 	TnodeMan* tnodeman_;
 	RelationMan* relman_;
+	FsoMan* fsoman_;
 
 	int nest_;
 	bool breaked_;
