@@ -1,0 +1,260 @@
+#include "common.h"
+#include "fso.h"
+#include <assert.h>
+#include <vector>
+using std::vector;
+
+#define FSO_COLUMN_NUMBER 8
+
+vector<unistr> split_path(const unistr& path)
+{
+	QDir dir(path);
+	std::vector<unistr> ret;
+	for(; !dir.isRoot(); dir.cdUp())
+		ret.push_back(dir.dirName());
+#ifdef _WIN32
+	ret.push_back(dir.dirName()); // we need driver name
+#endif
+
+	return ret;
+}
+
+/*
+ * Aggresive path from the list, e.g.
+ * 	picture.png collection1 pic document home /
+ * return:
+ * 	/home/document/pic/collection1/picture.png	
+ * 
+ * Note: although win32's root is null, but we don't make use of it
+ */
+unistr agg_path(const vector<unistr> path_list)
+{
+	if ( path_list.empty() )
+		return unistr();
+	unistr ret;
+	vector<unistr>::const_iterator iter= path_list.end() - 1;
+#ifdef _WIN32
+	iter--; // skip null root
+#endif
+	for(;iter != path_list.begin(); iter++)
+	{
+		ret += *iter;
+		ret += '/';
+	}
+	ret += path_list.front();
+}
+
+
+FsodbMan::FsodbMan(Database* db)
+	:db_(db)
+{
+}
+
+bool FsodbMan::add_fso(const unistr& name, idx_t parentid)
+{
+	sql_stmt stmt = db_->create_insert_stmt(Database::FsoTable, FSO_COLUMN_NUMBER);
+	fso_t fso(name);
+	fso.bind(stmt, parentid);
+
+	int err = stmt.execute();
+	bool success = judge_and_replace(err, err_);
+	return success;
+}
+
+const char* ensure_fso_locators = 
+{
+	"name",
+	"parentid"
+};
+
+idx_t FsodbMan::ensure(const unistr& name, idx_t parentid)
+{
+	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable, 2, ensure_fso_locators);
+	stmt.bind(1, name);
+	stmt.bind(2, parentid);
+	if ( !stmt.step() )
+	{
+		bool must_true = add_fso(path, parentid);
+		assert(must_true == true);
+		return ensure(name, parentid);
+	} else
+	{
+		idx_t ret;
+		stmt.col(1, ret);
+		return ret;
+	}
+}
+
+int FsodbMan::eno() const
+{
+	return err_;
+}
+
+unistr FsodbMan::fullpath(idx_t fsoid)
+{
+	fso_t fso = locate(fsoid);
+
+	vector<unistr> path_list;
+	while(!fso.is_root())
+	{
+		path_list.push_back(fso.name());
+		fsocdup(fso);
+		reloadfso(fso);
+	}
+	return agg_path(path_list);
+}
+
+idx_t FsodbMan::locate(const unistr& path)
+{
+	vector<unistr> path_list = split_path(dir);
+	fso_t fso;
+	int i;
+	for(i = path_list.size() - 1; i >= 0; i--)
+	{
+		if( !fsocd(fso, path_list[i]) )
+			break;
+	}
+	if ( i < 0 ) // exists in db
+	{
+		return fso.fsoid_;
+	} else
+		return 0;
+}
+
+const char* locate2selector[] =
+{
+	"name",
+	"parentid"
+};
+
+idx_t FsodbMan::locate(const unistr& name, idx_t parentid)
+{
+	sql_stmt stmt = db_->create_selall_stmt(Database::FsodbMan, 2, locate2selector);
+	stmt.bind(1, name);
+	stmt.bind(2, parentid);
+
+	if (stmt.step())
+	{
+		fso_t fso;
+		fso.load(stmt);
+		return fso.idx();
+	} else
+		return 0;
+}
+
+fso_t FsodbMan::locate(idx_t fsoid)
+{
+	fso_t ret(fsoid);
+
+	if ( reloadfso(ret) )
+		return ret;
+	else
+		return fso_t();
+}
+
+const char* fsocd_locators =
+{
+	"parentid",
+	"name"
+};
+
+bool FsodbMan::fsocd(fso_t& fso, const unistr& name)
+{
+	if ( name == "." )
+		return true;
+	if ( name == ".." )
+		return fsocdup(fso);
+
+	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable,
+			2,
+			fsocd_locators);
+	stmt.bind(1, fso.fsoid);
+	stmt.bind(2, name);
+
+	if ( stmt.step() )
+	{
+		fso.load(stmt);
+		return true;
+	} else
+		return false;
+}
+
+bool FsodbMan::fsocdup(fso_t& fso)
+{
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "fsoid", "*");
+	stmt.bind(1, fso.parentid());
+	
+	if ( stmt.step() )
+		fso.load(stmt);
+	else
+		return false;
+	return true;
+}
+
+bool FsodbMan::reloadfso(fso_t& fso)
+{
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "fsoid", "*");
+	stmt.bind(1, fso.fsoid());
+	
+	if ( stmt.step() )
+		fso.load(stmt);
+	else
+		return false;
+	return true;
+}
+
+const char* fsocollist = 
+{
+	"parentid",
+	"name",
+	"size",
+	"fs_date",
+	"recusive_date",
+	"hash_algo",
+	"hash"
+};
+
+bool FsodbMan::updatefso(fso_t& fso)
+{
+	sql_stmt stmt = db_->create_update_stmt(Database::FsodbMan, "fsoid", FSO_COLUMN_NUMBER - 1, fsocollist);
+	fso.updatebind(stmt);
+	return stmt.step();
+}
+
+bool FsodbMan::chroot(idx_t fsoid, idx_t parentnew)
+{
+#if 0
+	/* I think it should be commented, FsodbMan should know nothing about os file system */
+	QFileInfo info(pathnew);
+	if ( !info.exists() || !info.isDir() )
+		return false;
+#endif
+	// idx_t rootnew = ensure_dir(pathnew);
+	fso_t fso = locate(fsoid);
+	if ( fso == 0 )
+		return false;
+	fso.chparent(parentnew);
+	return updatefso(fso);
+}
+
+bool FsodbMan::haschild(idx_t )
+{
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "parentid", "*");
+	stmt.bind(1, pathid);
+	return stmt.step();
+}
+
+idx_t FsodbMan::ensure_dir(const unistr& path)
+{
+	db_->begin_transaction();
+	vector<unistr> path_list = split_path(dir);
+
+	idx_t parentid = 0;
+	for(int i = path_list.size() - 1; i >= 0; i++)
+	{
+		parentid = fsodb_->ensure(path_list[i], parentid);
+	}
+	db_->final_transaction();
+	return parentid;
+}
+

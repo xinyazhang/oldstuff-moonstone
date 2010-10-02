@@ -227,3 +227,37 @@
 	+ 下面就是fs子系统的设计了，如何设计出一个flexible的子系统，并且还要加上python支持？
 
 [TODO] 基本定下来了，先写fso pool吧
+2010/08/28
+FSO Pool完成，未测试
+不过需要一个工具(utility)来查看已经被归档的文件，不然没法继续测试
+另外需要与文件系统同步的模块。
+FS同步默认不是自动的，换句话说在默认情况下FS的变更不会反应到数据库中。
+除非手动要求更新。
+
+更新模块独立出去，另外要考虑多个更新数据源（inotify，NTFS-Journal，ReadDirectoryChangesW）
+还要考虑删除不存在的对象
+
+2010/09/04
+定一下Interface好了——失败了
+
+先写ModSource，然后才能写Utility
+auto-tagger的hook
+auto-classifier的working queue.
+
+2010/09/09
+ModSource完成，不过需要完成以下系统
++ 一个AsyncWQ实现，负责管理工作队列
++ 一个工作对象，dry run
+#+ 负责从db虚拟的文件系统中读取数据，dry run，最后
+
+设计失误，这里似乎没法单独测试这些东西
+
+那么就用shell测试一下FsodbMan的可用性吧，反正迭代执行添加删除的代码我也没写……
+
+cd(写了）
+ls(代码已经写了，但是没写printfso)
+touch(::add，没mkdir)
+rm(不区分dir和file，直接用rm即可）(::rm还没写……）
+
+2010/09/12
+shell代码只剩printfso了

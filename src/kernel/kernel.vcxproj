@@ -137,6 +137,8 @@
     <ClCompile Include="..\dal\stmt_sqlite_impl.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="..\dal\DatabaseInterface.cpp" />
+    <ClCompile Include="fso.cpp" />
+    <ClCompile Include="fsodbman.cpp" />
     <ClCompile Include="RelationMan.cpp" />
     <ClCompile Include="TagMan.cpp" />
     <ClCompile Include="tag_edit_action.cpp" />
@@ -153,6 +155,8 @@
     <ClInclude Include="..\dal\stmt_sqlite_impl.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="..\dal\DatabaseInterface.h" />
+    <ClInclude Include="fso.h" />
+    <ClInclude Include="fsodbman.h" />
     <ClInclude Include="Master.h" />
     <ClInclude Include="RelationMan.h" />
     <ClInclude Include="TagMan.h" />

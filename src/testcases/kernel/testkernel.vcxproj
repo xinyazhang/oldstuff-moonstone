@@ -10,6 +10,12 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="testKernels.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="testKernels.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>testKernels</ProjectName>
     <ProjectGuid>{F9108EC1-A238-368C-A77D-51CA09F4E8FA}</ProjectGuid>
@@ -125,46 +131,6 @@
       <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_TESTLIB_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="testKernels.cpp" />
-    <ClCompile Include="debug\moc_testKernels.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="release\moc_testKernels.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Database.h" />
-    <ClInclude Include="..\dal\DatabaseInterface.h" />
-    <ClInclude Include="Master.h" />
-    <ClInclude Include="TagMan.h" />
-    <ClInclude Include="TnodeMan.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="common_declare.h" />
-    <ClInclude Include="..\dal\dbmeta.h" />
-    <ClInclude Include="error_handle.h" />
-    <ClInclude Include="..\pal\int_type.h" />
-    <ClInclude Include="metadb.h" />
-    <ClInclude Include="sql_stmt.h" />
-    <ClInclude Include="..\dal\sql_stmt_interface.h" />
-    <ClInclude Include="..\pal\stdtype.h" />
-    <ClInclude Include="tag.h" />
-    <ClInclude Include="taglist.h" />
-    <CustomBuild Include="testKernels.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe;testKernels.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_TESTLIB_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I"d:\Qt\4.6.2.vc10\include\QtCore" -I"d:\Qt\4.6.2.vc10\include\QtGui" -I"d:\Qt\4.6.2.vc10\include\QtTest" -I"d:\Qt\4.6.2.vc10\include" -I"." -I"d:\Res\boost_1_42_0" -I"d:\Qt\4.6.2.vc10\include\ActiveQt" -I"debug" -Id:\Qt\4.6.2.vc10\mkspecs\default -D_MSC_VER=1500 -DWIN32 testKernels.h -o debug\moc_testKernels.cpp</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC testKernels.h</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_testKernels.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe;testKernels.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Qt\4.6.2.vc10\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_TESTLIB_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I"d:\Qt\4.6.2.vc10\include\QtCore" -I"d:\Qt\4.6.2.vc10\include\QtGui" -I"d:\Qt\4.6.2.vc10\include\QtTest" -I"d:\Qt\4.6.2.vc10\include" -I"." -I"d:\Res\boost_1_42_0" -I"d:\Qt\4.6.2.vc10\include\ActiveQt" -I"release" -Id:\Qt\4.6.2.vc10\mkspecs\default -D_MSC_VER=1500 -DWIN32 testKernels.h -o release\moc_testKernels.cpp</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC testKernels.h</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_testKernels.cpp;%(Outputs)</Outputs>
-    </CustomBuild>
-    <ClInclude Include="tnode.h" />
-    <ClInclude Include="..\pal\unicode.h" />
-    <ClInclude Include="..\pal\unistr.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

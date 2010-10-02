@@ -19,7 +19,7 @@ Database::Database(DatabaseInterface* i)
 	tagman_ = new TagMan(this);
 	tnodeman_ = new TnodeMan(this);
 	relman_ = new RelationMan(this);
-	fsoman_ = new FsoMan(this);
+	fsodbman_ = new FsoMan(this);
 
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
@@ -210,9 +210,9 @@ RelationMan* Database::relman()
 	return relman_;
 }
 
-FsoMan* Database::fsoman()
+FsoMan* Database::fsodbman()
 {
-	return fsoman_;
+	return fsodbman_;
 }
 
 idx_t Database::last_serial()

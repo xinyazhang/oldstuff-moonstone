@@ -2,9 +2,8 @@
 #define KERNEL_TEST_H
 
 #include <QtTest/QtTest>
-#include "../pal/stdtype.h"
-#include "common_declare.h"
-#include "common.h"
+#include "../../pal/stdtype.h"
+#include "../../kernel/common.h"
 
 class TagMan;
 class TnodeMan;
@@ -38,12 +37,20 @@ private slots:
 	void test310_ttr_probe();
 	void test320_ttr_remove();
 
+	void test400_fso_create();
+
+	void test700_daily_usage();
+
 	void cleanupTestCase();
 private:
 	Database* db_;
 	TagMan* tagman_;
 	TnodeMan* tnodeman_;
 	RelationMan* relman_;
+	FsodbMan* fsodbman_;
+	ModSource* modsource_;
+	PluginSys* pluginsys_;
+	WorkingQueue* wq_;
 	//TagManContext* tmc_;
 	idx_t idx_;
 

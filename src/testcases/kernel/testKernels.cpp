@@ -1,13 +1,9 @@
 #include "testKernels.h"
 
-#include "Tag.h"
-#include "TagMan.h"
-#include "Tnode.h"
-#include "TnodeMan.h"
+#include "../../kernel/common.h"
 //#include "TagManContext.h"
 
-#include "Database.h"
-#include "../dal/db_sqlite_impl.h"
+#include "../../dal/db_sqlite_impl.h"
 
 void TestKernels::initTestCase()
 {
@@ -20,6 +16,7 @@ void TestKernels::initTestCase()
 	tagman_ = db_->tagman();
 	tnodeman_ = db_->tnodeman();
 	relman_ = db_->relman();
+	fsodbman_ = db_->fsodbman();
 	//tmc_ = new TagManContext(db_);
 }
 

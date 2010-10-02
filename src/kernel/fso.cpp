@@ -45,10 +45,6 @@ void fso_t::updatebind(sql_stmt& stmt)
 	stmt.bind(8, hash_);
 }
 
-void fso_t::updatebind(sql_stmt& stmt)
-{
-}
-
 bool fso_t::is_root() const
 {
 	return fsoid_ == 0;
@@ -73,3 +69,12 @@ unistr fso_t::name() const
 	UNIQUE(parentid, name));")
 */
 
+void fso_t::load(sql_stmt& stmt)
+{
+	stmt.col(1, fsoid_);
+	stmt.col(2, parent_);
+	stmt.col(3, name_);
+	//stmt.col(4, );
+	stmt.col(5, mtime_);
+	stmt.col(6, mtimer_);
+}

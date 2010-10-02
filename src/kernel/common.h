@@ -11,5 +11,6 @@
 #include "sql_stmt.h"
 #include "error_handle.h"
 #include "fsoman.h"
+#include "modsource.h"
 
 #endif

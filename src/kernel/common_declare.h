@@ -10,5 +10,7 @@ class Database;
 class sql_stmt;
 class RelationMan;
 class FsoMan;
+class ModSource;
+class AsyncWQ;
 
 #endif
