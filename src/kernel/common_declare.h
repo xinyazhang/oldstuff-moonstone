@@ -4,13 +4,15 @@
 #include "../pal/stdtype.h"
 struct tag_t;
 struct tnode_t;
+struct fso_t;
 class TagMan;
 class TnodeMan;
 class Database;
 class sql_stmt;
 class RelationMan;
-class FsoMan;
+class FsodbMan;
 class ModSource;
 class AsyncWQ;
+class Snapshotter;
 
 #endif

@@ -13,9 +13,9 @@ public:
 	ModSource(Database* db);
 	~ModSource();
 
-	void redirect_fsodb(FsodbMan* fsodbman);
+	void redirect(Snapshotter* snapshotter);
 
-	enum ERROR
+	enum ERROR // should be inherited
 	{
 		NOERR = 0,
 		NOTEXIST = -1,
@@ -26,55 +26,41 @@ public:
 		SLOTPLUGGED = -6
 	};
 
-	bool add(const unistr& path, int flag = 0);
-	bool undoadd(const unistr& path, int flag = 0);
-	bool rm(const unistr& path, int flag = 0);
-	bool mv(const unistr& path, const unistr& pathnew);
-	bool cp(const unistr& path, const unistr& pathnew);
-
-	bool load_plugin(const unistr&);
+	bool load_plugin(const unistr&); // also should be inherited
 	void unload_plugin(libmodule);
 
 	ERROR eno() const;
 public:
-	enum FsoFlagShift
-	{
-		recursive_shift = 1
-	};
-	static const int recursive_flag = 1 << recursive_shift;
-
 private:
 	Database* db_;
-	FsodbMan* fsodb_;
+	Snapshotter* snapshotter_;
 	ERROR err_;
 
-	//bool add_fso(const unistr& path, idx_t parentid);
-	bool add_recursive(const unistr& path, idx_t rootfso);
-
-	struct plugin_t
+	struct plugin_t // move to plugin/plugin_base
 	{
 		libmodule module;
 		struct modinoti context;
 	};
 
-	enum plugin_type_enum
+	enum plugin_type_enum // move to plugin/plugin_type
 	{
 		LOCAL = 0,
 		FTP = 1,
 		LAST = 2
 	};
 
-	static plugin_type_enum conv_plugin_type(const unichar*);
+	static plugin_type_enum conv_plugin_type(const unichar*); // move to base class
 	std::vector<plugin_t> plugin_slots;
 
-	static int plugin_fb_add(void*, const unichar*);
+	static int plugin_fb_add(void*, const unichar*); // that's it!
 	static int plugin_fb_remove(void*, const unichar*);
 	static int plugin_fb_modify(void*, const unichar*);
 	static int plugin_fb_rename(void*, const unichar*, const unichar*);
 
 private:
+	// used to manage temporary watching directory, should move to working queue...
 	void rm_complete(const unistr& path, int flag = 0);
-	void mv_complete(const unistr& path, const unistr& pathnew);
+	void mv_complete(const unistr& path, const unistr& pathnew); 
 	void cp_complete(const unistr& path, const unistr& pathnew);
 };
 

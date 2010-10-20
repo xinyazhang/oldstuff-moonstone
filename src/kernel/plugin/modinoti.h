@@ -21,7 +21,7 @@ struct modinoti
 	void* plugin_cookie;
 	fp_modinoti_free fp_free;
 	const unichar* plugin_type;
-	fp_ctl_single_parameter fp_add_watch, fp_rm_watch;
+	fp_ctl fp_add_watch, fp_rm_watch;
 };
 
 

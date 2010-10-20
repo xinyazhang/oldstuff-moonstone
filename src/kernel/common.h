@@ -10,7 +10,9 @@
 #include "RelationMan.h"
 #include "sql_stmt.h"
 #include "error_handle.h"
-#include "fsoman.h"
+#include "fso.h"
+#include "fsodbman.h"
 #include "modsource.h"
+#include "snapshotter.h"
 
 #endif

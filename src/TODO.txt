@@ -261,3 +261,52 @@ rm(不区分dir和file，直接用rm即可）(::rm还没写……）
 
 2010/09/12
 shell代码只剩printfso了
+
+2010/10/20
+娘的拖了一个多月！架构都快忘干净个屁了！
+还有09/12谁tm说代码只剩printfso了？缺他妈那么大一块，编译都编译不动玩屁啊！
+/dal
+	: database abstraction layer
+		all real db opeartions here
+/kernel
+	: UI indepedent codes, contains
+		+ db objects (tag, tnode, fso_t)
+		+ db table managers (TagMan, TnodeMan, RelationMan, FsodbMan)
+		+ db utilities (sql_stmt)
+		+ db center (Database)
+		+ Advanced Interface (ModSource)
+			- Managers don't edit table directly
+			- #####TODO##### 将ModSource作为变更管理模块，应该从低级任务（相对于ModSource）中抽出，应该是如下的设计：
+				        UI -> High Level File System snapshottor -> FsodbMan -> Snapshot in Database
+				Plugin1- ModSource --/
+				Plugin2/
+				...
+			- 改名为snapshotter，不过问题又来了：hashing咋办？（稍后解决）
+		+ Kernel threads
+			- Working on time-cost jobs
+				* hashing, copying, moving, indexing
+			- Nearly all have relation with plugins
+				* note! copying and moving are platform depedent, placed in plugin may reduce the pal
+			- 需要Transaction支持的工作要扔这里，例如move，得move完了才能改数据库
+		+ plugins (/plugin)
+			- 插件系统是个很烦的东西
+			- pal负责module的load,unload还有getfunc是不容置疑的
+			- 但是其他部分就很烦了，要不要写个插件类？
+				* 似乎是必要的，毕竟手动维护实在太麻烦了
+				* 得，又得部分重构
+			- 要定下一个module规范，免得写到后来到处是module到处是loader
+				* 考虑各种可能的插件，以及他们之间的最小公共集
+			- 需要一个基类负责module loader and applyer的所有工作。
+			- 先把ModSource分离出来再说，现在这个架势啥都搞不好……
+/gui
+	: 反正要推倒重来，随便了
+/pal
+	: Platform Abstraction Layer
+		+ Unicode Support :wchar_t under windows and char(UTF-8) under *nix.
+		+ Module Support
+
+要让系统工作起来该如何办？
+要尽早测试就要先分离ModSource和其中的插件部分，并且尽量隔离插件部分
+不编译插件部分是最好的选择
+
+另外考虑转向cmake
