@@ -2,11 +2,13 @@
 #define KERNEL_MODIFICATION_SOURCE_H
 
 #include "common_declare.h"
+#include "plugin/pm.h"
 #include "plugin/modinoti.h"
 #include <pal/libop.h>
 #include <vector>
 
 class EXPORT_TO_DLL ModSource
+	:public plugin_manager_base
 {
 	friend class AsyncWQ;
 public:
@@ -14,40 +16,8 @@ public:
 	~ModSource();
 
 	void redirect(Snapshotter* snapshotter);
-
-	enum ERROR // should be inherited
-	{
-		NOERR = 0,
-		NOTEXIST = -1,
-		NOTEMPTY = -2,
-		MODLOADERR = -3,
-		PLUGIN_NOINITPOINT= -4,
-		INVALIDSLOT = -5,
-		SLOTPLUGGED = -6
-	};
-
-	bool load_plugin(const unistr&); // also should be inherited
-	void unload_plugin(libmodule);
-
-	ERROR eno() const;
-public:
 private:
-	Database* db_;
 	Snapshotter* snapshotter_;
-	ERROR err_;
-
-	struct plugin_t // move to plugin/plugin_base
-	{
-		libmodule module;
-		struct modinoti context;
-	};
-
-	enum plugin_type_enum // move to plugin/plugin_type
-	{
-		LOCAL = 0,
-		FTP = 1,
-		LAST = 2
-	};
 
 	static plugin_type_enum conv_plugin_type(const unichar*); // move to base class
 	std::vector<plugin_t> plugin_slots;

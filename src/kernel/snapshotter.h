@@ -12,10 +12,7 @@ public:
 	void redirect(FsodbMan* fsodbman);
 
 	bool add(const unistr& path, int flag = 0);
-	bool undoadd(const unistr& path, int flag = 0);
-	bool rm(const unistr& path, int flag = 0);
-	bool mv(const unistr& path, const unistr& pathnew);
-	bool cp(const unistr& path, const unistr& pathnew);
+	bool withdraw(const unistr& path, int flag = 0);
 
 	enum FsoFlagShift
 	{

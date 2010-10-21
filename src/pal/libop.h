@@ -12,6 +12,7 @@ libmodule pal_loadlib(const unistr&);
 bool pal_module_test(libmodule);
 void* pal_getfp(libmodule, const unistr&);
 bool pal_module_test_fp(void* );
+libmodule pal_invalidmodule();
 
 
 #endif
