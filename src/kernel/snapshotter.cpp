@@ -100,3 +100,17 @@ bool snapshotter::add_recursive(const unistr& path, idx_t rootfso)
 	}
 }
 
+idx_t snapshotter::ensure_dir(const unistr& path)
+{
+	db_->begin_transaction();
+	vector<unistr> path_list = split_path(path);
+
+	idx_t parentid = 0;
+	for(int i = path_list.size() - 1; i >= 0; i++)
+	{
+		parentid = fsodb_->ensure(path_list[i], parentid);
+	}
+	db_->final_transaction();
+	return parentid;
+}
+

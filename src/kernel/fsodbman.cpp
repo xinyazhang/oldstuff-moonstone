@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <vector>
 using std::vector;
+#include <QtCore/QDir>
 
 #define FSO_COLUMN_NUMBER 8
 
@@ -39,7 +40,7 @@ unistr agg_path(const vector<unistr> path_list)
 	for(;iter != path_list.begin(); iter++)
 	{
 		ret += *iter;
-		ret += '/';
+		ret += "/";
 	}
 	ret += path_list.front();
 }
@@ -61,7 +62,7 @@ bool FsodbMan::add_fso(const unistr& name, idx_t parentid)
 	return success;
 }
 
-const char* ensure_fso_locators = 
+const char* ensure_fso_locators[] = 
 {
 	"name",
 	"parentid"
@@ -74,7 +75,7 @@ idx_t FsodbMan::ensure(const unistr& name, idx_t parentid)
 	stmt.bind(2, parentid);
 	if ( !stmt.step() )
 	{
-		bool must_true = add_fso(path, parentid);
+		bool must_true = add_fso(name, parentid);
 		assert(must_true == true);
 		return ensure(name, parentid);
 	} else
@@ -106,7 +107,7 @@ unistr FsodbMan::fullpath(idx_t fsoid)
 
 idx_t FsodbMan::locate(const unistr& path)
 {
-	vector<unistr> path_list = split_path(dir);
+	vector<unistr> path_list = split_path(path);
 	fso_t fso;
 	int i;
 	for(i = path_list.size() - 1; i >= 0; i--)
@@ -129,7 +130,7 @@ const char* locate2selector[] =
 
 idx_t FsodbMan::locate(const unistr& name, idx_t parentid)
 {
-	sql_stmt stmt = db_->create_selall_stmt(Database::FsodbMan, 2, locate2selector);
+	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable, 2, locate2selector);
 	stmt.bind(1, name);
 	stmt.bind(2, parentid);
 
@@ -137,7 +138,7 @@ idx_t FsodbMan::locate(const unistr& name, idx_t parentid)
 	{
 		fso_t fso;
 		fso.load(stmt);
-		return fso.idx();
+		return fso.fsoid();
 	} else
 		return 0;
 }
@@ -152,7 +153,7 @@ fso_t FsodbMan::locate(idx_t fsoid)
 		return fso_t();
 }
 
-const char* fsocd_locators =
+const char* fsocd_locators[] =
 {
 	"parentid",
 	"name"
@@ -168,7 +169,7 @@ bool FsodbMan::fsocd(fso_t& fso, const unistr& name)
 	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable,
 			2,
 			fsocd_locators);
-	stmt.bind(1, fso.fsoid);
+	stmt.bind(1, fso.fsoid());
 	stmt.bind(2, name);
 
 	if ( stmt.step() )
@@ -181,7 +182,7 @@ bool FsodbMan::fsocd(fso_t& fso, const unistr& name)
 
 bool FsodbMan::fsocdup(fso_t& fso)
 {
-	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "fsoid", "*");
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "fsoid", "*");
 	stmt.bind(1, fso.parentid());
 	
 	if ( stmt.step() )
@@ -193,7 +194,7 @@ bool FsodbMan::fsocdup(fso_t& fso)
 
 bool FsodbMan::reloadfso(fso_t& fso)
 {
-	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "fsoid", "*");
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "fsoid", "*");
 	stmt.bind(1, fso.fsoid());
 	
 	if ( stmt.step() )
@@ -203,7 +204,7 @@ bool FsodbMan::reloadfso(fso_t& fso)
 	return true;
 }
 
-const char* fsocollist = 
+const char* fsocollist[] = 
 {
 	"parentid",
 	"name",
@@ -216,7 +217,7 @@ const char* fsocollist =
 
 bool FsodbMan::updatefso(fso_t& fso)
 {
-	sql_stmt stmt = db_->create_update_stmt(Database::FsodbMan, "fsoid", FSO_COLUMN_NUMBER - 1, fsocollist);
+	sql_stmt stmt = db_->create_update_stmt(Database::FsoTable, "fsoid", FSO_COLUMN_NUMBER - 1, fsocollist);
 	fso.updatebind(stmt);
 	return stmt.step();
 }
@@ -231,30 +232,15 @@ bool FsodbMan::chroot(idx_t fsoid, idx_t parentnew)
 #endif
 	// idx_t rootnew = ensure_dir(pathnew);
 	fso_t fso = locate(fsoid);
-	if ( fso == 0 )
+	if ( !fso.valid() )
 		return false;
 	fso.chparent(parentnew);
 	return updatefso(fso);
 }
 
-bool FsodbMan::haschild(idx_t )
+bool FsodbMan::haschild(idx_t dirid)
 {
-	sql_stmt stmt = db_->create_simsel_stmt(Database::FsodbMan, "parentid", "*");
-	stmt.bind(1, pathid);
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "parentid", "*");
+	stmt.bind(1, dirid);
 	return stmt.step();
 }
-
-idx_t FsodbMan::ensure_dir(const unistr& path)
-{
-	db_->begin_transaction();
-	vector<unistr> path_list = split_path(dir);
-
-	idx_t parentid = 0;
-	for(int i = path_list.size() - 1; i >= 0; i++)
-	{
-		parentid = fsodb_->ensure(path_list[i], parentid);
-	}
-	db_->final_transaction();
-	return parentid;
-}
-

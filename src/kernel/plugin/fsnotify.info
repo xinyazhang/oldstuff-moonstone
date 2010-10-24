@@ -1,0 +1,15 @@
+fsnotify standard
+
+fsnotify is short for File System NOTIFY. The name referenced linux's inofity.
+And works on it (under linux, if fanotify hasn't been ready).
+
+The workflow:
++ fsnotify is initialized
++ when the watching directory is changed, an add/delete list is given to
+fsnotify's function (this function should return immediately)
++ fsnotify register/unregister these directories (asynchronized)
+	- plugin should call kernel api to manipulate the list after every registory
++ after all these directory is processed, the fsnotify plugin should call the
+API to ack lain the work has done.
+
+plugin should provide a progress interface.

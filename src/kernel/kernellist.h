@@ -2,6 +2,8 @@
 #define KERNEL_TAGLIST_H
 
 #include <vector>
+#include "tag.h"
+#include "tnode.h"
 
 template<typename T>
 class distinctlist_t

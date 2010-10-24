@@ -27,6 +27,7 @@ public:
 
 	unistr& operator+=(const char* p) { this->append(unistr(p)); return *this; }
 	unistr& operator+=(const unistr& another) { this->append(another.native()); return *this; }
+	bool operator==(const char* p) const { return *this==unistr(p); }
 
 	operator QString() const { return QString::fromWCharArray(native()); }
 

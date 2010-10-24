@@ -31,15 +31,15 @@ void load_database()
 act_t readline()
 {
 	act_t ret;
-	cin >> ret.cmd
+	cin >> ret.cmd;
 	getline(cin, ret.para);
 	return ret;
 }
 
-int exec_cd(Database* db, fso_t& fso, unistr name);
+int exec_cd(Database* db, fso_t& fso, const string& name);
 int exec_ls(Database* db, fso_t& fso);
-int exec_add(Database* db, const unistr& name);
-int exec_rm(Database* db, const unistr& name);
+int exec_add(Database* db, const string& name);
+int exec_rm(Database* db, const string& name);
 
 int main(int argc, const char* argv)
 {
@@ -66,8 +66,8 @@ int main(int argc, const char* argv)
 void printfso(const fso_t& fso)
 {
 	cout << "File system object No. "<< fso.fsoid_ << endl;
-	cout << "File name: " << fso.name_ << endl;
-	cout << "Full path: " << fso.path_ << endl;
+	cout << "File name: " << fso.name_.native() << endl;
+	cout << "Full path: " << fso.path_.native() << endl;
 	cout << "Recorded size: " << fso.size_ << endl;
 	cout << "Recorded modification time: " << fso.mtime_ << endl;
 	cout << "Recorded recursive modification time: " << fso.mtimer_<< endl;
@@ -75,11 +75,11 @@ void printfso(const fso_t& fso)
 	cout << endl;
 }
 
-int exec_cd(Database* db, fso_t& fso, unistr name)
+int exec_cd(Database* db, fso_t& fso, const string& name)
 {
-	if ( !db->fsodbman()->fsocd(fso, name) )
+	if ( !db->fsodbman()->fsocd(fso, unistr(name.c_str()))  )
 	{
-		cerr << "cd: "<<name<<"123: No such file or directory"<<endl;
+		cerr << "cd: "<< name <<"123: No such file or directory"<<endl;
 	}
 	return 0;
 }
@@ -96,15 +96,15 @@ int exec_ls(Database* db, fso_t& fso)
 	return 0;
 }
 
-int exec_add(Database* db, const unistr& name)
+int exec_add(Database* db, const string& name)
 {
-	db->fsodbman()->add_fso(name, global_fso.fsoid());
+	db->fsodbman()->add_fso(unistr(name.c_str()), global_fso.fsoid());
 	return 0;
 }
 
-int exec_rm(Database* db, const unistr& name)
+int exec_rm(Database* db, const string& name)
 {
-	idx_t fsoid = db->fsodbman()->locate(name, global_fso.fsoid());
+	idx_t fsoid = db->fsodbman()->locate(unistr(name.c_str()), global_fso.fsoid());
 	if ( db->fsodbman()->haschild(fsoid) )
 		cerr << name << " is not empty "<<endl;
 	else

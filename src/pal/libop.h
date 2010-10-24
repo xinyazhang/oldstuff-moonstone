@@ -5,7 +5,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
-typedef HMOUDLE libmodule;
+
+typedef HMODULE libmodule;
 #endif
 
 libmodule pal_loadlib(const unistr&);

@@ -19,7 +19,7 @@ Database::Database(DatabaseInterface* i)
 	tagman_ = new TagMan(this);
 	tnodeman_ = new TnodeMan(this);
 	relman_ = new RelationMan(this);
-	fsodbman_ = new FsoMan(this);
+	fsodbman_ = new FsodbMan(this);
 
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
@@ -30,7 +30,7 @@ Database::~Database()
 	delete tagman_;
 	delete tnodeman_;
 	delete relman_;
-	delete fsoman_;
+	delete fsodbman_;
 }
 
 bool Database::initialized() const
@@ -210,7 +210,7 @@ RelationMan* Database::relman()
 	return relman_;
 }
 
-FsoMan* Database::fsodbman()
+FsodbMan* Database::fsodbman()
 {
 	return fsodbman_;
 }

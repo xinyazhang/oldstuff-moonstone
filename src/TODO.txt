@@ -281,13 +281,14 @@ shell代码只剩printfso了
 				Plugin1- ModSource --/
 				Plugin2/
 				...
-			- 改名为snapshotter，不过问题又来了：hashing咋办？（稍后解决）
+			- 改名为snapshotter，不过问题又来了：hashing咋办？（delayed，从obligation上来讲由snapshotter来做更好）
 		+ Kernel threads
 			- Working on time-cost jobs
 				* hashing, copying, moving, indexing
 			- Nearly all have relation with plugins
 				* note! copying and moving are platform depedent, placed in plugin may reduce the pal
 			- 需要Transaction支持的工作要扔这里，例如move，得move完了才能改数据库
+			- 暂时先不写
 		+ plugins (/plugin)
 			- 插件系统是个很烦的东西
 			- pal负责module的load,unload还有getfunc是不容置疑的
@@ -315,3 +316,10 @@ shell代码只剩printfso了
 考虑过后snapshotter只负责添加，文件系统操作的活不应该由它干
 删除rm、mv和cp等费事而又和数据库无关的操作
 需要新增管理fs op的类，不过很好，这样就可以更快的开始测试了。
+
+2010/10/24
+妈的2了，shell根本不需要snapshotter什么的支持，不编译进去就完事了！
+文件系统操作需要转调snapshotter或者fsodbman来处理
+另外不能依赖fswatcher来实现copy/mv/cp的追踪，因为ReadDirectoryChangesW似乎只处理一个目录……
+	fsnotify虽强不过……
+modinoti改名fsnotify，规范化，并修改了workflow

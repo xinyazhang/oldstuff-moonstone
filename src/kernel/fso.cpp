@@ -1,5 +1,6 @@
 #include "common.h"
 #include <QtCore/QFileInfo>
+#include <QtCore/QDateTime>
 
 fso_t::fso_t()
 	:fsoid_(0), parent_(0), size_(0), mtime_(0), mtimer_(0), hash_algo_(0), hash_(NULL)
@@ -41,8 +42,8 @@ void fso_t::updatebind(sql_stmt& stmt)
 	stmt.bind(4, size_);
 	stmt.bind(5, mtime_);
 	stmt.bind(6, mtimer_);
-	stmt.bind(7, hash_algo_);
-	stmt.bind(8, hash_);
+	stmt.bind(7);
+	stmt.bind(8);
 }
 
 bool fso_t::is_root() const
@@ -77,4 +78,9 @@ void fso_t::load(sql_stmt& stmt)
 	//stmt.col(4, );
 	stmt.col(5, mtime_);
 	stmt.col(6, mtimer_);
+}
+
+bool fso_t::valid() const
+{
+	return fsoid_ == 0;
 }

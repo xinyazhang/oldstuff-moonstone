@@ -3,15 +3,16 @@
 
 #include "common_declare.h"
 
-class EXPORT_TO_DLL Snapshotter
+class EXPORT_TO_DLL snapshotter
 {
 public:
-	Snapshotter(Database* );
-	~Snapshotter();
+	snapshotter(Database* );
+	~snapshotter();
 
 	void redirect(FsodbMan* fsodbman);
 
 	bool add(const unistr& path, int flag = 0);
+	idx_t ensure_dir(const unistr&);
 	bool withdraw(const unistr& path, int flag = 0);
 
 	enum FsoFlagShift
@@ -26,3 +27,5 @@ private:
 
 	bool add_recursive(const unistr& path, idx_t rootfso);
 };
+
+#endif

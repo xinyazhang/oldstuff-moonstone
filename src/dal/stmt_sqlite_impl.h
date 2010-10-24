@@ -15,6 +15,7 @@ public:
 	virtual void bind(int c); // bind a null
 	virtual void bind(int c, idx_t );
 	virtual void bind(int c, const unistr&);
+	virtual void bind(int c, void*, int64_t size);
 	virtual int execute();
 	virtual bool step();
 	virtual void col(int c, unistr& );

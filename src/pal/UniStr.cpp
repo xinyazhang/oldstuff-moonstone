@@ -20,7 +20,7 @@ unistr::unistr()
 }
 
 unistr::unistr(const QString& qs)
-	:wstring(qs.utf16())
+	:wstring((wchar_t*)qs.utf16())
 {
 }
 
@@ -42,7 +42,7 @@ unistr::unistr(const char* ascii)
 
 unistr unistr::number(int n)
 {
-	return unistr(QString::number(n).utf16());
+	return unistr((wchar_t*)QString::number(n).utf16());
 }
 
 #if 0

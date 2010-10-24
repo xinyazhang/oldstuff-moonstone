@@ -1,6 +1,7 @@
 #ifndef KERNEL_COMMON_H
 #define KERNEL_COMMON_H
 
+#include <pal/UniStr.h>
 #include "tag.h"
 #include "tnode.h"
 #include "kernellist.h"
@@ -12,7 +13,7 @@
 #include "error_handle.h"
 #include "fso.h"
 #include "fsodbman.h"
-#include "modsource.h"
-#include "snapshotter.h"
+//#include "modsource.h"
+//#include "snapshotter.h"
 
 #endif

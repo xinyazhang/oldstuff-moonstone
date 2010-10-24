@@ -26,6 +26,11 @@ void stmt_sqlite_impl::bind(int c, const unistr& str)
 	int ret = sqlite3_bind_text_native(stmt_, c, str.native(), -1, SQLITE_TRANSIENT);
 }
 
+void stmt_sqlite_impl::bind(int c, void* ptr, int64_t size)
+{
+	int ret = sqlite3_bind_blob(stmt_, c, ptr, size, NULL);
+}
+
 int stmt_sqlite_impl::execute()
 {
 	int ret = sqlite3_step(stmt_);
@@ -54,4 +59,3 @@ void stmt_sqlite_impl::col(int c, idx_t& value)
 {
 	value = sqlite3_column_idx(stmt_, c - 1);
 }
-

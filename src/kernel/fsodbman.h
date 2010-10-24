@@ -2,7 +2,6 @@
 #define KERNEL_FSO_POOL_MAN_H
 
 #include "common_declare.h"
-class fso_t;
 
 class EXPORT_TO_DLL FsodbMan
 {
@@ -16,7 +15,6 @@ public:
 	bool add_fso(const unistr& name, idx_t parentid);
 	//bool add(const fso_t&);
 	idx_t ensure(const unistr& name, idx_t parent);
-	idx_t ensure_dir(const unistr&);
 	unistr fullpath(idx_t fsoid);
 	idx_t locate(const unistr& path);
 	idx_t locate(const unistr& name, idx_t parentid);

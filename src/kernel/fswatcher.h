@@ -3,21 +3,22 @@
 
 #include "common_declare.h"
 #include "plugin/pm.h"
-#include "plugin/modinoti.h"
+#include "plugin/fsnotify.h"
 #include <pal/libop.h>
 #include <vector>
 
-class EXPORT_TO_DLL ModSource
+class EXPORT_TO_DLL fswatcher
 	:public plugin_manager_base
 {
-	friend class AsyncWQ;
 public:
-	ModSource(Database* db);
-	~ModSource();
+	fswatcher(Database* db);
+	~fswatcher();
 
-	void redirect(Snapshotter* snapshotter);
+	bool add_watch(const unistr&, bool recursive = true);
+	bool remove_watch(const unistr&); // note: recursive watch is a single watch
+	void redirect(snapshotter* );
 private:
-	Snapshotter* snapshotter_;
+	snapshotter* snapshotter_;
 
 	static plugin_type_enum conv_plugin_type(const unichar*); // move to base class
 	std::vector<plugin_t> plugin_slots;
