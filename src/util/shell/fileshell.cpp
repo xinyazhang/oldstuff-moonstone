@@ -32,6 +32,8 @@ act_t readline()
 {
 	act_t ret;
 	cin >> ret.cmd;
+	while ( ' ' == cin.peek() )
+		cin.get();
 	getline(cin, ret.para);
 	return ret;
 }
@@ -66,8 +68,13 @@ int main(int argc, const char* argv)
 void printfso(const fso_t& fso)
 {
 	cout << "File system object No. "<< fso.fsoid_ << endl;
-	cout << "File name: " << fso.name_.native() << endl;
-	cout << "Full path: " << fso.path_.native() << endl;
+	cout.flush();
+	wprintf(L"File name: %s\n", fso.name_.native());
+	wprintf(L"Full path: %s\n", fso.path_.native());
+	/*
+	cout << "File name: " << (wchar_t*)fso.name_.native() << endl;
+	cout << "Full path: " << (wchar_t*)fso.path_.native() << endl;
+	*/
 	cout << "Recorded size: " << fso.size_ << endl;
 	cout << "Recorded modification time: " << fso.mtime_ << endl;
 	cout << "Recorded recursive modification time: " << fso.mtimer_<< endl;
@@ -79,20 +86,27 @@ int exec_cd(Database* db, fso_t& fso, const string& name)
 {
 	if ( !db->fsodbman()->fsocd(fso, unistr(name.c_str()))  )
 	{
-		cerr << "cd: "<< name <<"123: No such file or directory"<<endl;
+		cerr << "cd: "<< name <<": No such file or directory"<<endl;
 	}
 	return 0;
 }
 
 int exec_ls(Database* db, fso_t& fso)
 {
+	int64_t total = 0;
 	fso_t fsoiter = db->fsodbman()->fsocontent(fso);
+	if ( !fsoiter.valid() )
+		goto summary;
+
 	fsoiter.path_ = db->fsodbman()->fullpath(fso.fsoid_);
-	printfso(fsoiter);
+	printfso(fsoiter); total++;
 	while ( db->fsodbman()->fsonext(fsoiter) )
 	{
-		printfso(fsoiter);
+		fsoiter.path_ = db->fsodbman()->fullpath(fso.fsoid_);
+		printfso(fsoiter); total++;
 	}
+summary:
+	cout<<"Total: "<<total<<endl;
 	return 0;
 }
 

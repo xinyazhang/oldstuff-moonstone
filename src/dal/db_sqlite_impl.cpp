@@ -95,7 +95,7 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_tag(name TEXT, tnode INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(name, tnode));"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_tagtag_relation(tagger INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, taggee INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(tagger, taggee));"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_fso(fsoid INTEGER PRIMARY KEY ASC AUTOINCREMENT, parentid INTEGER REFERENCES $PREFIX_fso(fsoid) ON DELETE CASCADE, name TEXT, size INTEGER, fs_date INTEGER, recusive_date INTEGER, hash_algo INTEGER, hash BLOB, UNIQUE(parentid, name));"),
-	UT("INSERT INTO $PREFIX_fso values(0, 0, \"\", 0, 0, 0, NULL, NULL)")
+	UT("INSERT INTO $PREFIX_fso values(0, 0, \"/\", 0, 0, 0, NULL, NULL)")
 };
 
 int db_sqlite_impl::initialize_sql_number() const

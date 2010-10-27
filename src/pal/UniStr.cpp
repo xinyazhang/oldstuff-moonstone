@@ -36,8 +36,9 @@ unistr::unistr(const unistr& another)
 }
 
 unistr::unistr(const char* ascii)
-	:wstring(QString(ascii).toStdWString())
+//	:wstring(QString(ascii).toStdWString())
 {
+	*this = (wchar_t*)QString(ascii).utf16();
 }
 
 unistr unistr::number(int n)

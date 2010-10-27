@@ -36,8 +36,13 @@ public:
 	sql_stmt create_insert_stmt(Database::TableSelector, int col_number);
 	sql_stmt create_simsel_stmt(TableSelector, const unistr& locator, const unistr& selcontent);
 	sql_stmt create_selall_stmt(TableSelector, int locatorn, const char* locators[]);
+	/* restrictions must contain comparision operators selves! */
+	sql_stmt create_list_stmt(TableSelector, 
+			int restrictn, const char* restrictions[],
+			int ordern, const char* order_cols[], const bool asc[]);
 	sql_stmt create_update_stmt(TableSelector, const unistr& locator, int updatecoln, const char* updatecols[]);
 	sql_stmt create_del_stmt(TableSelector, int locatorn, const char* locators[]);
+
 	sql_stmt create_stmt_ex(const unistr& );
 	unistr table(TableSelector);
 	idx_t last_serial();

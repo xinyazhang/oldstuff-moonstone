@@ -5,7 +5,7 @@
 using std::vector;
 #include <QtCore/QDir>
 
-#define FSO_COLUMN_NUMBER 8
+#define FSO_COLUMN_NUMBER 7
 
 vector<unistr> split_path(const unistr& path)
 {
@@ -34,15 +34,19 @@ unistr agg_path(const vector<unistr> path_list)
 		return unistr();
 	unistr ret;
 	vector<unistr>::const_iterator iter= path_list.end() - 1;
+	/*
 #ifdef _WIN32
 	iter--; // skip null root
 #endif
-	for(;iter != path_list.begin(); iter++)
+	*/
+	for(;iter != path_list.begin(); iter--)
 	{
 		ret += *iter;
 		ret += "/";
 	}
 	ret += path_list.front();
+
+	return ret;
 }
 
 
@@ -55,7 +59,7 @@ bool FsodbMan::add_fso(const unistr& name, idx_t parentid)
 {
 	sql_stmt stmt = db_->create_insert_stmt(Database::FsoTable, FSO_COLUMN_NUMBER);
 	fso_t fso(name);
-	fso.bind(stmt, parentid);
+	fso.addbind(stmt, parentid);
 
 	int err = stmt.execute();
 	bool success = judge_and_replace(err, err_);
@@ -217,7 +221,7 @@ const char* fsocollist[] =
 
 bool FsodbMan::updatefso(fso_t& fso)
 {
-	sql_stmt stmt = db_->create_update_stmt(Database::FsoTable, "fsoid", FSO_COLUMN_NUMBER - 1, fsocollist);
+	sql_stmt stmt = db_->create_update_stmt(Database::FsoTable, "fsoid", FSO_COLUMN_NUMBER, fsocollist);
 	fso.updatebind(stmt);
 	return stmt.step();
 }
@@ -243,4 +247,69 @@ bool FsodbMan::haschild(idx_t dirid)
 	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "parentid", "*");
 	stmt.bind(1, dirid);
 	return stmt.step();
+}
+
+const char* del_locators[] =
+{
+	"fsoid"
+};
+
+bool FsodbMan::rm(idx_t fsoid)
+{
+	sql_stmt stmt = db_->create_del_stmt(Database::FsoTable, 1, del_locators);
+	stmt.bind(1, fsoid);
+
+	int err = stmt.execute();
+	bool success = judge_and_replace(err, err_);
+	return success;
+}
+
+const char* content_restricts[] =
+{
+	"parentid = "
+};
+
+const char* content_orders[] =
+{
+	"fsoid"
+};
+
+const bool content_order_is_asc[] =
+{
+	true
+};
+
+fso_t FsodbMan::fsocontent(const fso_t& fso) // pickup the first child
+{
+	if ( !haschild( fso.fsoid() ) )
+		return fso_t();
+	sql_stmt stmt = db_->create_list_stmt(Database::FsoTable, 1, content_restricts,
+			1, content_orders, content_order_is_asc);
+	stmt.bind(1, fso.fsoid());
+	if( !stmt.step() )
+		return fso_t();
+	fso_t ret;
+	ret.load(stmt);
+
+	return ret;
+}
+
+const char* next_restrictions[] =
+{
+	"parentid = ",
+	"fsoid > "
+};
+
+bool FsodbMan::fsonext(fso_t& fso) 
+	// next fso, used to iterate elements, use LIMIT clause for 1 result
+{
+	sql_stmt stmt = db_->create_list_stmt(Database::FsoTable, 2, next_restrictions,
+			1, content_orders, content_order_is_asc);
+	stmt.bind(1, fso.parentid());
+	stmt.bind(2, fso.fsoid());
+	if ( !stmt.step() )
+		return false;
+	else
+		fso.load(stmt);
+	return true;
 }

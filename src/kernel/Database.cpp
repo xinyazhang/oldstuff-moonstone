@@ -96,7 +96,7 @@ static unistr insert_content[] =
 	UT("(refc, mastername, comment)"),
 	UT("(name, tnode)"),
 	UT("(tagger, taggee)"),
-	UT("(fsoid, parentid, name, size, fs_date, recusive_date, hash_algo, hash)")
+	UT("(parentid, name, size, fs_date, recusive_date, hash_algo, hash)")
 };
 
 sql_stmt Database::create_insert_stmt(TableSelector ts, int col_number)
@@ -141,6 +141,42 @@ sql_stmt Database::create_selall_stmt(TableSelector s, int locatorn, const char*
 	sql += locators[locatorn - 1];
 	sql += "=$";
 	sql += unistr::number(locatorn);
+
+	return create_stmt_ex(sql);
+}
+
+sql_stmt Database::create_list_stmt(TableSelector s, 
+		int restrictn, const char* restrictions[],
+		int ordern, const char* order_cols[], const bool asc[])
+{
+	unistr sql("SELECT * FROM ");
+	sql += table(s);
+	sql += " WHERE ";
+	for(int i = 0; i < restrictn - 1; i++)
+	{
+		sql += restrictions[i];
+		sql += " $";
+		sql += unistr::number(i + 1);
+		sql += " AND ";
+	}
+	sql += restrictions[restrictn - 1];
+	sql += " $";
+	sql += unistr::number(restrictn);
+
+	sql += " ORDER BY ";
+	for(int i = 0; i < ordern - 1; i++)
+	{
+		sql += order_cols[i];
+		if ( asc[i] )
+			sql += " ASC, ";
+		else
+			sql += " DESC, ";
+	}
+	sql += order_cols[ordern - 1];
+	if ( asc[ordern - 1] )
+		sql += " ASC";
+	else
+		sql += " DESC";
 
 	return create_stmt_ex(sql);
 }

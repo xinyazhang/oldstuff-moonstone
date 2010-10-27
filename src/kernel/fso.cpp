@@ -15,23 +15,25 @@ fso_t::fso_t(idx_t fsoid)
 fso_t::fso_t(const unistr& path)
 	:fsoid_(0), hash_algo_(0), hash_(0)
 {
+	name_ = path;
+	/*
 	QFileInfo info_(path);
 	name_ = info_.fileName();
 	path_ = info_.absoluteFilePath();
 	size_ = info_.size();
 	mtimer_ = mtime_ = info_.lastModified().toTime_t();
+	*/
 }
 
-void fso_t::bind(sql_stmt& stmt, idx_t parentid)
+void fso_t::addbind(sql_stmt& stmt, idx_t parentid)
 {
-	stmt.bind(1);
-	stmt.bind(2, parentid);
-	stmt.bind(3, name_);
-	stmt.bind(4, size_);
-	stmt.bind(5, mtime_);
-	stmt.bind(6, mtimer_);
+	stmt.bind(1, parentid);
+	stmt.bind(2, name_);
+	stmt.bind(3, size_);
+	stmt.bind(4, mtime_);
+	stmt.bind(5, mtimer_);
+	stmt.bind(6);
 	stmt.bind(7);
-	stmt.bind(8);
 }
 
 void fso_t::updatebind(sql_stmt& stmt)
@@ -82,5 +84,5 @@ void fso_t::load(sql_stmt& stmt)
 
 bool fso_t::valid() const
 {
-	return fsoid_ == 0;
+	return fsoid_ != 0 || ( fsoid_ == 0 && name_ == "/");
 }

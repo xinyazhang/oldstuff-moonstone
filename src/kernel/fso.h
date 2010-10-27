@@ -13,7 +13,7 @@ struct EXPORT_TO_DLL fso_t
 	fso_t(); // root dir, note for win32: \\?\ is root
 	fso_t(idx_t ); // an fso only id loaded
 	fso_t(const unistr& path); // used to load fs meta data
-	void bind(sql_stmt& stmt, idx_t parentid);
+	void addbind(sql_stmt& stmt, idx_t parentid);
 	void updatebind(sql_stmt& stmt);
 	void load(sql_stmt& stmt);
 	bool is_root() const;
@@ -33,7 +33,5 @@ struct EXPORT_TO_DLL fso_t
 	int hash_algo_;
 	void* hash_;
 };
-
-#define FSO_COLUMN_NUMBER 8
 
 #endif
