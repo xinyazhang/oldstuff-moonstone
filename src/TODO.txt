@@ -323,3 +323,45 @@ shell代码只剩printfso了
 另外不能依赖fswatcher来实现copy/mv/cp的追踪，因为ReadDirectoryChangesW似乎只处理一个目录……
 	fsnotify虽强不过……
 modinoti改名fsnotify，规范化，并修改了workflow
+
+2010/10/28
+fsodbman tested (@yesterday, forgot to log)
+roadmap:
+	snapshotter
+		- need a pal module to abstract platform depedent fs operations
+		- like VFS, use common attributes of various FS
+		- load into structure fso directly, so it need to include
+		  "../kernel/fso.h"
+		- but afterall I've made a usable snapshotter beforce use pal module...
+	shell-ext (add snapshotter related commands and add a chenv op to switch operating environment)
+	file-tagger
+	plugin-base
+	plugin-subsys-fswatcher
+	plugin-subsys-fswatcher-ntfs
+	daemon-ntfs
+	plugin-subsys-autotagger
+	plugin-subsys-autotagger-animestd
+	async-tasklet-base (atasklet)
+	async-tasklet-autonewtag
+
+after kernel done:
+	name formatting (names like TagMan should be changed to tag_man)
+
+async-tasklet:
+	base class for asynchronized processing routine.
+	used in:
+		- processes which take long time.
+		- processes which needs users' input
+
+		However, these two types of processing need another sub-classes of the base class.
+	request:
+		safe and fast copy like POD types
+
+2010/11/29
+	focus on shell
+	but make it easily...
+
+	F**K Qt! QtDir WON'T reture then driver letter!
+MUST WRITE a VFS module
+
+	test passed, commit to the repo.

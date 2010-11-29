@@ -52,6 +52,7 @@ public:
 	RelationMan* relman();
 	FsodbMan* fsodbman();
 	AsyncWQ* asyncwq();
+	snapshotter* ss();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this
@@ -62,6 +63,7 @@ private:
 	RelationMan* relman_;
 	FsodbMan* fsodbman_;
 	AsyncWQ* asyncwq_;
+	snapshotter* ss_;
 
 	int nest_;
 	bool breaked_;

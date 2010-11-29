@@ -7,6 +7,20 @@
 
 using namespace std;
 
+enum env_t
+{
+	FSO_INTERACTIVE = 0
+};
+
+const char* envstring[] =
+{
+	"fso"
+};
+
+env_t current_env = FSO_INTERACTIVE;
+
+bool intractive = true;
+
 struct act_t
 {
 	string cmd;
@@ -42,26 +56,93 @@ int exec_cd(Database* db, fso_t& fso, const string& name);
 int exec_ls(Database* db, fso_t& fso);
 int exec_add(Database* db, const string& name);
 int exec_rm(Database* db, const string& name);
+int chenv(const string& env);
+int snapshot(const char*, bool);
+wstring env_reference();
 
-int main(int argc, const char* argv)
+int main(int argc, char* argv[])
 {
 	load_database();
+	if ( argc > 1 && std::string(argv[1]) == "snapshot" )
+	{
+		intractive = false;
+		if ( argc > 2 )
+			snapshot(argv[2], true);
+		else
+			cout << "Usage: "<< argv[0] << " snapshot [FILE]" << endl;
+
+		delete global_db;
+		delete global_db_core;
+		return 0;
+	}
 	do
 	{
+		if (intractive)
+		{
+			wprintf(L"[%S:%s] ", envstring[current_env], env_reference().c_str());
+		}
 		act = readline();
 
-		if ( act.cmd == "exit" )
+		if ( act.cmd == "chenv" )
+		{
+			chenv(act.para);
+			continue;
+		}
+		switch (current_env)
+		{
+		case FSO_INTERACTIVE:
+			if ( act.cmd == "exit" )
+				return 0;
+			else if ( act.cmd == "cd" )
+				exec_cd(global_db, global_fso, act.para);
+			else if ( act.cmd == "ls" )
+				exec_ls(global_db, global_fso);
+			else if ( act.cmd == "add" )
+				exec_add(global_db, act.para);
+			else if ( act.cmd == "rm" )
+				exec_rm(global_db, act.para);
+			else if ( act.cmd == "pwd" )
+				wprintf(L"%s%s\n", global_fso.name_.c_str(), global_fso.path_.c_str());
 			break;
-		else if ( act.cmd == "cd" )
-			exec_cd(global_db, global_fso, act.para);
-		else if ( act.cmd == "ls" )
-			exec_ls(global_db, global_fso);
-		else if ( act.cmd == "add" )
-			exec_add(global_db, act.para);
-		else if ( act.cmd == "rm" )
-			exec_rm(global_db, act.para);
+		default:
+			break;
+		}
 
 	} while ( true );
+
+	delete global_db_core;
+	delete global_db;
+	return 0;
+}
+
+wstring env_reference()
+{
+	if ( current_env == FSO_INTERACTIVE )
+		return global_fso.name_;
+	
+	return wstring();
+}
+
+int chenv(const string& env)
+{
+	if ( env == "snapshot" )
+	{
+		cout << "Error, snapshot don't provide an intractive environment"<<endl;
+		cout << "Using shell command snapshot instead"<<endl;
+		return 0; 
+	}
+
+	// no matching
+	cout << "Error, no such environment: "<<env<<endl;
+	return 0;
+}
+
+int snapshot(const char* path, bool recursive) // no impl. currently
+{
+	int flag = 0;
+	if ( recursive )
+		flag = snapshotter::recursive_flag;
+	global_db->ss()->add(unistr(path), flag);
 	return 0;
 }
 

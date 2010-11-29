@@ -13,6 +13,6 @@ class RelationMan;
 class FsodbMan;
 class ModSource;
 class AsyncWQ;
-class Snapshotter;
+class snapshotter;
 
 #endif

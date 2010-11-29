@@ -14,6 +14,6 @@
 #include "fso.h"
 #include "fsodbman.h"
 //#include "modsource.h"
-//#include "snapshotter.h"
+#include "snapshotter.h"
 
 #endif

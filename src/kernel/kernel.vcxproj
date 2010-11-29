@@ -132,9 +132,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="RelationMan.cpp" />
-    <ClCompile Include="snapshotter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="snapshotter.cpp" />
     <ClCompile Include="sql_stmt.cpp" />
     <ClCompile Include="TagMan.cpp" />
     <ClCompile Include="tag_edit_action.cpp" />

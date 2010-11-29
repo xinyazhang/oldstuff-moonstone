@@ -1,8 +1,17 @@
 #include "snapshotter.h"
 #include "common.h"
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+#include <vector>
+
+using std::vector;
 
 snapshotter::snapshotter(Database* db)
-	:db_(db), fsodb_(db->fsoman())
+	:db_(db), fsodb_(db->fsodbman())
+{
+}
+
+snapshotter::~snapshotter()
 {
 }
 
@@ -19,7 +28,7 @@ bool snapshotter::add(const unistr& path, int flag)
 	QFileInfo fi(path);
 	if ( fi.isDir() )
 	{
-		root = ensure_dir(path);
+		rootfso = ensure_dir(path);
 	} else
 	{
 		ensure_dir(fi.absolutePath());
@@ -35,14 +44,14 @@ bool snapshotter::withdraw(const unistr& path, int flag)
 	idx_t pathid = fsodb_->locate(path);
 	if ( pathid < 0 )
 	{
-		err_ = NOTEXIST;
+		//err_ = NOTEXIST;
 		return false;
 	}
 
 	if ( fsodb_->haschild(pathid) && !(flag & recursive_flag) )
 	{
 		// have content
-		err_ = NOTEMPTY;
+		//err_ = NOTEMPTY;
 		return false;
 	}
 }
@@ -98,6 +107,20 @@ bool snapshotter::add_recursive(const unistr& path, idx_t rootfso)
 			add_recursive(iter->absoluteFilePath(), next);
 		}
 	}
+	return true;
+}
+
+static vector<unistr> split_path(const unistr& path)
+{
+	QDir dir(path);
+	std::vector<unistr> ret;
+	for(; !dir.isRoot(); dir.cdUp())
+		ret.push_back(dir.dirName());
+#ifdef _WIN32
+	//ret.push_back(dir.dirName()); // we need driver name
+#endif
+
+	return ret;
 }
 
 idx_t snapshotter::ensure_dir(const unistr& path)
@@ -106,7 +129,7 @@ idx_t snapshotter::ensure_dir(const unistr& path)
 	vector<unistr> path_list = split_path(path);
 
 	idx_t parentid = 0;
-	for(int i = path_list.size() - 1; i >= 0; i++)
+	for(int i = path_list.size() - 1; i >= 0; i--)
 	{
 		parentid = fsodb_->ensure(path_list[i], parentid);
 	}

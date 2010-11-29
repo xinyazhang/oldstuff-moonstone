@@ -7,7 +7,7 @@ using std::vector;
 
 #define FSO_COLUMN_NUMBER 7
 
-vector<unistr> split_path(const unistr& path)
+static vector<unistr> split_path(const unistr& path)
 {
 	QDir dir(path);
 	std::vector<unistr> ret;

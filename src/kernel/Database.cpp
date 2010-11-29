@@ -20,6 +20,7 @@ Database::Database(DatabaseInterface* i)
 	tnodeman_ = new TnodeMan(this);
 	relman_ = new RelationMan(this);
 	fsodbman_ = new FsodbMan(this);
+	ss_ = new snapshotter(this);
 
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
@@ -27,6 +28,7 @@ Database::Database(DatabaseInterface* i)
 
 Database::~Database()
 {
+	delete ss_;
 	delete tagman_;
 	delete tnodeman_;
 	delete relman_;
@@ -249,6 +251,11 @@ RelationMan* Database::relman()
 FsodbMan* Database::fsodbman()
 {
 	return fsodbman_;
+}
+
+snapshotter* Database::ss()
+{
+	return ss_;
 }
 
 idx_t Database::last_serial()
