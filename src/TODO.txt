@@ -365,3 +365,18 @@ async-tasklet:
 MUST WRITE a VFS module
 
 	test passed, commit to the repo.
+
+2010/12/01
+	Remove Qt in 
+		fso.cpp
+		fsodbman.cpp
+		snapshotter.cpp
+	TODO: add metadata loading routine in fso.cpp
+	TODO: build a bugzilla
+	TODO: add a bug "remove_unc" only process "\\?\" rather than UNC
+	TODO: add a bug "snapshotter::add", to deal with ::abs_fullpath's return
+	value
+	TODO: take care of violate file systems, in snapshotter::add_recursive and
+	snapshotter::ensure_dir, etc. . Add a bug
+	TODO: send fso_t array back to kernel directly
+	TODO: make fso_t platform depedent.

@@ -1,6 +1,4 @@
 #include "common.h"
-#include <QtCore/QFileInfo>
-#include <QtCore/QDateTime>
 
 fso_t::fso_t()
 	:fsoid_(0), parent_(0), size_(0), mtime_(0), mtimer_(0), hash_algo_(0), hash_(NULL)

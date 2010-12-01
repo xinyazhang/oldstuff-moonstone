@@ -1,7 +1,6 @@
 #include "snapshotter.h"
 #include "common.h"
-#include <QtCore/QFileInfo>
-#include <QtCore/QDir>
+#include <pal/path.hpp>
 #include <vector>
 
 using std::vector;
@@ -25,13 +24,15 @@ bool snapshotter::add(const unistr& path, int flag)
 {
 	bool recursive = flag & recursive_flag;
 	idx_t rootfso;
-	QFileInfo fi(path);
-	if ( fi.isDir() )
+
+	if ( ::is_dir(path) )
 	{
 		rootfso = ensure_dir(path);
+		if ( rootfso < 0 )
+			return false;
 	} else
 	{
-		ensure_dir(fi.absolutePath());
+		ensure_dir(::abs_fullpath(path));
 		recursive = false;
 	}
 	if ( recursive )
@@ -95,36 +96,27 @@ bool snapshotter::cp(const unistr& path, const unistr& pathnew)
 
 bool snapshotter::add_recursive(const unistr& path, idx_t rootfso)
 {
-	QDir dir(path);
-	QFileInfoList ls = dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
-	for(QFileInfoList::iterator iter = ls.begin();
-			iter != ls.end();
+	if ( path.empty() )
+		return false;
+
+	vector<unistr> dir_content = ::ls(path);
+	for(vector<unistr>::iterator iter = dir_content.begin();
+			iter != dir_content.end();
 			iter++)
 	{
-		idx_t next = fsodb_->ensure(iter->fileName(), rootfso);
-		if ( iter->isDir() )
+		idx_t next = fsodb_->ensure(*iter, rootfso);
+		if ( ::is_dir(*iter) )
 		{
-			add_recursive(iter->absoluteFilePath(), next);
+			add_recursive(::abs_fullpath(*iter), next);
 		}
 	}
 	return true;
 }
 
-static vector<unistr> split_path(const unistr& path)
-{
-	QDir dir(path);
-	std::vector<unistr> ret;
-	for(; !dir.isRoot(); dir.cdUp())
-		ret.push_back(dir.dirName());
-#ifdef _WIN32
-	//ret.push_back(dir.dirName()); // we need driver name
-#endif
-
-	return ret;
-}
-
 idx_t snapshotter::ensure_dir(const unistr& path)
 {
+	if ( path.empty() )
+		return -1;
 	db_->begin_transaction();
 	vector<unistr> path_list = split_path(path);
 

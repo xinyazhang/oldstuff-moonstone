@@ -3,22 +3,9 @@
 #include <assert.h>
 #include <vector>
 using std::vector;
-#include <QtCore/QDir>
+#include <pal/path.hpp>
 
 #define FSO_COLUMN_NUMBER 7
-
-static vector<unistr> split_path(const unistr& path)
-{
-	QDir dir(path);
-	std::vector<unistr> ret;
-	for(; !dir.isRoot(); dir.cdUp())
-		ret.push_back(dir.dirName());
-#ifdef _WIN32
-	ret.push_back(dir.dirName()); // we need driver name
-#endif
-
-	return ret;
-}
 
 /*
  * Aggresive path from the list, e.g.
@@ -28,27 +15,6 @@ static vector<unistr> split_path(const unistr& path)
  * 
  * Note: although win32's root is null, but we don't make use of it
  */
-unistr agg_path(const vector<unistr> path_list)
-{
-	if ( path_list.empty() )
-		return unistr();
-	unistr ret;
-	vector<unistr>::const_iterator iter= path_list.end() - 1;
-	/*
-#ifdef _WIN32
-	iter--; // skip null root
-#endif
-	*/
-	for(;iter != path_list.begin(); iter--)
-	{
-		ret += *iter;
-		ret += "/";
-	}
-	ret += path_list.front();
-
-	return ret;
-}
-
 
 FsodbMan::FsodbMan(Database* db)
 	:db_(db)
