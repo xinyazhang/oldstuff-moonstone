@@ -32,6 +32,8 @@ void fso_t::addbind(sql_stmt& stmt, idx_t parentid)
 	stmt.bind(5, mtimer_);
 	stmt.bind(6);
 	stmt.bind(7);
+
+	parent_ = parentid;
 }
 
 void fso_t::updatebind(sql_stmt& stmt)

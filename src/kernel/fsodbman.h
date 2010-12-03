@@ -13,8 +13,10 @@ public:
 	 */
 	//bool add(const unistr& path, int flag = 0);
 	bool add_fso(const unistr& name, idx_t parentid);
+	bool add_fso(fso_t& fso, idx_t parentid);
 	//bool add(const fso_t&);
 	idx_t ensure(const unistr& name, idx_t parent);
+	idx_t ensure(fso_t& fso, idx_t parentid);
 	unistr fullpath(idx_t fsoid);
 	idx_t locate(const unistr& path);
 	idx_t locate(const unistr& name, idx_t parentid);
@@ -33,6 +35,8 @@ public:
 	bool reloadfso(fso_t&);
 	bool updatefso(fso_t&);
 	bool haschild(idx_t );
+
+	void maintain_mtimer(idx_t); // mtimer = max(max(mtime), max(mtimer)) in all direct children
 
 	int eno() const;
 private:

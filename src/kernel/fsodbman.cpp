@@ -32,6 +32,19 @@ bool FsodbMan::add_fso(const unistr& name, idx_t parentid)
 	return success;
 }
 
+bool FsodbMan::add_fso(fso_t& fso, idx_t parentid)
+{
+	sql_stmt stmt = db_->create_insert_stmt(Database::FsoTable, FSO_COLUMN_NUMBER);
+	fso.addbind(stmt, parentid);
+
+	int err = stmt.execute();
+	bool success = judge_and_replace(err, err_);
+	if ( success )
+		fso.fsoid_ = locate(fso.name(), parentid);
+
+	return success;
+}
+
 const char* ensure_fso_locators[] = 
 {
 	"name",
@@ -43,11 +56,31 @@ idx_t FsodbMan::ensure(const unistr& name, idx_t parentid)
 	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable, 2, ensure_fso_locators);
 	stmt.bind(1, name);
 	stmt.bind(2, parentid);
+
 	if ( !stmt.step() )
 	{
 		bool must_true = add_fso(name, parentid);
 		assert(must_true == true);
 		return ensure(name, parentid);
+	} else
+	{
+		idx_t ret;
+		stmt.col(1, ret);
+		return ret;
+	}
+}
+
+idx_t FsodbMan::ensure(fso_t& fso, idx_t parentid)
+{
+	sql_stmt stmt = db_->create_selall_stmt(Database::FsoTable, 2, ensure_fso_locators);
+	stmt.bind(1, fso.name());
+	stmt.bind(2, parentid);
+
+	if ( !stmt.step() )
+	{
+		bool must_true = add_fso(fso, parentid);
+		assert(must_true == true);
+		return fso.fsoid();
 	} else
 	{
 		idx_t ret;
@@ -79,13 +112,13 @@ idx_t FsodbMan::locate(const unistr& path)
 {
 	vector<unistr> path_list = split_path(path);
 	fso_t fso;
-	int i;
-	for(i = path_list.size() - 1; i >= 0; i--)
+	size_t i;
+	for(i = 0; i < path_list.size(); i++)
 	{
 		if( !fsocd(fso, path_list[i]) )
 			break;
 	}
-	if ( i < 0 ) // exists in db
+	if ( i < path_list.size() ) // exists in db
 	{
 		return fso.fsoid_;
 	} else
@@ -180,7 +213,7 @@ const char* fsocollist[] =
 	"name",
 	"size",
 	"fs_date",
-	"recusive_date",
+	"recursive_date",
 	"hash_algo",
 	"hash"
 };
@@ -213,6 +246,22 @@ bool FsodbMan::haschild(idx_t dirid)
 	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "parentid", "*");
 	stmt.bind(1, dirid);
 	return stmt.step();
+}
+
+void FsodbMan::maintain_mtimer(idx_t fsoid)
+{
+	unistr mmtr;
+	unistr tablename = db_->table(Database::FsoTable);
+	mmtr += UT("UPDATE ");
+	mmtr += tablename;
+	mmtr += UT("SET recursive_date = ");
+	mmtr += UT("MAX(MAX(SELECT fs_date FROM ");
+	mmtr += tablename;
+	mmtr += UT(" WHERE parentid = $1), MAX(SELECT recursive_date FROM ");
+	mmtr += tablename;
+	mmtr += UT(" WHERE parentid = $1)) ");
+	mmtr += UT(" WHERE fsoid = $3 ");
+	sql_stmt stmt = db_->create_stmt_ex(mmtr);
 }
 
 const char* del_locators[] =

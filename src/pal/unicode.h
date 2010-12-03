@@ -14,6 +14,10 @@
 #endif
 
 #ifdef USE_UTF16LE
+#include <wchar.h>
+#endif
+
+#ifdef USE_UTF16LE
 #	define UT(x) L##x
 #	define unichar wchar_t
 #else

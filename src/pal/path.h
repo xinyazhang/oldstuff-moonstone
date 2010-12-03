@@ -3,14 +3,18 @@
 
 #include "unicode.h"
 
-int remove_unc(const unicode*);
-int isdir(const unicode*);
-unicode* abspath(const unicode*);
-void abspath_dispose(unicode*);
+extern int remove_unc(const unichar*);
+int isdir(const unichar*);
+unichar* abspath(const unichar*);
+void abspath_dispose(unichar*);
 
-void* open_dir(const unicode*); // XP version of POSIX's opendir
-unicode* dir_buf(void* );
-unicode* dir_next(void*, unicode* );
-void close_dir(void* );
+typedef void* dir_handle;
+typedef void* dir_entry_data;
+
+dir_handle open_dir(const unichar*); // XP version of POSIX's opendir
+int valid_dir_entry(dir_entry_data);
+dir_entry_data dir_buf(dir_handle);
+dir_entry_data dir_next(dir_handle);
+void close_dir(dir_handle);
 
 #endif

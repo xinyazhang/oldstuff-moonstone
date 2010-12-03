@@ -12,7 +12,7 @@ struct EXPORT_TO_DLL fso_t
 {
 	fso_t(); // root dir, note for win32: \\?\ is root
 	fso_t(idx_t ); // an fso only id loaded
-	fso_t(const unistr& path); // used to load fs meta data
+	fso_t(const unistr& name); // only setting name
 	void addbind(sql_stmt& stmt, idx_t parentid);
 	void updatebind(sql_stmt& stmt);
 	void load(sql_stmt& stmt);
@@ -32,6 +32,7 @@ struct EXPORT_TO_DLL fso_t
 	int64_t mtimer_;
 	int hash_algo_;
 	void* hash_;
+	bool is_dir_;
 };
 
 #endif

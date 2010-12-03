@@ -32,14 +32,20 @@ bool snapshotter::add(const unistr& path, int flag)
 			return false;
 	} else
 	{
-		ensure_dir(::abs_fullpath(path));
+		if (ensure_dir(::abs_fullpath(path)) < 0)
+			return false;
 		recursive = false;
 	}
+
 	if ( recursive )
-		return add_recursive(path, rootfso);
+		return add_recursive(::abs_fullpath(path), rootfso);
 	return true;
 }
 
+/*
+ * In fact, withdraw shouldn't be placed here as it has nothing to do with FS
+ * It's just a facade
+ */
 bool snapshotter::withdraw(const unistr& path, int flag)
 {
 	idx_t pathid = fsodb_->locate(path);
@@ -54,74 +60,49 @@ bool snapshotter::withdraw(const unistr& path, int flag)
 		// have content
 		//err_ = NOTEMPTY;
 		return false;
-	}
+	} else
+		return fsodb_->rm(pathid);
 }
-
-#if 0 //removed to get a cleaner design
-bool snapshotter::rm(const unistr& path, int flag)
-{
-	idx_t pathid = fsodb_->locate(path);
-	if ( pathid < 0 )
-	{
-		err_ = NOTEXIST;
-		return false;
-	}
-
-	if ( fsodb_->haschild(pathid) && !(flag & recursive_flag) )
-	{
-		// have content
-		err_ = NOTEMPTY;
-		return false;
-	}
-
-	add_watch(path);
-	db_->asyncwq()->invoke_rm(path);
-}
-
-bool snapshotter::mv(const unistr& path, const unistr& pathnew)
-{
-	add_watch(path);
-	add_watch(pathnew);
-	db_->asyncwq()->invoke_mv(path, pathnew);
-	return true;
-}
-
-bool snapshotter::cp(const unistr& path, const unistr& pathnew)
-{
-	add_watch(path);
-	add_watch(pathnew);
-	AsyncWQ* asyncwq = db_->asyncwq();
-}
-#endif
 
 bool snapshotter::add_recursive(const unistr& path, idx_t rootfso)
 {
 	if ( path.empty() )
 		return false;
 
-	vector<unistr> dir_content = ::ls(path);
-	for(vector<unistr>::iterator iter = dir_content.begin();
-			iter != dir_content.end();
-			iter++)
+	dir_handle handle = ::open_dir(path.native());
+	fso_t fso;
+
+	for(dir_entry_data entry = dir_buf(handle);
+			valid_dir_entry(entry);
+			entry = dir_next(handle))
 	{
-		idx_t next = fsodb_->ensure(*iter, rootfso);
-		if ( ::is_dir(*iter) )
-		{
-			add_recursive(::abs_fullpath(*iter), next);
-		}
+		::fso_read_entry(fso, entry);
+		idx_t next = fsodb_->ensure(fso, rootfso);
+		if ( fso.is_dir_ )
+			add_recursive(path + fso.name(), next);
 	}
+	fsodb_->maintain_mtimer(rootfso);
+
 	return true;
 }
 
+/*
+ * It's safe to only index a directory name. Because:
+ * 	- ensure_dir is called by function add, a function used by interface
+ * 	- if user hadn't ``add'' the path (or a part), we also needn't to index it
+ * 	- if user had ``add'' the whole path, the ensure_dir wouldn't invoke a
+ * 	 fso_t::ensure to add a directory.
+ */
 idx_t snapshotter::ensure_dir(const unistr& path)
 {
 	if ( path.empty() )
 		return -1;
+
 	db_->begin_transaction();
 	vector<unistr> path_list = split_path(path);
 
 	idx_t parentid = 0;
-	for(int i = path_list.size() - 1; i >= 0; i--)
+	for(size_t i = 0; i < path_list.size(); i++)
 	{
 		parentid = fsodb_->ensure(path_list[i], parentid);
 	}

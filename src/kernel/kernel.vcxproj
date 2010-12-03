@@ -86,6 +86,8 @@
     <ClInclude Include="..\dal\stmt_sqlite_impl.h" />
     <ClInclude Include="..\pal\int_type.h" />
     <ClInclude Include="..\pal\libop.h" />
+    <ClInclude Include="..\pal\path.h" />
+    <ClInclude Include="..\pal\path.hpp" />
     <ClInclude Include="..\pal\PlatformSpec.h" />
     <ClInclude Include="..\pal\stdtype.h" />
     <ClInclude Include="..\pal\unicode.h" />
@@ -122,6 +124,9 @@
     <ClCompile Include="..\dal\sqlite3.c" />
     <ClCompile Include="..\dal\sqlitemeta.cpp" />
     <ClCompile Include="..\dal\stmt_sqlite_impl.cpp" />
+    <ClCompile Include="..\pal\pathc_win.c" />
+    <ClCompile Include="..\pal\pathxx.cpp" />
+    <ClCompile Include="..\pal\pathxx_win.cpp" />
     <ClCompile Include="..\pal\UniStr.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="fso.cpp" />
