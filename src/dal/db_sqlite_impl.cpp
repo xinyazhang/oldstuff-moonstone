@@ -95,12 +95,13 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_tag(name TEXT, tnode INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(name, tnode));"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_tagtag_relation(tagger INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, taggee INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(tagger, taggee));"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_fso(fsoid INTEGER PRIMARY KEY ASC AUTOINCREMENT, parentid INTEGER REFERENCES $PREFIX_fso(fsoid) ON DELETE CASCADE, name TEXT, size INTEGER, fs_date INTEGER, recusive_date INTEGER, hash_algo INTEGER, hash BLOB, UNIQUE(parentid, name));"),
-	UT("INSERT INTO $PREFIX_fso values(0, 0, \"/\", 0, 0, 0, NULL, NULL)")
+	UT("INSERT INTO $PREFIX_fso values(0, 0, \"/\", 0, 0, 0, NULL, NULL)"),
+	UT("CREATE TABLE IF NOT EXISTS $PREFIX_ft(fsoid INTERGER REFERENCES $PREFIX_fso(fsoid) ON DELETE CASCADE, tnode INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(fsoid, tnode));")
 };
 
 int db_sqlite_impl::initialize_sql_number() const
 {
-	return 8; // magical number, but it doesn't matter
+	return 9; // magical number, but it doesn't matter
 }
 
 void db_sqlite_impl::build_sqls()

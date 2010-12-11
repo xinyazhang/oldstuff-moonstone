@@ -3,14 +3,15 @@
 #include "../dal/DatabaseInterface.h"
 //#include <boost/static_assert.hpp>
 
-#define TABLE_NUMBER 4
+#define TABLE_NUMBER 5
 
 const unistr Database::table_name_postfix_[] =
 {
 	"tnode",
 	"tag",
 	"tagtag_relation",
-	"fso"
+	"fso",
+	"ft"
 };
 
 Database::Database(DatabaseInterface* i)
@@ -21,6 +22,7 @@ Database::Database(DatabaseInterface* i)
 	relman_ = new RelationMan(this);
 	fsodbman_ = new FsodbMan(this);
 	ss_ = new snapshotter(this);
+	ftman_ = new ftman_t(this);
 
 	for(int i = 0; i < TABLE_NUMBER; i++)
 		table_name_.push_back(prefix_ + table_name_postfix_[i]);
@@ -28,6 +30,7 @@ Database::Database(DatabaseInterface* i)
 
 Database::~Database()
 {
+	delete ftman_;
 	delete ss_;
 	delete tagman_;
 	delete tnodeman_;
@@ -98,7 +101,8 @@ static unistr insert_content[] =
 	UT("(refc, mastername, comment)"),
 	UT("(name, tnode)"),
 	UT("(tagger, taggee)"),
-	UT("(parentid, name, size, fs_date, recusive_date, hash_algo, hash)")
+	UT("(parentid, name, size, fs_date, recusive_date, hash_algo, hash)"),
+	UT("(fsoid, tnode)")
 };
 
 sql_stmt Database::create_insert_stmt(TableSelector ts, int col_number)
@@ -256,6 +260,11 @@ FsodbMan* Database::fsodbman()
 snapshotter* Database::ss()
 {
 	return ss_;
+}
+
+ftman_t* Database::ftman()
+{
+	return ftman_;
 }
 
 idx_t Database::last_serial()

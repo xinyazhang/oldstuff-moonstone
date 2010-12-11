@@ -24,7 +24,8 @@ public:
 		TnodeTable = 0,
 		TagTable = 1,
 		TagTagRelationTable = 2,
-		FsoTable = 3
+		FsoTable = 3,
+		FtTable = 4
 	};
 public:
 	bool initialized() const;
@@ -53,6 +54,7 @@ public:
 	FsodbMan* fsodbman();
 	AsyncWQ* asyncwq();
 	snapshotter* ss();
+	ftman_t ftman();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this
@@ -64,6 +66,7 @@ private:
 	FsodbMan* fsodbman_;
 	AsyncWQ* asyncwq_;
 	snapshotter* ss_;
+	ftman_t* ftman_;
 
 	int nest_;
 	bool breaked_;

@@ -380,3 +380,7 @@ MUST WRITE a VFS module
 	snapshotter::ensure_dir, etc. . Add a bug
 	TODO: send fso_t array back to kernel directly
 	TODO: make fso_t platform depedent.
+
+2010/12/11
+	Migrating to BugZilla
+	Began to write ftman.

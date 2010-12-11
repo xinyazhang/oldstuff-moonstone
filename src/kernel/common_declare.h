@@ -14,5 +14,6 @@ class FsodbMan;
 class ModSource;
 class AsyncWQ;
 class snapshotter;
+class ftman_t;
 
 #endif
