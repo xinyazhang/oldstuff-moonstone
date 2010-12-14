@@ -26,5 +26,6 @@ public:
 
 typedef distinctlist_t<tag_t> taglist_t;
 typedef distinctlist_t<tnode_t> tnodelist_t;
+typedef distinctlist_t<idx_t> idxlist_t;
 
 #endif

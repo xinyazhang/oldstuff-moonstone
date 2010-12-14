@@ -54,7 +54,7 @@ public:
 	FsodbMan* fsodbman();
 	AsyncWQ* asyncwq();
 	snapshotter* ss();
-	ftman_t ftman();
+	ftman_t* ftman();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this

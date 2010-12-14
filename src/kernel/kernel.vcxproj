@@ -101,6 +101,7 @@
     <ClInclude Include="error_handle.h" />
     <ClInclude Include="fso.h" />
     <ClInclude Include="fsodbman.h" />
+    <ClInclude Include="ftman.h" />
     <ClInclude Include="kernellist.h" />
     <ClInclude Include="kstack.h" />
     <ClInclude Include="Master.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="fso.cpp" />
     <ClCompile Include="fsodbman.cpp" />
+    <ClCompile Include="ftman.cpp" />
     <ClCompile Include="kernellist.cpp" />
     <ClCompile Include="metadb.cpp" />
     <ClCompile Include="modsource.cpp">
