@@ -1,0 +1,13 @@
+SET(UNIX_SRC pathc_unix.c)
+SET(WIN32_SRC pathc_win.c pathxx_win.cpp)
+SET(COMMON_SRC pathxx.cpp unistr.cpp)
+
+IF(UNIX)
+	SET(PAL_SRC ${COMMON_SRC} ${UNIX_SRC})
+ENDIF(UNIX)
+
+IF(WIN32)
+	SET(PAL_SRC ${COMMON_SRC} ${WIN32_SRC})
+ENDIF(WIN32)
+
+ADD_LIBRARY(pal STATIC ${PAL_SRC})

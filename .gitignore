@@ -1,0 +1,8 @@
+# VIM TEMPFILES #
+*.vimbak~
+
+build
+build-x86
+*.tlog
+*.obj
+lib

@@ -14,7 +14,7 @@ int remove_unc(const unichar* path)
 		return 0;
 }
 
-int isdir(unichar* path)
+int isdir(const unichar* path)
 {
     DWORD attr = GetFileAttributesW(path);
 	if ( attr == INVALID_FILE_ATTRIBUTES )
@@ -26,7 +26,7 @@ int isdir(unichar* path)
 /*
  * use realpath in UNIX
  */
-unichar* abspath(unichar* relpath)
+unichar* abspath(const unichar* relpath)
 {
 	DWORD len = GetFullPathNameW(relpath, 0, NULL, 0);
 	unichar* buf;
@@ -48,7 +48,7 @@ void abspath_dispose(unichar* buffer)
 struct dir_handle_internal
 {
 	HANDLE find_file;
-	WIN32_FIND_DATA find_data;
+	WIN32_FIND_DATAW find_data;
 };
 
 dir_handle open_dir(const unichar* path)
@@ -77,7 +77,7 @@ dir_entry_data dir_next(dir_handle _handle)
 {
 	struct dir_handle_internal* handle = (struct dir_handle_internal*)_handle;
 	
-	if ( FindNextFile(handle->find_file, &handle->find_data) != 0 )
+	if ( FindNextFileW(handle->find_file, &handle->find_data) != 0 )
 		return &handle->find_data;
 	else
 		return NULL;
