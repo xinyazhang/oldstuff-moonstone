@@ -13,6 +13,8 @@ ENDIF()
 ADD_SUBDIRECTORY( pal )
 ADD_SUBDIRECTORY( dal )
 ADD_SUBDIRECTORY( kernel )
+#ADD_SUBDIRECTORY( testcases )
+
 #add_subdirectory( gui )
 #add_subdirectory( util )
 

@@ -1,0 +1,35 @@
+﻿设计思想：MID方式打开多个数据库
+
+某些问题：不能使用MID方式打开对一个数据库的多个部分的修改，否则就有得看了
+
+MainWindow包含各个MID Child
+然后各个MID Child是左边选择管理类型：
+	- 编辑Tag/Attribute为主
+	- 编辑已索引文件为主
+	- 浏览文件系统（实际上要实现一个Explorer……不过如果太费力的话就不做了，用
+	  Drag&Drop解决问题）
+	- 待决事件
+	- 插件设置
+	- 日志信息
+
+编辑窗口其实是通用的，不过是以某个为主而已，并且工具栏会有对应的设置，for
+example:
+tag1
+ +--<file tagged with tag1>
+ +--tag1.1
+ +--tag1.2
+ +--tag1.3
+      +--<file tagged with tag1.3>
+	  +--tag1.3.4
+
+——可以在tag窗口查看tag标记的文件，默认不展开
+
+/
+  +--Music
+      +--<tags of directory "/Music">
+      +--Key
+	       +--<tags of directory "/Music/Key">
+		   +--Kanon
+		       +--<tags of directory "/Music/Key/Kanon">
+		   +--AIR
+		   +--CLANNAD
