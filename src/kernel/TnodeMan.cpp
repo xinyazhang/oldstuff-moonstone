@@ -10,6 +10,11 @@ bool TnodeMan::invalid(const tnode_t& tnode)
 	return tnode.idx == 0;
 }
 
+bool TnodeMan::invalid(const idx_t& idx)
+{
+	return idx == 0;
+}
+
 TnodeMan::TnodeMan(Database* db)
 	:db_(db), err_(0)
 {

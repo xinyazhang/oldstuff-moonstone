@@ -15,10 +15,10 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="QToolBar" name="listWidget">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>1</horstretch>
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
@@ -28,55 +28,21 @@
        <height>0</height>
       </size>
      </property>
-     <property name="alternatingRowColors">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="alternatingRowColors" stdset="0">
       <bool>false</bool>
      </property>
      <property name="isWrapping" stdset="0">
       <bool>true</bool>
      </property>
-     <property name="gridSize">
+     <property name="gridSize" stdset="0">
       <size>
        <width>1</width>
        <height>0</height>
       </size>
      </property>
-     <property name="viewMode">
-      <enum>QListView::IconMode</enum>
-     </property>
-     <item>
-      <property name="text">
-       <string>Tags&amp;Attributes</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>icons/placeholder.png</normaloff>icons/placeholder.png</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Indexed Files</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Explorer</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Pending Events</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Plugins</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Logs</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item>

@@ -26,7 +26,7 @@ tag1
 
 /
   +--Music
-      +--<tags of directory "/Music">
+      +--"Click here to expand tags of Music" <tags of directory "/Music">
       +--Key
 	       +--<tags of directory "/Music/Key">
 		   +--Kanon

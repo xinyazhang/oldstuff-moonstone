@@ -24,6 +24,7 @@ private:
 	int err_;
 public:
 	static bool invalid(const tnode_t& );
+	static bool invalid(const idx_t& );
 	static tnode_t invalid_tnode();
 };
 

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 PROJECT( lain )
 
+# FORCE Unicode Support
+ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+
 INCLUDE_DIRECTORIES(d:/usr/include)
 INCLUDE_DIRECTORIES(.)
 IF( CMAKE_SIZEOF_VOID_P EQUAL 4 )

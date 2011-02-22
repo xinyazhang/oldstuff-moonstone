@@ -91,16 +91,32 @@ static void load_tnodelist(Database* db, sql_stmt& stmt, tnodelist_t& tnodel)
 	}
 }
 
-tnodelist_t RelationMan::tagger(const tag_t& taggee)
+tnodelist_t RelationMan::tagger(const tnode_t& taggee)
 {
-	if ( TagMan::invalid(taggee) )
+	if ( TnodeMan::invalid(taggee) )
 		return tnodelist_t();
 	tnodelist_t tnodel;
 	unistr sql("SELECT DISTINCT tagger FORM ");
 	sql += db_->table(Database::TagTagRelationTable);
 	sql += " WHRER taggee = $1 ";
 	sql_stmt stmt = db_->create_stmt_ex(sql);
-	stmt.bind(1, taggee.tnode);
+	stmt.bind(1, taggee);
+
+	load_tnodelist(db_, stmt, tnodel);
+
+	return tnodel;
+}
+
+tnodelist_t RelationMan::taggee(const tnode_t& tagger)
+{
+	if ( TnodeMan::invalid(tagger) )
+		return tnodelist_t();
+	tnodelist_t tnodel;
+	unistr sql("SELECT DISTINCT taggee FORM ");
+	sql += db_->table(Database::TagTagRelationTable);
+	sql += " WHRER tagger = $1 ";
+	sql_stmt stmt = db_->create_stmt_ex(sql);
+	stmt.bind(1, tagger);
 
 	load_tnodelist(db_, stmt, tnodel);
 
