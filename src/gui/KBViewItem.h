@@ -31,7 +31,8 @@ public:
 	/* Type depedent */
 	virtual QVariant col_data(Database*, int ) const = 0;
 	virtual int children_count(Database* ) const = 0;
-	// create it when first access, return NULL when OOR
+	// create it when first access
+	// don't check range! -- it has been made by KBModel
 	virtual KBViewItem* child(Database*, int index) = 0;
 	// Reload from database
 	virtual void reload(Database* ) = 0;
