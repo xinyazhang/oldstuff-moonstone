@@ -31,10 +31,12 @@ QVariant KBViewTag::col_data(Database* db, int col) const
 
 KBViewItem* KBViewTag::child(Database* 0, int index)
 {
+#if 0 // has been done by KBModel
 	if (index < 0 || index >= children_count())
 	{
 		return NULL;
 	}
+#endif
 
 	if (!children_[index])
 		touch(index);
@@ -49,7 +51,7 @@ void KBViewTag::touch(int index) //must guarntee children_[index].get() == NULL
 		/*
 		 * The first child: files tagged by this tag
 		 */
-		children_[index] = shared_ptr<KBViewItem>(new KBViewFileOfTag(db, idx_, this));
+		children_[index] = shared_ptr<KBViewItem>(new KBViewTFI(db, idx_, this));
 	} else
 	{
 		/*
@@ -59,7 +61,7 @@ void KBViewTag::touch(int index) //must guarntee children_[index].get() == NULL
 	}
 }
 
-int KBViewTag::children_count(Database* db) const
+int KBViewTag::children_count(Database*) const
 {
 	return taggees_.size();
 }

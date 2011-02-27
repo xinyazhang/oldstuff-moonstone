@@ -56,6 +56,9 @@ QModelIndex KBModel::index(int row,
 	else
 		parent_item = static_cast<KBViewItem*>(parent.internalPointer());
 
+	if ( row < 0 || row >= parent_item->children_count() )
+		return QModelIndex();
+
 	KBViewItem *child_item = parent_item->child(row);
 	if (child_item)
 		return createIndex(row, column, child_item);
