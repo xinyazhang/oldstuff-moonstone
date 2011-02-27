@@ -2,6 +2,7 @@
 #define LAIN_GUI_KNOWLEDGE_BASE_TAG_VIEW_H
 
 #include <pal/stdtype.h>
+#include "KBViewItem.h"
 
 class KBViewTag
 	:public KBViewItem

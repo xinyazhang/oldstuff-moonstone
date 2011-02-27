@@ -2,6 +2,7 @@
 #define KERNEL_COMMON_H
 
 #include <pal/UniStr.h>
+#include "syntax.h"
 #include "tag.h"
 #include "tnode.h"
 #include "kernellist.h"

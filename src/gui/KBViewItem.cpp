@@ -1,5 +1,5 @@
 #include "KBViewItem.h"
-#include "KBView-Tag.h"
+#include "KBView-tag.h"
 
 KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType)
 {
