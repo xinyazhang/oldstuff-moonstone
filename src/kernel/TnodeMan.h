@@ -17,6 +17,7 @@ public:
 	bool refcinc(idx_t );
 	bool refcdec(idx_t );
 	taglist_t names(idx_t );
+	tag_t anyone(idx_t);
 	int eno() const;
 
 private:

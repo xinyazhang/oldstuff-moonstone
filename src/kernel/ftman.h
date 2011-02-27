@@ -19,6 +19,7 @@ public:
 
 	tnodelist_t tnodes(const fso_t&);
 	idxlist_t tagged_file(tag_t&);
+	idxlist_t tagged_file_toplevel(tag_t&);
 
 	bool withdraw_tag(const fso_t&, tag_t&);
 private:
