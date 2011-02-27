@@ -36,11 +36,8 @@ public:
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
-	void setupModelData(const QStringList &lines, TreeItem *parent);
-
 	Database *db_;
 	KBViewItem *root_;
 };
-
 
 #endif
