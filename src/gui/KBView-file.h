@@ -15,6 +15,9 @@ public:
 	virtual KBViewItem* child(Database*, int index);
 	virtual void reload(Database* );
 
+protected:
+	virtual void create_child(Database* db, int index);
+
 private:
 	idx_t idx_;
 	fso_t cache_;

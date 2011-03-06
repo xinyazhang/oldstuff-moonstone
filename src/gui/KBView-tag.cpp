@@ -29,22 +29,7 @@ QVariant KBViewTag::col_data(Database* db, int col) const
 	return QVariant(ret);
 }
 
-KBViewItem* KBViewTag::child(Database* 0, int index)
-{
-#if 0 // has been done by KBModel
-	if (index < 0 || index >= children_count())
-	{
-		return NULL;
-	}
-#endif
-
-	if (!children_[index])
-		touch(index);
-
-	return children_[index].get();
-}
-
-void KBViewTag::touch(int index) //must guarntee children_[index].get() == NULL
+void KBViewTag::create_child(Database* db, int index)
 {
 	if (index == 0)
 	{

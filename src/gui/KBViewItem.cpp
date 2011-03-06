@@ -39,3 +39,10 @@ KBViewItem* KBViewItem::parent()
 	return parent_;
 }
 
+KBViewItem* KBViewItem::child(Database* db, int index)
+{
+	if (!children_[index])
+		create_child(db, index);
+
+	return children_[index].get();
+}

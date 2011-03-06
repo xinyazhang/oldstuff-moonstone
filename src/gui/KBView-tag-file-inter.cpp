@@ -37,16 +37,10 @@ int KBViewTFI::children_count(Database*) const
 	return toplevel_.size();
 }
 
-KBViewItem* KBViewTFI::child(Database* db, int index)
+void KBViewTFI::create_child(Database* db, int index)
 {
-	if ( !children_[index] )
-	{
-		// create it
-		children_[index] = 
-			shared_ptr<KBViewItem>(new KBViewFile(db, toplevel_[index], this));
-	}
-
-	return children_[index].get();
+	children_[index] = 
+		shared_ptr<KBViewItem>(new KBViewFile(db, toplevel_[index], this));
 }
 
 void KBViewTFI::reload(Database* db)

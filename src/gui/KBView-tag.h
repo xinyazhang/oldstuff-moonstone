@@ -14,8 +14,11 @@ public:
 	virtual int children_count(Database* ) const;
 	virtual KBViewItem* child(Database*, int index);
 	virtual void reload(Database* );
+
+protected:
+	void create_child(Database*, int index);
+
 private:
-	void touch(int index);
 
 	idx_t idx_;
 	tnodelist_t taggees_;

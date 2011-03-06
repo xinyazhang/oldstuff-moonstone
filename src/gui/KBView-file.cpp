@@ -22,23 +22,19 @@ int KBViewFile::children_count(Database* db) const
 	return db->fsodbman()->childcound(idx_);
 }
 
-KBViewItem* KBViewFile::child(Database* db, int index)
+void KBViewFile::create_child(Database* db, int index)
 {
-	if ( !children_[index] )
-	{
-		idx_t counter = 0;
-		FsodbMan* man = db->fsodbman();
-		fso_t fso_iter = man->fsocontent(cache_);
-		while(counter < index && man->fsonext(fso_iter))
-			counter++;
+	idx_t counter = 0;
+	FsodbMan* man = db->fsodbman();
+	fso_t fso_iter = man->fsocontent(cache_);
+	while(counter < index && man->fsonext(fso_iter))
+		counter++;
 
-		if (counter != index || !fso_iter.valid())
-			return NULL;
+	if (counter != index || !fso_iter.valid())
+		return NULL;
 
-		children_[index] =
-			shared_ptr<KBViewItem>(new KBViewFile(db, fso_iter.idx(), this));
-	}
-	return children_[index].get();
+	children_[index] =
+		shared_ptr<KBViewItem>(new KBViewFile(db, fso_iter.idx(), this));
 }
 
 void KBViewFile::reload(Database* db)

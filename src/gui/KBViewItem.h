@@ -27,13 +27,13 @@ public:
 	QVariant header(int ) const;
 	int header_count() const;
 	KBViewItem* parent();
+	// create it when first access
+	// don't check range! -- it has been made by KBModel
+	KBViewItem* child(Database*, int index);
 
 	/* Type depedent */
 	virtual QVariant col_data(Database*, int ) const = 0;
 	virtual int children_count(Database* ) const = 0;
-	// create it when first access
-	// don't check range! -- it has been made by KBModel
-	virtual KBViewItem* child(Database*, int index) = 0;
 	// Reload from database
 	virtual void reload(Database* ) = 0;
 
@@ -44,6 +44,8 @@ public:
 	static KBViewItem* RootFactory(Database*, KBViewItemType); 
 
 protected:
+	virtual void create_child(Database* db, int index) = 0;
+
 	KBViewItem* parent_;
 	std::vector<boost::shared_ptr<KBViewItem*> > children_;
 private:

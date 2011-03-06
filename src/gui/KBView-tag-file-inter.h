@@ -14,6 +14,10 @@ public:
 	virtual int children_count(Database* ) const;
 	virtual KBViewItem* child(Database*, int index);
 	virtual void reload(Database* );
+
+protected:
+	virtual void create_child(Database* db, int index);
+
 private:
 	idx_t idx_;
 	idxlist_t toplevel_;
