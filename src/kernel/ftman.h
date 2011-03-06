@@ -27,6 +27,7 @@ private:
 	int err_;
 
 	idx_t access_tnode(tag_t& tag);
+	sql_stmt sql_get_tagged_file(tag_t&);
 };
 
 #endif
