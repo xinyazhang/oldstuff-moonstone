@@ -91,7 +91,7 @@ static void load_tnodelist(Database* db, sql_stmt& stmt, tnodelist_t& tnodel)
 	}
 }
 
-tnodelist_t RelationMan::tagger(const tnode_t& taggee)
+tnodelist_t RelationMan::tagger(const idx_t& taggee)
 {
 	if ( TnodeMan::invalid(taggee) )
 		return tnodelist_t();
@@ -107,7 +107,7 @@ tnodelist_t RelationMan::tagger(const tnode_t& taggee)
 	return tnodel;
 }
 
-tnodelist_t RelationMan::taggee(const tnode_t& tagger)
+tnodelist_t RelationMan::taggee(const idx_t& tagger)
 {
 	if ( TnodeMan::invalid(tagger) )
 		return tnodelist_t();

@@ -35,7 +35,7 @@ public:
 	bool reloadfso(fso_t&);
 	bool updatefso(fso_t&);
 	bool haschild(idx_t );
-	int childcound(idx_t);
+	int childcount(idx_t);
 
 	void maintain_mtimer(idx_t); // mtimer = max(max(mtime), max(mtimer)) in all direct children
 

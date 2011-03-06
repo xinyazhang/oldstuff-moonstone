@@ -41,13 +41,18 @@ tag_t TagMan::hardlink(tag_t& org, const unistr& name)
 	return create(name, org.tnode);
 }
 
+void load_tag(sql_stmt& stmt, tag_t& t)
+{
+	stmt.col(1, t.name);
+	stmt.col(2, t.tnode);
+}
+
 bool load_tags(sql_stmt& stmt, taglist_t& tagl)
 {
 	while ( stmt.step() )
 	{
 		tag_t t;
-		stmt.col(1, t.name);
-		stmt.col(2, t.tnode);
+		load_tag(stmt, t);
 		tagl.add_distinct(t);
 	}
 	return true;

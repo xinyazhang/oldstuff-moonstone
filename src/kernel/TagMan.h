@@ -29,5 +29,6 @@ private:
 };
 
 bool load_tags(sql_stmt& stmt, taglist_t& tagl);
+void load_tag(sql_stmt& stmt, tag_t& tag);
 
 #endif
