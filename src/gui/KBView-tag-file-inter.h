@@ -17,6 +17,6 @@ public:
 private:
 	idx_t idx_;
 	idxlist_t toplevel_;
-}
+};
 
 #endif

@@ -1,4 +1,5 @@
 #include "KBView-tag-file-inter.h"
+#include "KBView-file.h"
 #include <kernel/common.h>
 
 using boost::shared_ptr;
