@@ -248,6 +248,17 @@ bool FsodbMan::haschild(idx_t dirid)
 	return stmt.step();
 }
 
+int FsodbMan::childcount(idx_t dirid)
+{
+	sql_stmt stmt = db_->create_simsel_stmt(Database::FsoTable, "parentid", " COUNT(DISTINCT fsoid) ");
+	stmt.bind(1, dirid);
+	if ( !stmt.step() )
+		return 0;
+	idx_t ret = 0;
+	stmt.col(1, ret);
+	return (int)ret;
+}
+
 void FsodbMan::maintain_mtimer(idx_t fsoid)
 {
 	unistr mmtr;
