@@ -139,6 +139,22 @@ taglist_t TnodeMan::names(idx_t idx)
 	return ret;
 }
 
+tag_t TnodeMan::anyone(idx_t idx)
+{
+	tag_t ret;
+	db_->begin_transaction();
+	sql_stmt stmt = db_->create_stmt_ex("SELECT name,tnode FROM "+
+		db_->table(Database::TagTable)+
+		", "+
+		db_->table(Database::TnodeTable)+
+		" WHERE idx=$1 AND idx=tnode");
+	stmt.bind(1, idx);
+	stmt.execute();
+	load_tag(stmt, ret);
+	db_->final_transaction();
+	return ret;
+}
+
 int TnodeMan::eno() const
 {
 	return err_;
