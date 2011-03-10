@@ -4,7 +4,7 @@ PROJECT( lain )
 # FORCE Unicode Support
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
-INCLUDE_DIRECTORIES(d:/usr/include)
+INCLUDE_DIRECTORIES(d:/usr/local/include)
 INCLUDE_DIRECTORIES(.)
 IF( CMAKE_SIZEOF_VOID_P EQUAL 4 )
 	LINK_DIRECTORIES(d:/usr/lib)
@@ -18,7 +18,7 @@ ADD_SUBDIRECTORY( dal )
 ADD_SUBDIRECTORY( kernel )
 #ADD_SUBDIRECTORY( testcases )
 
-#add_subdirectory( gui )
+add_subdirectory( gui )
 #add_subdirectory( util )
 
 #SET( gui_src gui/*.cpp )
