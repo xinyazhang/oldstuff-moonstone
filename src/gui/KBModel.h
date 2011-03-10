@@ -13,6 +13,7 @@
 
 #include <QtCore/QAbstractItemModel>
 #include <kernel/common_declare.h>
+#include "KBViewItem.h"
 
 class KBModel
 	:public QAbstractItemModel
@@ -20,7 +21,7 @@ class KBModel
 	Q_OBJECT;
 
 public:
-	KBModel(Database* db, KBItemType type /* the root's type */, QObject *parent = 0);
+	KBModel(Database* db, KBViewItemType type /* the root's type */, QObject *parent = 0);
 	~KBModel();
 
 	QVariant data(const QModelIndex &index, int role) const;

@@ -1,8 +1,9 @@
 #ifndef LAIN_GUI_KNOWLEDGE_BASE_ITEM
 #define LAIN_GUI_KNOWLEDGE_BASE_ITEM
 
-#include <kernel/common_declare.h>
 #include <boost/shared_ptr.hpp>
+#include <QtCore/QVariant>
+#include <kernel/common_declare.h>
 
 using boost::shared_ptr;
 
@@ -26,6 +27,7 @@ public:
 	 */
 	QVariant header(int ) const;
 	int header_count() const;
+	int row() const;
 	KBViewItem* parent();
 	// create it when first access
 	// don't check range! -- it has been made by KBModel
@@ -47,7 +49,8 @@ protected:
 	virtual void create_child(Database* db, int index) = 0;
 
 	KBViewItem* parent_;
-	std::vector<boost::shared_ptr<KBViewItem*> > children_;
+	std::vector<boost::shared_ptr<KBViewItem> > children_;
+	int get_child_index(const KBViewItem*) const;
 private:
 	KBViewItem();
 };

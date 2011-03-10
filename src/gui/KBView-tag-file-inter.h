@@ -1,6 +1,7 @@
 #ifndef LAIN_GUI_KNOWLEDGE_BASE_TAG_FILE_INTER_H
 #define LAIN_GUI_KNOWLEDGE_BASE_TAG_FILE_INTER_H
 
+#include <kernel/kernellist.h>
 #include "KBViewItem.h"
 
 /* TFI: Tag File Inter */
@@ -12,7 +13,6 @@ public:
 
 	virtual QVariant col_data(Database*, int ) const;
 	virtual int children_count(Database* ) const;
-	virtual KBViewItem* child(Database*, int index);
 	virtual void reload(Database* );
 
 protected:

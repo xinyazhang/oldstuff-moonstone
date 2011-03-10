@@ -14,7 +14,7 @@ QVariant KBViewTag::col_data(Database* db, int col) const
 	QString ret;
 	if ( col == 0 )
 	{
-		ret = db->tnodeman()->locate(idx_)->mastername;
+		ret = db->tnodeman()->locate(idx_).mastername;
 	}else
 	{
 		taglist_t tl = db->tnodeman()->names(idx_);
@@ -42,16 +42,17 @@ void KBViewTag::create_child(Database* db, int index)
 		/*
 		 * Tags tageed by this
 		 */
-		children_[index] = shared_ptr<KBViewItem>(new KBViewTag(db, taggees_[index], this));
+		children_[index] = 
+			shared_ptr<KBViewItem>(new KBViewTag(db, taggees_[index].idx, this));
 	}
 }
 
 int KBViewTag::children_count(Database*) const
 {
-	return taggees_.size();
+	return (int)taggees_.size();
 }
 
-void KBViewTag::reload(Database* db) const
+void KBViewTag::reload(Database* db)
 {
 	taggees_ = db->relman()->taggee(idx_);
 	children_.clear();

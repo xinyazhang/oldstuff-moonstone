@@ -1,3 +1,5 @@
+#include <QtCore/QString>
+#include <QtCore/QVariant>
 #include "KBView-tag-file-inter.h"
 #include "KBView-file.h"
 #include <kernel/common.h>
@@ -15,9 +17,9 @@ QVariant KBViewTFI::col_data(Database* db, int col) const
 	QString ret;
 	if ( col == 0 )
 	{
-		static QString value_template(tr("Click here to show files tagged with: "));
+		static QString value_template(QObject::tr("Click here to show files tagged with: "));
 		ret = value_template;
-		ret += parent->col_data(db, 0).toString();
+		ret += parent_->col_data(db, 0).toString();
 	} else
 	{
 		taglist_t tl;
@@ -34,7 +36,7 @@ QVariant KBViewTFI::col_data(Database* db, int col) const
 
 int KBViewTFI::children_count(Database*) const
 {
-	return toplevel_.size();
+	return (int)toplevel_.size();
 }
 
 void KBViewTFI::create_child(Database* db, int index)
@@ -45,8 +47,8 @@ void KBViewTFI::create_child(Database* db, int index)
 
 void KBViewTFI::reload(Database* db)
 {
-	toplevel_ = db->ftman()->tagged_file_toplevel(db->tagman()->anyone(idx_));
-	children_.clearn();
+	toplevel_ = db->ftman()->tagged_file_toplevel(db->tnodeman()->anyone(idx_));
+	children_.clear();
 	children_.resize(children_count(db));
 }
 

@@ -1,13 +1,10 @@
+#include <QtCore/QString>
 #include "KBViewItem.h"
 #include "KBView-tag.h"
 
-KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType)
+KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t)
 {
-#if 0 // TODO
-	if (KB_tag_item == KBViewItemType)
-	{
-	}
-#endif
+	return NULL; // Placeholder
 }
 
 KBViewItem::KBViewItem(KBViewItem* parent)
@@ -15,11 +12,11 @@ KBViewItem::KBViewItem(KBViewItem* parent)
 {
 }
 
-~KBViewItem::KBViewItem()
+KBViewItem::~KBViewItem()
 {
 }
 
-QString common_header[] = { tr("Item"), tr("Description") };
+QString common_header[] = { QObject::tr("Item"), QObject::tr("Description") };
 
 QVariant KBViewItem::header(int idx) const
 {
@@ -34,6 +31,13 @@ int KBViewItem::header_count() const
 	return 2;
 }
 
+int KBViewItem::row() const
+{
+	if ( parent_ )
+		return parent_->get_child_index(this);
+	return 0;
+}
+
 KBViewItem* KBViewItem::parent()
 {
 	return parent_;
@@ -45,4 +49,16 @@ KBViewItem* KBViewItem::child(Database* db, int index)
 		create_child(db, index);
 
 	return children_[index].get();
+}
+
+int KBViewItem::get_child_index(const KBViewItem* ptr) const
+{
+	for(std::vector<boost::shared_ptr<KBViewItem> >::const_iterator iter = children_.begin();
+			iter != children_.end();
+			iter++)
+	{
+		if (iter->get() == ptr)
+			return iter - children_.begin();
+	}
+	return 0;
 }

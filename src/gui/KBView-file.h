@@ -12,7 +12,6 @@ public:
 
 	virtual QVariant col_data(Database*, int ) const;
 	virtual int children_count(Database* ) const;
-	virtual KBViewItem* child(Database*, int index);
 	virtual void reload(Database* );
 
 protected:

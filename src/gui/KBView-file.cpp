@@ -1,4 +1,5 @@
-#include "KBViewFile.h"
+#include <kernel/common.h>
+#include "KBView-file.h"
 
 KBViewFile::KBViewFile(Database* db,idx_t fid, KBViewItem* parent)
 	:KBViewItem(parent), idx_(fid)
@@ -19,7 +20,7 @@ QVariant KBViewFile::col_data(Database* db, int col) const
 
 int KBViewFile::children_count(Database* db) const
 {
-	return db->fsodbman()->childcound(idx_);
+	return db->fsodbman()->childcount(idx_);
 }
 
 void KBViewFile::create_child(Database* db, int index)
@@ -31,16 +32,16 @@ void KBViewFile::create_child(Database* db, int index)
 		counter++;
 
 	if (counter != index || !fso_iter.valid())
-		return NULL;
+		return ;
 
 	children_[index] =
-		shared_ptr<KBViewItem>(new KBViewFile(db, fso_iter.idx(), this));
+		shared_ptr<KBViewItem>(new KBViewFile(db, fso_iter.fsoid(), this));
 }
 
 void KBViewFile::reload(Database* db)
 {
 	cache_ = db->fsodbman()->locate(idx_);
 	if ( cache_.valid() )
-		cache_.path = db->fsodbman()->fullpath(idx_);
+		cache_.path_ = db->fsodbman()->fullpath(idx_);
 }
 

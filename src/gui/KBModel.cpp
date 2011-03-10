@@ -1,6 +1,6 @@
 #include "KBModel.h"
 
-KBModel::KBModel(Database* db, KBItemType type, QObject* parent)
+KBModel::KBModel(Database* db, KBViewItemType type, QObject* parent)
 	:QAbstractItemModel(parent), db_(db)
 {
 	root_ = KBViewItem::RootFactory(db, type);
@@ -21,7 +21,7 @@ QVariant KBModel::data(const QModelIndex &index, int role) const
 
 	KBViewItem *item = static_cast<KBViewItem*>(index.internalPointer());
 
-	return item->data(db_, index.column());
+	return item->col_data(db_, index.column());
 }
 
 Qt::ItemFlags KBModel::flags(const QModelIndex &index) const
@@ -37,7 +37,7 @@ QVariant KBModel::headerData(int section,
 		int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-		return root_->data(section);
+		return root_->col_data(db_, section);
 
 	return QVariant();
 }
@@ -52,14 +52,14 @@ QModelIndex KBModel::index(int row,
 	KBViewItem *parent_item;
 
 	if (!parent.isValid())
-		parent_item = rootItem;
+		parent_item = root_;
 	else
 		parent_item = static_cast<KBViewItem*>(parent.internalPointer());
 
-	if ( row < 0 || row >= parent_item->children_count() )
+	if ( row < 0 || row >= parent_item->children_count(db_) )
 		return QModelIndex();
 
-	KBViewItem *child_item = parent_item->child(row);
+	KBViewItem *child_item = parent_item->child(db_, row);
 	if (child_item)
 		return createIndex(row, column, child_item);
 	else
@@ -71,13 +71,13 @@ QModelIndex KBModel::parent(const QModelIndex &index) const
 	if (!index.isValid())
 		return QModelIndex();
 
-	KBViewItem *cur = static_cast<TreeItem*>(index.internalPointer());
+	KBViewItem *cur = static_cast<KBViewItem*>(index.internalPointer());
 	KBViewItem *parent = cur->parent();
 
 	if (parent == root_)
 		return QModelIndex();
 
-	return createIndex(parentItem->row(), 0, parentItem);
+	return createIndex(parent->row(), 0, parent);
 }
 
 int KBModel::rowCount(const QModelIndex &parent) const
@@ -91,7 +91,7 @@ int KBModel::rowCount(const QModelIndex &parent) const
 	else
 		parent_item = static_cast<KBViewItem*>(parent.internalPointer());
 
-	return parent_item->children_count();
+	return parent_item->children_count(db_);
 }
 
 int KBModel::columnCount(const QModelIndex &parent) const
