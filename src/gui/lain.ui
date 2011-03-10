@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>LainMain</class>
+ <widget class="QMainWindow" name="LainMain">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Lain (Alpha)</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -34,6 +34,7 @@
     <property name="title">
      <string>Database</string>
     </property>
+    <addaction name="actionOnly_default_in_current_version"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -83,6 +84,11 @@
   <action name="actionNew_Database">
    <property name="text">
     <string>New Database</string>
+   </property>
+  </action>
+  <action name="actionOnly_default_in_current_version">
+   <property name="text">
+    <string>Only default in current version</string>
    </property>
   </action>
  </widget>
