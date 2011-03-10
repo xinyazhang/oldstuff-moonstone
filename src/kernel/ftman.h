@@ -9,7 +9,7 @@
  * necessary.
  */
 
-class ftman_t
+class EXPORT_TO_DLL ftman_t
 {
 public:
 	ftman_t(Database* );
