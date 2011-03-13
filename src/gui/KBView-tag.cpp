@@ -54,7 +54,22 @@ int KBViewTag::children_count(Database*) const
 
 void KBViewTag::reload(Database* db)
 {
+	if ( !idx_ )
+		return ; // don't load placholder view
 	taggees_ = db->relman()->taggee(idx_);
 	children_.clear();
 	children_.resize(KBViewTag::children_count(db));
+}
+
+KBViewTag* KBViewTag::RootFactory(Database* db, const unistr_list& ul)
+{
+	KBViewTag* ret = new KBViewTag(db, 0, NULL);
+	taglist_t tl = db->tagman()->locate(ul);
+	for(taglist_t::iterator iter = tl.begin();
+			iter != tl.end();
+			iter++)
+	{
+		ret->taggees_.push_back(db->tagman()->access_tnode(*iter));
+	}
+	return ret;
 }

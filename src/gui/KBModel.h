@@ -12,6 +12,7 @@
 #define LAIN_GUI_KNOWLEDGE_BASE_MODEL
 
 #include <QtCore/QAbstractItemModel>
+#include <QtCore/QStringList>
 #include <kernel/common_declare.h>
 #include "KBViewItem.h"
 
@@ -21,7 +22,7 @@ class KBModel
 	Q_OBJECT;
 
 public:
-	KBModel(Database* db, KBViewItemType type /* the root's type */, QObject *parent = 0);
+	KBModel(Database* db, KBViewItemType type /* the root's type */, QStringList locators, QObject *parent = 0);
 	~KBModel();
 
 	QVariant data(const QModelIndex &index, int role) const;

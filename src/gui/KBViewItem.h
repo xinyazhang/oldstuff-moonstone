@@ -43,7 +43,7 @@ public:
 	 * create and return the root
 	 * NOTE: the pointer MUST CAN be deleted by using delete.
 	 */
-	static KBViewItem* RootFactory(Database*, KBViewItemType); 
+	static KBViewItem* RootFactory(Database*, KBViewItemType, QStringList); 
 
 protected:
 	virtual void create_child(Database* db, int index) = 0;

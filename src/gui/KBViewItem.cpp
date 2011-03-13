@@ -1,10 +1,24 @@
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 #include "KBViewItem.h"
 #include "KBView-tag.h"
+#include <kernel/common.h>
 
-KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t)
+KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t, QStringList locators)
 {
-	return NULL; // Placeholder
+	unistr_list ul;
+	for(QStringList::const_iterator iter = locators.begin();
+			iter != locators.end();
+			iter++)
+	{
+		ul.push_back(unistr(*iter));
+	}
+
+	if ( t == KB_tag_item )
+	{
+		return KBViewTag::RootFactory(db, ul);
+	}
+	return NULL;
 }
 
 KBViewItem::KBViewItem(KBViewItem* parent)

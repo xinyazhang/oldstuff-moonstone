@@ -1,9 +1,9 @@
 #include "KBModel.h"
 
-KBModel::KBModel(Database* db, KBViewItemType type, QObject* parent)
+KBModel::KBModel(Database* db, KBViewItemType type, QStringList locators, QObject* parent)
 	:QAbstractItemModel(parent), db_(db)
 {
-	root_ = KBViewItem::RootFactory(db, type);
+	root_ = KBViewItem::RootFactory(db, type, locators);
 }
 
 KBModel::~KBModel()

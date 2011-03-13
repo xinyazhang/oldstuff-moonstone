@@ -15,6 +15,7 @@ public:
 	virtual int children_count(Database* ) const;
 	virtual void reload(Database* );
 
+	static KBViewTag* RootFactory(Database*, const unistr_list&); 
 protected:
 	void create_child(Database*, int index);
 
