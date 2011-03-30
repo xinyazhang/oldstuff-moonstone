@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>DatabaseSession</class>
+ <widget class="QWidget" name="DatabaseSession">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -54,10 +54,11 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
-     <widget class="QWidget" name="page"/>
-     <widget class="QWidget" name="page_2"/>
+     <widget class="GeneralExplorer" name="tag_page"/>
+     <widget class="GeneralExplorer" name="file_page"/>
+     <widget class="GeneralExplorer" name="comp_page"/>
     </widget>
    </item>
   </layout>
@@ -74,6 +75,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GeneralExplorer</class>
+   <extends>QWidget</extends>
+   <header>generalexplorer.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

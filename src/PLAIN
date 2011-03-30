@@ -1,0 +1,24 @@
+2011/03/28
+	Complete the GUI interface to the kernel.
+	Tag:
+		create/edit/delete [uied]
+		tagging,tagged [uied]
+	File:
+		index/deindex [uied]
+		<Requires kernel support>
+	Relation:
+		Tagging file [uied, by drag & drop to editing dock]
+
+	Interface TODO:
+		Tag viewing interface [done]
+		Tag Edit panel for both add procedure and edit procedure [x,
+		redesigned]
+		...
+
+2011/03/30
+	Interface Impl.
+		Model for TreeView of Tag and File.
+			(Consider reuse existing codes)
+		Undo Redo Support.
+		Drag & Drop Support
+	
