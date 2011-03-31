@@ -19,6 +19,20 @@
 	Interface Impl.
 		Model for TreeView of Tag and File.
 			(Consider reuse existing codes)
-		Undo Redo Support.
+		Undo Redo Support (Each Widget's undo/redo + Realtime display in Conform Widget)
 		Drag & Drop Support
 	
+2011/03/31
+	Launching Seq.
+		LainMain - DatabaseSession - GeneralExplorer - TagSearcher
+
+		Only SearchHandler need to know the db_ object, so ...
+
+	TODO List
+		Model for TagSearchResult, maybe we could use KBModel directly
+		Complete TagSearcher, it is SearchHandler's oblige to give out a
+			usable Model for its viewer.
+	
+	PLANNING
+		TagEditor
+			- created by DatabaseSession, knows db_ object.
