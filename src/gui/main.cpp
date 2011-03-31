@@ -4,8 +4,9 @@
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
-	LainMain* lm = new LainMain();
+	LainMain* lm = LainMain::instance();
 	lm->show();
-
-	return app.exec();
+	int ret = app.exec();
+	LainMain::release();
+	return ret;
 }

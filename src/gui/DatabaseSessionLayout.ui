@@ -46,7 +46,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QStackedWidget" name="stackedWidget">
+    <widget class="QStackedWidget" name="stacked">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>20</horstretch>
@@ -54,7 +54,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="GeneralExplorer" name="tag_page"/>
      <widget class="GeneralExplorer" name="file_page"/>
@@ -65,7 +65,7 @@
   <action name="actionTag">
    <property name="icon">
     <iconset>
-     <normaloff>icons/placeholder.png</normaloff>icons/placeholder.png</iconset>
+     <normaloff>C:/Users/zxy/.designer/backup/icons/placeholder.png</normaloff>C:/Users/zxy/.designer/backup/icons/placeholder.png</iconset>
    </property>
    <property name="text">
     <string>Tag</string>
