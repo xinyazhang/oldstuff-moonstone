@@ -10,12 +10,14 @@ namespace Ui
 	class DatabaseSession;
 };
 
+class LainMain;
+
 class DatabaseSession
 	:public QWidget
 {
 	Q_OBJECT;
 public:
-	DatabaseSession();
+	DatabaseSession(LainMain*);
 	~DatabaseSession();
 
 public slots:

@@ -1,5 +1,6 @@
 #include "LainMain.h"
 #include "ui_lain.h"
+#include "DatabaseSession.h"
 
 LainMain* LainMain::inst = NULL;
 
@@ -8,7 +9,7 @@ LainMain::LainMain()
 {
 	ui_->setupUi(this);
 	/* Automaticlly Load the default db */
-	dbs_ = new DatabaseSession;
+	dbs_ = new DatabaseSession(this);
 }
 
 LainMain::~LainMain()

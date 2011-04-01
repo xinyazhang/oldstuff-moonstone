@@ -1,10 +1,11 @@
 #include "DatabaseSession.h"
 #include "LainMain.h"
-#include "ui_databasesessionlayerout.h"
+#include "ui_DatabaseSessionLayout.h"
+#include <kernel/common.h>
 //#include "TagSearcher.h"
 
-DatabaseSession::DatabaseSession()
-	:QWidget(LainMain::instance())
+DatabaseSession::DatabaseSession(LainMain* parent)
+	:QWidget(parent), ui_(new Ui::DatabaseSession)
 {
 	db_ = new Database(sqlite_ = new db_sqlite_impl(":memory:", ""));
 
