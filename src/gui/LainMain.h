@@ -16,6 +16,7 @@ class LainMain
 public:
 	LainMain();
 	~LainMain();
+	void load_default();
 
 	static LainMain* instance();
 	static void release();
