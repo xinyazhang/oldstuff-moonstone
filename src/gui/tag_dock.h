@@ -2,6 +2,7 @@
 #define LAIN_GUI_TAG_DOCK_WINDOW_H
 
 #include <QtGui/QDockWidget>
+#include <kernel/common.h>
 
 namespace Ui
 {
@@ -27,6 +28,7 @@ private:
 
 	RelationModel* relations_;
 	ConformWidget* conforms_;
+	QWidget* content_;
 };
 
 #endif
