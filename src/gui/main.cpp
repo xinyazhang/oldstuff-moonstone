@@ -10,3 +10,12 @@ int main(int argc, char* argv[])
 	LainMain::release();
 	return ret;
 }
+
+#ifdef Q_WS_WIN
+#include "windows.h"
+
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int )
+{
+	return main(__argc, __argv);
+}
+#endif
