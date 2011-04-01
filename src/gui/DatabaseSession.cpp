@@ -10,6 +10,7 @@ DatabaseSession::DatabaseSession(LainMain* parent)
 	db_ = new Database(sqlite_ = new db_sqlite_impl(":memory:", ""));
 
 	ui_->setupUi(this);
+	ui_->listWidget->addAction(ui_->actionTag);
 	//ui_->tag_page->install_sh(new TagSearcher(db_));
 
 	connect(ui_->actionTag, SIGNAL(triggered(bool)),
