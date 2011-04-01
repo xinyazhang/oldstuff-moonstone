@@ -2,7 +2,6 @@
 #define LAIN_GUI_GENERAL_EXPLORER_H
 
 #include <QtGui/QWidget>
-#include "SearchHandler.h"
 
 namespace Ui
 {
