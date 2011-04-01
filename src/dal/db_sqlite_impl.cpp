@@ -8,7 +8,7 @@
 #endif
 
 db_sqlite_impl::db_sqlite_impl(const unistr& filename, const unistr& prefix)
-	:filename_(filename), DatabaseInterface(prefix)
+	:filename_(filename), DatabaseInterface(prefix), handle_(NULL)
 {
 }
 
@@ -32,7 +32,8 @@ void db_sqlite_impl::abort_transaction()
 
 db_sqlite_impl::~db_sqlite_impl()
 {
-	sqlite3_close(handle_);
+	if ( handle_ )
+		sqlite3_close(handle_);
 }
 
 bool db_sqlite_impl::connect()
