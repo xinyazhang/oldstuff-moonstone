@@ -1,5 +1,6 @@
 #include "GeneralExplorer.h"
 #include "ui_general_explorer.h"
+#include "SearchHandler.h"
 
 GeneralExplorer::GeneralExplorer()
 	:ui_(new Ui::GeneralExplorer), sh_(NULL)
@@ -12,6 +13,7 @@ GeneralExplorer::GeneralExplorer()
 void GeneralExplorer::install_sh(SearchHandler* sh)
 {
 	sh_ = sh;
+	sh_->install_view(ui_->result_tree);
 }
 
 GeneralExplorer::~GeneralExplorer()
@@ -22,4 +24,5 @@ GeneralExplorer::~GeneralExplorer()
 
 void GeneralExplorer::launch_search()
 {
+	sh_->launch_search(ui_->search_text->text().trimmed());
 }

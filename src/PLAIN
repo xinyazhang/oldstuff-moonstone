@@ -36,3 +36,8 @@
 	PLANNING
 		TagEditor
 			- created by DatabaseSession, knows db_ object.
+
+2011/04/04
+	TODO
+		TagEditor to handle add and update tags.
+		List all facility
