@@ -64,12 +64,18 @@ void KBViewTag::reload(Database* db)
 KBViewTag* KBViewTag::RootFactory(Database* db, const unistr_list& ul)
 {
 	KBViewTag* ret = new KBViewTag(db, 0, NULL);
-	taglist_t tl = db->tagman()->locate(ul);
-	for(taglist_t::iterator iter = tl.begin();
-			iter != tl.end();
-			iter++)
+	if ( ul.empty() )
 	{
-		ret->taggees_.push_back(db->tagman()->access_tnode(*iter));
+		ret->taggees_ = db->tnodeman()->all();
+	} else
+	{
+		taglist_t tl = db->tagman()->locate(ul);
+		for(taglist_t::iterator iter = tl.begin();
+				iter != tl.end();
+				iter++)
+		{
+			ret->taggees_.push_back(db->tagman()->access_tnode(*iter));
+		}
 	}
 	return ret;
 }
