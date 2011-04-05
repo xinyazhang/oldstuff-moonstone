@@ -19,6 +19,7 @@ public:
 	taglist_t names(idx_t );
 	tag_t anyone(idx_t);
 	int eno() const;
+	tnodelist_t all();
 
 private:
 	Database* db_;

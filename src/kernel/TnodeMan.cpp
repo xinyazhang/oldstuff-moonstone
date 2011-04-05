@@ -159,3 +159,34 @@ int TnodeMan::eno() const
 {
 	return err_;
 }
+
+void load_tnode(sql_stmt& stmt, tnode_t& t)
+{
+	stmt.col(1, t.idx);
+	stmt.col(2, t.refc);
+	stmt.col(3, t.mastername);
+	stmt.col(4, t.comment);
+}
+
+bool load_tnodes(sql_stmt& stmt, tnodelist_t& ret)
+{
+	while ( stmt.step() )
+	{
+		tnode_t t;
+		load_tnode(stmt, t);
+		ret.add_distinct(t);
+	}
+	return true;
+}
+
+tnodelist_t TnodeMan::all()
+{
+	tnodelist_t ret;
+	db_->begin_transaction();
+	sql_stmt stmt = db_->create_stmt_ex("SELECT * FROM "+
+		db_->table(Database::TnodeTable));
+	stmt.execute();
+	load_tnodes(stmt, ret);
+	db_->final_transaction();
+	return ret;
+}
