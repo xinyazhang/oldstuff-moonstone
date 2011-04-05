@@ -8,6 +8,9 @@ DatabaseSession::DatabaseSession(LainMain* parent)
 	:QWidget(parent), ui_(new Ui::DatabaseSession)
 {
 	db_ = new Database(sqlite_ = new db_sqlite_impl("laindefault.db", ""));
+	sqlite_->connect();
+	if ( !db_->initialized() )
+		db_->initialize();
 
 	ui_->setupUi(this);
 	ui_->listWidget->addAction(ui_->actionTag);
