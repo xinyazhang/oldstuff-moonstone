@@ -174,8 +174,13 @@ bool TagMan::touch_tnode(tag_t* tag)
 	if ( tag->tnode == 0 )
 	{
 		TnodeMan* tnodeman = db_->tnodeman();
-		if ( 0 == tnodeman->create(tag, unistr()) )
+		idx_t tid = tnodeman->create(tag, unistr());
+		if ( 0 == tid )
 			return false;
+		tag_t tagold;
+		tagold = *tag;
+		tagold.tnode = 0;
+		update(tagold, *tag);
 	}
 	return true;
 }
