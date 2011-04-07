@@ -24,7 +24,7 @@ void LainMain::load_default()
 	ui_->mdiArea->addSubWindow(dbs_);
 	/* Test Dock */
 	TagDock *ge = new TagDock;
-	addDockWidget(Qt::LeftDockWidgetArea, ge);
+	addDockWidget(Qt::RightDockWidgetArea, ge);
 }
 
 LainMain* LainMain::instance()
