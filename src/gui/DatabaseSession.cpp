@@ -3,6 +3,7 @@
 #include "ui_DatabaseSessionLayout.h"
 #include <kernel/common.h>
 #include "TagSearcher.h"
+#include "tag_dock.h"
 
 DatabaseSession::DatabaseSession(LainMain* parent)
 	:QWidget(parent), ui_(new Ui::DatabaseSession)
@@ -30,4 +31,11 @@ DatabaseSession::~DatabaseSession()
 void DatabaseSession::s2tag()
 {
 	ui_->stacked->setCurrentIndex(0);
+}
+
+void DatabaseSession::newTagDialog()
+{
+	TagDock* te = new TagDock(db_);
+	LainMain::instance()->addsub(te);
+	te->show();
 }

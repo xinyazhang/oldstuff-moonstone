@@ -22,6 +22,7 @@ public:
 
 public slots:
 	void s2tag();
+	void newTagDialog();
 
 private:
 	Ui::DatabaseSession* ui_;

@@ -50,7 +50,13 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionNew_3"/>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="actionTag"/>
+    </widget>
+    <addaction name="menuNew"/>
     <addaction name="separator"/>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
@@ -131,9 +137,9 @@
     <string>Delete</string>
    </property>
   </action>
-  <action name="actionNew_3">
+  <action name="actionTag">
    <property name="text">
-    <string>New</string>
+    <string>Tag</string>
    </property>
   </action>
  </widget>

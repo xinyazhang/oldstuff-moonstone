@@ -20,6 +20,8 @@ public:
 
 	static LainMain* instance();
 	static void release();
+
+	void addsub(QDockWidget* );
 private:
 	Ui::LainMain* ui_;
 

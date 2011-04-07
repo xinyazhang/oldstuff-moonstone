@@ -11,24 +11,26 @@ namespace Ui
 
 class RelationModel;
 class ConformWidget;
+class DatabaseSession;
 
 class TagDock
 	:public QDockWidget
 {
 	Q_OBJECT;
 public:
-	TagDock();
+	TagDock(Database*);
 	~TagDock();
 
 public slots:
+	void commit();
 	void select_target(tag_t);
-
 private:
 	Ui::TagEditor* ui_;
 
 	RelationModel* relations_;
 	ConformWidget* conforms_;
 	QWidget* content_;
+	Database* db_;
 };
 
 #endif

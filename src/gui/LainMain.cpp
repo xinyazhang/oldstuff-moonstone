@@ -23,8 +23,11 @@ void LainMain::load_default()
 	dbs_ = new DatabaseSession(this);
 	ui_->mdiArea->addSubWindow(dbs_);
 	/* Test Dock */
-	TagDock *ge = new TagDock;
-	addDockWidget(Qt::RightDockWidgetArea, ge);
+	//TagDock *ge = new TagDock(dbs_;
+	//addDockWidget(Qt::RightDockWidgetArea, ge);
+	/* Add Dock trigger */
+	connect(ui_->actionTag, SIGNAL(triggered()),
+			dbs_, SLOT(newTagDialog()));
 }
 
 LainMain* LainMain::instance()
@@ -38,4 +41,9 @@ void LainMain::release()
 {
 	delete inst;
 	inst = NULL;
+}
+
+void LainMain::addsub(QDockWidget* widget)
+{
+	addDockWidget(Qt::NoDockWidgetArea, widget);
 }

@@ -60,6 +60,13 @@
      </property>
     </widget>
    </item>
+   <item row="5" column="0">
+    <widget class="QPushButton" name="conform">
+     <property name="text">
+      <string>Conform</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
