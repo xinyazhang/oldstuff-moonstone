@@ -6,3 +6,4 @@ build-x86
 *.tlog
 *.obj
 lib
+*.swp
