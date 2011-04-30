@@ -14,3 +14,13 @@
 	- add table name to table_name_postfix_ array in Database.cpp
 	- add Table Creation SQL(s) in db_**_impl, you may need to modify more than one implementation.
 	- change initialize_sql_number() member function
+
+3. How to add new kind of KBViewItem
+	- implement col_data, to return proper value of each section
+		+ note: only 0 and 1 section are used currently
+	- implement children_count attribute function
+	- implement reload function
+		+ note: its a good choice to merge initialization into it
+		+ note: it should resize the member ``children_'' to a proper size
+	- implement create_child
+		+ note: it must create child, the following procedure would use it.
