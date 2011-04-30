@@ -45,3 +45,33 @@
 2011/04/05
 	TODO
 		GUI for add tag, or nothing can be tested.
+
+2011/04/28
+	TODO
+		Debug crash in listing tag
+
+2011/04/29
+	TODO
+		Enhance the KBView-tag:
+			ctor accept tnode_t& as the second parameter (interface changed
+			but not affecting the implementation)
+
+			KBViewItems should store its own information
+		Enhance the list facility
+			Every item in the database should have a index, including the
+			relationship item (LTE)
+		Doc the KBViewItem
+
+2011/04/30
+	TODO
+		Enhance the KBView-tag:
+			restore the initial design (see gui/GUIDesign.txt for details)
+		Enhance the ``TagEditor'' UI
+			A proper placement ...
+		Add the relation editing facility
+	LTE
+		reversion log in DB
+		editing reversion list in UI
+		Universal Database Object Model, template is a powerful tool as we
+			have designed nearly all the DB objects.
+
