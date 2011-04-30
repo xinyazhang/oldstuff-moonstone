@@ -2,7 +2,53 @@
 #include <QtCore/QStringList>
 #include "KBViewItem.h"
 #include "KBView-tag.h"
+#include "KBSearchResult.hpp"
 #include <kernel/common.h>
+
+struct tnode_ks_meta
+{
+	typedef tnode_t e_type; // Element_TYPE
+	typedef KBViewTag cv_type; // Child View TYPE
+	static distinctlist_t<e_type> all(Database* db)
+	{
+		return db->tnodeman()->all();
+	}
+
+	static distinctlist_t<e_type> select(Database* db, const unistr_list& ul)
+	{
+		taglist_t tl = db->tagman()->locate(ul);
+		distinctlist_t<e_type> ret;
+
+		for(taglist_t::iterator iter = tl.begin();
+				iter != tl.end();
+				iter++)
+		{
+			ret.push_back(db->tagman()->access_tnode(*iter));
+		}
+		return ret;
+	}
+#if 0 // not used in the root
+	static QVariant col_data(const e_type&, int col)
+	{
+		QString ret;
+		if ( col == 0 )
+		{
+			ret = db->tnodeman()->locate(idx_).mastername;
+		} else
+		{
+			taglist_t tl = db->tnodeman()->names(idx_);
+			for(taglist_t::const_iterator iter = tl.begin();
+					iter != tl.end();
+					iter++)
+			{
+				ret += iter->name;
+				ret += ' ';
+			}
+		}
+		return QVariant(ret);
+	}
+#endif
+};
 
 KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t, QStringList locators)
 {
@@ -16,7 +62,8 @@ KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t, QStringList 
 
 	if ( t == KB_tag_item )
 	{
-		return KBViewTag::RootFactory(db, ul);
+		//return KBViewTag::RootFactory(db, ul);
+		return KBSearchResult<tnode_ks_meta/* list */>::Factory(db, ul);
 	}
 	return NULL;
 }
