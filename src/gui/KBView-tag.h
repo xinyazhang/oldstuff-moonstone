@@ -9,19 +9,21 @@ class KBViewTag
 	:public KBViewItem
 {
 public:
-	KBViewTag(Database*, idx_t, KBViewItem* parent);
+	KBViewTag(Database*, const tnode_t&, KBViewItem* parent);
 
 	virtual QVariant col_data(Database*, int ) const;
 	virtual int children_count(Database* ) const;
 	virtual void reload(Database* );
 
-	static KBViewTag* RootFactory(Database*, const unistr_list&); 
+	// static KBViewTag* RootFactory(Database*, const unistr_list&); 
 protected:
 	void create_child(Database*, int index);
 
 private:
-	idx_t idx_;
-	tnodelist_t taggees_;
+	tnode_t tnode_;
+	taglist_t names_;
+	unistr cache_col1_;
+	//tnodelist_t taggees_;
 };
 
 #endif

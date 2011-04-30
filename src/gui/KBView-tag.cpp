@@ -2,8 +2,8 @@
 #include "KBView-tag-file-inter.h"
 #include <kernel/common.h>
 
-KBViewTag::KBViewTag(Database* db, idx_t idx, KBViewItem* parent)
-	:KBViewItem(parent)
+KBViewTag::KBViewTag(Database* db, const tnode_t& tnode, KBViewItem* parent)
+	:KBViewItem(parent), tnode_(tnode)
 {
 	KBViewTag::reload(db);
 }
@@ -14,23 +14,18 @@ QVariant KBViewTag::col_data(Database* db, int col) const
 	QString ret;
 	if ( col == 0 )
 	{
-		ret = db->tnodeman()->locate(idx_).mastername;
+		ret = tnode_.mastername;
+		// ret = db->tnodeman()->locate(idx_).mastername;
 	}else
 	{
-		taglist_t tl = db->tnodeman()->names(idx_);
-		for(taglist_t::const_iterator iter = tl.begin();
-				iter != tl.end();
-				iter++)
-		{
-			ret += iter->name;
-			ret += ' ';
-		}
+		ret = cache_col1_;
 	}
 	return QVariant(ret);
 }
 
 void KBViewTag::create_child(Database* db, int index)
 {
+#if 0 //commented temporary
 	if (index == 0)
 	{
 		/*
@@ -45,22 +40,38 @@ void KBViewTag::create_child(Database* db, int index)
 		children_[index] = 
 			shared_ptr<KBViewItem>(new KBViewTag(db, taggees_[index].idx, this));
 	}
+#endif
 }
 
 int KBViewTag::children_count(Database*) const
 {
-	return (int)taggees_.size();
+	return 0;
+	// return (int)taggees_.size();
 }
 
 void KBViewTag::reload(Database* db)
 {
-	if ( !idx_ )
+	if ( TnodeMan::invalid(tnode_) )
 		return ; // don't load placholder view
-	taggees_ = db->relman()->taggee(idx_);
-	children_.clear();
-	children_.resize(KBViewTag::children_count(db));
+	names_ = db->tnodeman()->names(tnode_.idx);
+	cache_col1_ = "";
+	for(taglist_t::const_iterator iter = names_.begin();
+			iter != names_.end();
+			iter++)
+	{
+		cache_col1_ += iter->name;
+		cache_col1_ += " ";
+	}
+	//taggees_ = db->relman()->taggee(idx_);
+	//children_.clear();
+	//children_.resize(KBViewTag::children_count(db));
 }
 
+/*
+ * It seems root factory is meaningless
+ */
+
+/*
 KBViewTag* KBViewTag::RootFactory(Database* db, const unistr_list& ul)
 {
 	KBViewTag* ret = new KBViewTag(db, 0, NULL);
@@ -79,3 +90,4 @@ KBViewTag* KBViewTag::RootFactory(Database* db, const unistr_list& ul)
 	}
 	return ret;
 }
+*/
