@@ -45,5 +45,5 @@ void LainMain::release()
 
 void LainMain::addsub(QDockWidget* widget)
 {
-	addDockWidget(Qt::NoDockWidgetArea, widget);
+	addDockWidget(Qt::RightDockWidgetArea, widget);
 }
