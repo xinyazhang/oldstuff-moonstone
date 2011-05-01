@@ -75,3 +75,12 @@
 		Universal Database Object Model, template is a powerful tool as we
 			have designed nearly all the DB objects.
 
+2011/05/01
+	TODO 
+		Add the relation editing facility
+			drag&drop supporting...
+		Add file indexing facility
+			also drag&drop
+			kernel API
+		Alpaca tickets
+			roadmap...
