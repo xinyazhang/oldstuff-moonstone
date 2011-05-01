@@ -10,19 +10,17 @@ class KBSearchResult
 	:public KBViewItem
 {
 public:
-	KBSearchResult():KBViewItem(NULL) {}
+	KBSearchResult(KBViewItem* parent = NULL):KBViewItem(parent) {}
 
-	void init(Database* db, const unistr_list& ul)
+	void init(Database* db, const typename T::ks_type &ksp)
 	{
-		ul_ = ul;
+		ksp_ = ksp;
 		reload(db);
 	}
 
 	virtual QVariant col_data(Database*, int idx) const
 	{
-		if (idx == 0)
-			return QString("Searching results");
-		return QString("Attributes");
+		return T::header[idx];
 	}
 
 	virtual int children_count(Database* ) const
@@ -32,20 +30,20 @@ public:
 
 	virtual void reload(Database* db)
 	{
-		if ( ul_.empty() )
+		if ( T::empty_ks(ksp_) )
 		{
 			list_ = T::all(db);
 		} else
 		{
-			list_ = T::select(db, ul_);
+			list_ = T::select(db, ksp_);
 		}
 		children_.resize(children_count(db));
 	}
 
-	static KBSearchResult<T>* Factory(Database* db, const unistr_list& ul)
+	static KBSearchResult<T>* Factory(Database* db, const typename T::ks_type &ksp, KBViewItem* parent = NULL)
 	{
-		KBSearchResult<T>* ret = new KBSearchResult<T>;
-		ret->init(db, ul);
+		KBSearchResult<T>* ret = new KBSearchResult<T>(parent);
+		ret->init(db, ksp);
 		return ret;
 	}
 
@@ -58,7 +56,7 @@ protected:
 
 private:
 	distinctlist_t<typename T::e_type> list_;
-	unistr_list ul_;
+	typename T::ks_type ksp_;
 };
 
 #endif

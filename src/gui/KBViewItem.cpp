@@ -5,16 +5,24 @@
 #include "KBSearchResult.hpp"
 #include <kernel/common.h>
 
-struct tnode_ks_meta
+struct tnode_strks_meta
 {
+	typedef unistr_list ks_type; // Knowlegde base Searching parameter TYPE
 	typedef tnode_t e_type; // Element_TYPE
 	typedef KBViewTag cv_type; // Child View TYPE
+	static const char* header[2];
+
+	static bool empty_ks(const ks_type& ul)
+	{
+		return ul.empty();
+	}
+
 	static distinctlist_t<e_type> all(Database* db)
 	{
 		return db->tnodeman()->all();
 	}
 
-	static distinctlist_t<e_type> select(Database* db, const unistr_list& ul)
+	static distinctlist_t<e_type> select(Database* db, const ks_type& ul)
 	{
 		taglist_t tl = db->tagman()->locate(ul);
 		distinctlist_t<e_type> ret;
@@ -27,28 +35,8 @@ struct tnode_ks_meta
 		}
 		return ret;
 	}
-#if 0 // not used in the root
-	static QVariant col_data(const e_type&, int col)
-	{
-		QString ret;
-		if ( col == 0 )
-		{
-			ret = db->tnodeman()->locate(idx_).mastername;
-		} else
-		{
-			taglist_t tl = db->tnodeman()->names(idx_);
-			for(taglist_t::const_iterator iter = tl.begin();
-					iter != tl.end();
-					iter++)
-			{
-				ret += iter->name;
-				ret += ' ';
-			}
-		}
-		return QVariant(ret);
-	}
-#endif
 };
+const char* tnode_strks_meta::header[2] = {"Searching results", "Attributes"};
 
 KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t, QStringList locators)
 {
@@ -63,7 +51,7 @@ KBViewItem* KBViewItem::RootFactory(Database* db, KBViewItemType t, QStringList 
 	if ( t == KB_tag_item )
 	{
 		//return KBViewTag::RootFactory(db, ul);
-		return KBSearchResult<tnode_ks_meta/* list */>::Factory(db, ul);
+		return KBSearchResult<tnode_strks_meta/* list */>::Factory(db, ul);
 	}
 	return NULL;
 }
