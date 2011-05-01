@@ -44,17 +44,17 @@ QVariant KBModel::headerData(int section,
 
 QModelIndex KBModel::index(int row, 
 		int column, 
-		const QModelIndex &parent) const
+		const QModelIndex &parent_index) const
 {
-	if (!hasIndex(row, column, parent))
+	if (!hasIndex(row, column, parent_index))
 		return QModelIndex();
 
 	KBViewItem *parent_item;
 
-	if (!parent.isValid())
+	if (!parent_index.isValid())
 		parent_item = root_;
 	else
-		parent_item = static_cast<KBViewItem*>(parent.internalPointer());
+		parent_item = static_cast<KBViewItem*>(parent_index.internalPointer());
 
 	if ( row < 0 || row >= parent_item->children_count(db_) )
 		return QModelIndex();
@@ -72,12 +72,15 @@ QModelIndex KBModel::parent(const QModelIndex &index) const
 		return QModelIndex();
 
 	KBViewItem *cur = static_cast<KBViewItem*>(index.internalPointer());
-	KBViewItem *parent = cur->parent();
+	KBViewItem *cur_parent = cur->parent();
 
-	if (parent == root_)
+	if (cur_parent == NULL)
 		return QModelIndex();
 
-	return createIndex(parent->row(), 0, parent);
+	if (cur_parent == root_)
+		return QModelIndex();
+
+	return createIndex(cur_parent->row(), 0, cur_parent);
 }
 
 int KBModel::rowCount(const QModelIndex &parent) const
