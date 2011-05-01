@@ -63,7 +63,7 @@
    <item row="5" column="0">
     <widget class="QPushButton" name="conform">
      <property name="text">
-      <string>Conform</string>
+      <string>Confirm</string>
      </property>
     </widget>
    </item>
