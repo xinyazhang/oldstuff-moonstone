@@ -8,6 +8,8 @@ GeneralExplorer::GeneralExplorer()
 	ui_->setupUi(this);
 	connect(ui_->search_text, SIGNAL(returnPressed()),
 			this, SLOT(launch_search()));
+	ui_->result_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	ui_->result_tree->setDragEnabled(true);
 }
 
 void GeneralExplorer::install_sh(SearchHandler* sh)
