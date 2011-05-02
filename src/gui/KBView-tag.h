@@ -16,6 +16,7 @@ public:
 	virtual void reload(Database* );
 
 	// static KBViewTag* RootFactory(Database*, const unistr_list&); 
+	virtual void append_binary_layerout(QDataStream&) const;
 protected:
 	void create_child(Database*, int index);
 

@@ -3,6 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <QtCore/QVariant>
+#include <QtCore/QDataStream>
 #include <kernel/common_declare.h>
 
 using boost::shared_ptr;
@@ -44,6 +45,11 @@ public:
 	 * NOTE: the pointer MUST CAN be deleted by using delete.
 	 */
 	static KBViewItem* RootFactory(Database*, KBViewItemType, QStringList); 
+
+	/*
+	 * Drag&drop
+	 */
+	virtual void append_binary_layerout(QDataStream&) const;
 
 protected:
 	virtual void create_child(Database* db, int index) = 0;

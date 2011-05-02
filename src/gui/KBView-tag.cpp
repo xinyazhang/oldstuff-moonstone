@@ -146,3 +146,7 @@ KBViewTag* KBViewTag::RootFactory(Database* db, const unistr_list& ul)
 	return ret;
 }
 */
+void KBViewTag::append_binary_layerout(QDataStream& ds) const
+{
+	ds << LOBLT_TNODE << tnode_.idx;
+}

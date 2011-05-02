@@ -111,3 +111,7 @@ int KBViewItem::get_child_index(const KBViewItem* ptr) const
 	}
 	return 0;
 }
+
+void KBViewItem::append_binary_layerout(QDataStream&) const
+{
+}
