@@ -1,4 +1,5 @@
 #include "KBModel.h"
+#include <QtCore/QMimeData>
 
 KBModel::KBModel(Database* db, KBViewItemType type, QStringList locators, QObject* parent)
 	:QAbstractItemModel(parent), db_(db)
@@ -29,7 +30,7 @@ Qt::ItemFlags KBModel::flags(const QModelIndex &index) const
 	if (!index.isValid())
 		return 0;
 
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	return Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
 }
 
 QVariant KBModel::headerData(int section, 
@@ -105,3 +106,29 @@ int KBModel::columnCount(const QModelIndex &parent) const
 		return root_->header_count();
 }
 
+QStringList KBModel::mimeTypes() const
+{
+	QStringList types;
+	types << "application/lain.binary_objects";
+	return types;
+}
+
+QMimeData* KBModel::mimeData(const QModelIndexList &indexes) const
+{
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData;
+
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+	foreach (const QModelIndex &index, indexes) 
+	{
+		if (index.isValid()) 
+		{
+			const KBViewItem* item = static_cast<const KBViewItem*>(index.internalPointer());
+			item->append_binary_layerout(stream);
+		}
+	}
+
+	mimeData->setData("application/lain.binary_objects", encodedData);
+	return mimeData;
+}

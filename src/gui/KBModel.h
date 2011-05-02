@@ -37,6 +37,11 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+	/*
+	 * Drag&Drop support
+	 */
+	QStringList mimeTypes() const;
+	QMimeData* mimeData(const QModelIndexList &indexes) const;
 private:
 	Database *db_;
 	KBViewItem *root_;
