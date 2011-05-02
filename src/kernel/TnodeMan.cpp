@@ -185,7 +185,6 @@ tnodelist_t TnodeMan::all()
 	db_->begin_transaction();
 	sql_stmt stmt = db_->create_stmt_ex("SELECT * FROM "+
 		db_->table(Database::TnodeTable));
-	stmt.execute();
 	load_tnodes(stmt, ret);
 	db_->final_transaction();
 	return ret;
