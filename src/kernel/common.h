@@ -17,5 +17,6 @@
 //#include "modsource.h"
 #include "snapshotter.h"
 #include "ftman.h"
+#include "binlayerout.h"
 
 #endif
