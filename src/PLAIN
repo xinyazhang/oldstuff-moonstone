@@ -84,3 +84,17 @@
 			kernel API
 		Alpaca tickets
 			roadmap...
+
+2011/05/02
+	TODO
+		Binary layerouts of local objects
+			it blocks the drag&drop
+				write done, but not elegant (it should not be a part of GUI,
+				it's a kernel work)
+				read not started, can't skip objects efficiently
+		File indexing
+			legacy
+		Alpaca tickets
+			tag done, file?
+	NOTE
+		Review the litesql
