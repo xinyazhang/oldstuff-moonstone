@@ -1,0 +1,37 @@
+DOCUMENTS ON BINARY LAYOUTS OF INTRA-PROCESS DATABASE OBJECTS
+
+1. APPLICATION INTERFACE
+	Every class should has a cooresponding
+		+ QDataStream& operator<<(T );
+	function for writing to QDataStream and a
+		+ QDataStream& operator>>(T& );
+	function for reading from QDataStream
+
+	If current cursor of QDataStream do not represent object of corresponding
+	class, the current object should be skipped
+
+2. BINARY INTERFACE
+	BYTE 0		OBJECT CLASS
+	BYTE 1~4	OBJECT LENGTH (denoted as N)
+	BYTE 5~N-1	OBJECT CONTEXT
+
+3. PACK OF OBJECT
+	Currently the objects are not packed, the user of the objects shold keep
+	the metadata of the blobs (i.e. the QDataStream do not store it is a pack
+	of database objects, or not)
+
+4. SPECIFICATIONS
+	tag:
+			<NONE>
+		it does not have an binlay as it does not have sufficient data as SACs
+	tnode:
+			UINT64	idx
+		it does not have to contain a mastername as other module could access
+		it from DB.
+	relation:
+			UINT64 tagger
+			UINT64 taggee
+	fso:
+			UINT64 fsoid
+			UINT64 parent
+
