@@ -98,3 +98,15 @@
 			tag done, file?
 	NOTE
 		Review the litesql
+
+2011/05/03
+	TODO
+		Binary layerout
+			Designed but lacks impl.
+		File indexing
+			Done in fact, call snapshotter.
+		UI Revolution
+			Like explorer
+	NOTE
+		litesql is simple but not powerful
+		Revolution of current DAL planned
