@@ -11,9 +11,9 @@ DOCUMENTS ON BINARY LAYOUTS OF INTRA-PROCESS DATABASE OBJECTS
 	class, the current object should be skipped
 
 2. BINARY INTERFACE
-	BYTE 0		OBJECT CLASS
-	BYTE 1~4	OBJECT LENGTH (denoted as N)
-	BYTE 5~N-1	OBJECT CONTEXT
+	BYTE 0			OBJECT CLASS
+	BYTE 1~4		OBJECT PAYLOAD LENGTH (denoted as N)
+	BYTE 5~N-1+5	OBJECT CONTEXT
 
 3. PACK OF OBJECT
 	Currently the objects are not packed, the user of the objects shold keep
