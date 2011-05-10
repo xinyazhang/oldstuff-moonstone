@@ -28,3 +28,9 @@ void GeneralExplorer::launch_search()
 {
 	sh_->launch_search(ui_->search_text->text().trimmed());
 }
+
+void GeneralExplorer::install_prop(QWidget* widget)
+{
+	ui_->horizontalLayout->addWidget(widget);
+	prop_ = widget;
+}

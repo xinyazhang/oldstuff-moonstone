@@ -4,10 +4,10 @@
 #include <kernel/common.h>
 
 TagDock::TagDock(Database* db)
-	:QDockWidget(LainMain::instance()), ui_(new Ui::TagEditor), content_(new QWidget(this)), db_(db)
+	:QWidget(/*LainMain::instance()*/), ui_(new Ui::TagEditor), db_(db)
 {
-	ui_->setupUi(content_);
-	setWidget(content_);
+	ui_->setupUi(this);
+	//setWidget(content_);
 	/* Don't setup model currently */
 #if 0
 	relations_ = new RelationModel;

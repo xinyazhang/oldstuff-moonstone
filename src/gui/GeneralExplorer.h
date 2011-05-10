@@ -17,12 +17,14 @@ class GeneralExplorer
 public:
 	GeneralExplorer();
 	void install_sh(SearchHandler*);
+	void install_prop(QWidget*);
 	~GeneralExplorer();
 public slots:
 	void launch_search();
 private:
 	SearchHandler* sh_;
 	Ui::GeneralExplorer* ui_;
+	QWidget* prop_;
 };
 
 #endif

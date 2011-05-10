@@ -1,3 +1,5 @@
+#include <QtGui/QMdiSubWindow>
+#include <QtGui/QDockWidget>
 #include "LainMain.h"
 #include "ui_lain.h"
 #include "DatabaseSession.h"
@@ -9,6 +11,7 @@ LainMain::LainMain()
 	:ui_(new Ui::LainMain)
 {
 	ui_->setupUi(this);
+	setWindowState(Qt::WindowMaximized);
 }
 
 LainMain::~LainMain()
@@ -21,7 +24,11 @@ void LainMain::load_default()
 {
 	/* Automaticlly Load the default db */
 	dbs_ = new DatabaseSession(this);
-	ui_->mdiArea->addSubWindow(dbs_);
+	QMdiSubWindow *mdis = new QMdiSubWindow(this);
+	mdis->setWidget(dbs_);
+	mdis->setWindowState(Qt::WindowMaximized);
+
+	ui_->mdiArea->addSubWindow(mdis);
 	/* Test Dock */
 	//TagDock *ge = new TagDock(dbs_;
 	//addDockWidget(Qt::RightDockWidgetArea, ge);
@@ -43,7 +50,10 @@ void LainMain::release()
 	inst = NULL;
 }
 
-void LainMain::addsub(QDockWidget* widget)
+void LainMain::addsub(QWidget* widget)
 {
-	addDockWidget(Qt::RightDockWidgetArea, widget);
+	//addDockWidget(Qt::RightDockWidgetArea, widget);
+	QDockWidget* dw = new QDockWidget(this);
+	dw->setWidget(widget);
+	addDockWidget(Qt::AllDockWidgetAreas, dw);
 }

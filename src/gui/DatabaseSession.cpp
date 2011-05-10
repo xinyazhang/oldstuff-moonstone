@@ -14,8 +14,10 @@ DatabaseSession::DatabaseSession(LainMain* parent)
 		db_->initialize();
 
 	ui_->setupUi(this);
+
 	ui_->listWidget->addAction(ui_->actionTag);
 	ui_->tag_page->install_sh(new TagSearcher(db_));
+	ui_->tag_page->install_prop(new TagDock(db_));
 
 	connect(ui_->actionTag, SIGNAL(triggered(bool)),
 			this, SLOT(s2tag()));

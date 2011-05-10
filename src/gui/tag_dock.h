@@ -1,7 +1,7 @@
 #ifndef LAIN_GUI_TAG_DOCK_WINDOW_H
 #define LAIN_GUI_TAG_DOCK_WINDOW_H
 
-#include <QtGui/QDockWidget>
+#include <QtGui/QWidget>
 #include <kernel/common.h>
 
 namespace Ui
@@ -14,7 +14,7 @@ class ConformWidget;
 class DatabaseSession;
 
 class TagDock
-	:public QDockWidget
+	:public QWidget
 {
 	Q_OBJECT;
 public:
@@ -29,7 +29,7 @@ private:
 
 	RelationModel* relations_;
 	ConformWidget* conforms_;
-	QWidget* content_;
+	//QWidget* content_;
 	Database* db_;
 };
 
