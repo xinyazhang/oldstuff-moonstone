@@ -110,3 +110,12 @@
 	NOTE
 		litesql is simple but not powerful
 		Revolution of current DAL planned
+
+2011/05/10
+	DONE
+		UI Revolution
+		Encoding and decoding for drag&drop
+	TODO
+		Remove the motherfucker class QDataStream out of the program.
+			Reason: brain-damaged implementation.
+		Action after drop events detected.
