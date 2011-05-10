@@ -42,6 +42,8 @@ public:
 	 */
 	QStringList mimeTypes() const;
 	QMimeData* mimeData(const QModelIndexList &indexes) const;
+	bool dropMimeData(const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
+	Qt::DropActions supportedDropActions() const;
 private:
 	Database *db_;
 	KBViewItem *root_;

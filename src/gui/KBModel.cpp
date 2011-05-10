@@ -1,5 +1,7 @@
-#include "KBModel.h"
 #include <QtCore/QMimeData>
+#include <QtGui/QMessageBox>
+#include "KBModel.h"
+#include <kernel/common.h>
 
 KBModel::KBModel(Database* db, KBViewItemType type, QStringList locators, QObject* parent)
 	:QAbstractItemModel(parent), db_(db)
@@ -28,9 +30,9 @@ QVariant KBModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags KBModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
-		return 0;
+		return Qt::ItemIsDropEnabled;
 
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable |Qt::ItemIsDragEnabled;
+	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 QVariant KBModel::headerData(int section, 
@@ -109,7 +111,7 @@ int KBModel::columnCount(const QModelIndex &parent) const
 QStringList KBModel::mimeTypes() const
 {
 	QStringList types;
-	types << "application/lain.binary_objects";
+	types << "application/lain.local_binary_objects";
 	return types;
 }
 
@@ -129,6 +131,41 @@ QMimeData* KBModel::mimeData(const QModelIndexList &indexes) const
 		}
 	}
 
-	mimeData->setData("application/lain.binary_objects", encodedData);
+	mimeData->setData("application/lain.local_binary_objects", encodedData);
 	return mimeData;
+}
+
+bool KBModel::dropMimeData(const QMimeData* mime, Qt::DropAction action, int row, int col, const QModelIndex& parent)
+{
+	if (action == Qt::IgnoreAction)
+		return true;
+
+	if (!mime->hasFormat("application/lain.local_binary_objects"))
+		return false;
+
+	QByteArray encodedData = mime->data("application/lain.local_binary_objects");
+	QByteArray dt = encodedData;
+	dt.append(' ');
+	dt.chop(1);
+	QDataStream stream(&dt, QIODevice::ReadOnly);
+	QString text;
+
+	while (!stream.atEnd())
+	{
+		tnode_t tnode;
+		stream >> tnode;
+		tnode = db_->tnodeman()->locate(tnode.idx);
+		text += "Tnode: ";
+		text += QString::number(tnode.idx);
+		text += "\t";
+		text += tnode.mastername;
+		text += "\n";
+	}
+	QMessageBox::information(NULL, tr("Drop!"), text);
+	return true;
+}
+
+Qt::DropActions KBModel::supportedDropActions() const
+{
+	return Qt::CopyAction | Qt::MoveAction;
 }
