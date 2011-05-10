@@ -4,9 +4,18 @@
 /*
  * Local Object Binary Layerout Type
  */
-#define LOBLT_TAG		1
-#define LOBLT_TNODE 	2
-#define LOBLT_REL		3
-#define LOBLT_FILE		4
+#define LOBLT_TAG		((uint8_t)1)
+#define LOBLT_TNODE 	((uint8_t)2)
+#define LOBLT_REL		((uint8_t)3)
+#define LOBLT_FILE		((uint8_t)4)
+
+#include "common_declare.h"
+class QDataStream;
+
+QDataStream& EXPORT_TO_DLL operator<< (QDataStream&, const tnode_t&);
+QDataStream& EXPORT_TO_DLL operator>> (QDataStream&, tnode_t&);
+
+QDataStream& EXPORT_TO_DLL operator<< (QDataStream&, const fso_t&);
+QDataStream& EXPORT_TO_DLL operator>> (QDataStream&, fso_t&);
 
 #endif
