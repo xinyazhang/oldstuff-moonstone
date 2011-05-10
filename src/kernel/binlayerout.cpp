@@ -10,7 +10,10 @@ static bool scan(QDataStream& stream, uint8_t type)
 	{
 		stream >> peek;
 		if (peek == type)
+		{
+			stream.skipRawData(sizeof(uint32_t));
 			return true;
+		}
 		uint32_t skip;
 		stream >> skip;
 		stream.skipRawData(skip);
