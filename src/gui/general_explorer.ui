@@ -10,6 +10,9 @@
     <height>680</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>General Explorer</string>
   </property>
@@ -26,6 +29,18 @@
          <horstretch>9</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropOverwriteMode">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::CopyAction</enum>
        </property>
       </widget>
      </item>
