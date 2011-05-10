@@ -12,10 +12,10 @@
 #include "common_declare.h"
 class QDataStream;
 
-QDataStream& EXPORT_TO_DLL operator<< (QDataStream&, const tnode_t&);
-QDataStream& EXPORT_TO_DLL operator>> (QDataStream&, tnode_t&);
-
-QDataStream& EXPORT_TO_DLL operator<< (QDataStream&, const fso_t&);
-QDataStream& EXPORT_TO_DLL operator>> (QDataStream&, fso_t&);
+EXPORT_TO_DLL QDataStream& operator<< (QDataStream&, const tnode_t&);
+EXPORT_TO_DLL QDataStream& operator>> (QDataStream&, tnode_t&);
+                                      
+EXPORT_TO_DLL QDataStream& operator<< (QDataStream&, const fso_t&);
+EXPORT_TO_DLL QDataStream& operator>> (QDataStream&, fso_t&);
 
 #endif
