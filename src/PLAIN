@@ -119,3 +119,46 @@
 		Remove the motherfucker class QDataStream out of the program.
 			Reason: brain-damaged implementation.
 		Action after drop events detected.
+
+2011/05/11
+	DONE
+		Motherfucker QDataStream
+			solved, reason: link to QtCore4 and QtCored4 ...
+	TODO
+		Undo/Redo Infrastructure
+			it blocks the Action
+
+2011/05/12
+	NOTE
+		Some part of GUI's Undo/Redo Infrastructure can be made through
+		QAction, QUndoStack and QUndoView
+
+		However it is not what we want, as most of our actions don't
+		essentially have a sequence.
+
+		In fact, our undo/redo have three layers
+		Top: (Sequenced) UI's undo/redo, a normal undo/redo for staging content
+			e.g. Tag's mastername, the content of add/updated/removed
+			relations
+		Second: (Unsequenced) staged changes, can be edited freely.
+		Bottom: (Sequenced) Databased changes, logged in separated tables (see
+		Wiki like CMS)
+
+		The design:
+			Top layer: Qt's QUndoStack, QAction
+				note, subclasses of QAction should be embedded in .cpp
+			Intermediate layer: template based KBViewItem.
+				tagger
+					|-tag1
+					|-tag2
+					|-...
+					|----separator----
+					|-[ ]new tag1
+					|-...
+					|----separator----
+					|-[ ]removed tag1
+			Bottom layer: add trigger in creating database.
+	
+	TODO
+		DB Transaction fix (currently lacks the rollback)
+		Top layer's Undo/Redo
