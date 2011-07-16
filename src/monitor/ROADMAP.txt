@@ -1,0 +1,23 @@
+First, a win32 daemon shall be written.
+
+main
+	- daemonize (stub)
+	- open default configuration files
+	- load known partitions and locators
+		- de-serialize partitions objects from "Partition"
+			- each partition object contains locators
+		- partitions information should contain ``last traced'' timestamp, for NTFS, USN is one additional information.
+	- enumerate online partitions
+	- load tracing paths
+	- create hooks on tracing paths 
+		! Below is NTFS-specified
+		- Find Volumes for paths (CreateFile is OK)
+		- Open these Volumes
+		- Start a thread for each Volume, and passes relative paths of each volume
+			- [each thread] read USN DATA...
+			- pass to the journal thread
+		- start a journal thread to write events to files.
+			- we need a "tail" like command to parse the file...
+	- The service never exits
+		- How to write a NT service?
+
