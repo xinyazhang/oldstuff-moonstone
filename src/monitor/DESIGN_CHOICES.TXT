@@ -1,0 +1,26 @@
+daemon.h: function
+daemon_data.h: data structures
+
+<> header: defines data types, placed at <platform>/
+"" header: online defines functions, placed at ., implementations placed at
+	<platform>/
+
+file io: using fstream(linux), or wfstream(win32), type abstracted as filestream
+serialization: using boost::serialization
+	- archive: using boost::xml_[i/o]archive(linux), or
+	  boost::xml_w[i/o]archive, abstracted as barc_[i/o]
+
+partition: using an int64_t as an index, counting from 1
+	using boost::uuids::uuid as unique locator,
+	storing an device string as methods to refer partition,
+		for windows, it stores \\?\Volume{GUID}, it is dumplicated from uuid
+		for linux, it stores the block device
+		+ this field is filled by scan_online_partitons
+
+partition locators:
+	the values stored by this data structure are mostly read by human, not
+	program, so a map<string, string> is good enough.
+
+tracing:
+	partition, relative path are XP
+	watching are not XP, as fanotify watches pathes but NTFS watches volumns
