@@ -1,0 +1,36 @@
+The cross platform document
+
+1. file descriptor (int) vs file handle (HANDLE, or void*)
+2. utf-8 fopen vs UTF-16 _wfopen
+	- maybe the fstream vs wfstream is better (for boost serialization)?
+3. pthread_create vs _beginthread_ex
+	- I wanna a pthread_win32 ...
+4. socket+bind+listen+accept+connect vs CreateNamedPipe+ConnectNamePipe+WaitNamedPipe
+	- Need a simple abstracted API...
+5. Send fd across processes
+	sendmsg+recvmsg vs ReadFile(to get target process id)+DuplicateHandle+WriteFile
+6. Read FS events
+	fanotify vs Journal
+	- Only ``paths'' are the same between interfaces.
+7. daemonize vs ?
+	- Win32 don't need a ``daemonize'' ...
+8. enumerate partitions
+	Parse /proc/self/mountinfo vs FindFirstVolumn+FindNextVolumn
+9. Parse paths
+	unix /proc/self/mountinfo vs GetVolumeInformation+GetVolumePathName+GetVolumeNameForVolumeMountPoint
+10. Device changes
+	linux's libudev vs RegisterDeviceNotification
+11. position of default configuration files
+	return /etc vs SHGetFolderLocation
+12. Mount event
+	libudisk vs ?
+
+
+Some invariant types across platforms
+
+1. Partition, all are denoted by UUID (GUID)
+	both are 128-bit number, char [16] is good enough
+2. Mount Point, all are denoted as string
+	What can I do?
+3. Path: Partition+relative path
+4. Journal Event
