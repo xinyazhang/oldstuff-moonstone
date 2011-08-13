@@ -21,3 +21,30 @@ main
 	- The service never exits
 		- How to write a NT service?
 
+
+Milestone 1
+	GOAL:	write a NT service as well as a normal process
+	TEST:	- Register the service and start it and the configuration file
+			  should be written "OK"
+			- Do the same with the process
+
+Milestone 2
+	GOAL:	write a daemon which could scan online partitions
+	TEST:	- Run the daemon with null configure file, check the configure file
+			- Run the daemon with configure file whose one item was deleted,
+			  check the configure file
+			- Run the daemon with a corrupt configure file, check the
+			  configure file
+	NOTE: These tests are done without service
+
+Milestone 3
+	GOAL:	write a daemon could index paths and changes[NTFS]
+	TEST:	- Run the daemon with configure file which daemon paths were
+			written, touch filesystems and then check the journal file
+	
+Milestone 4
+	GOAL:	write a daemon providing services with IPC
+	TEST:	- Run the daemon with configure file, using a client to start
+			  an index query, and check the file written by the client 
+			- Run the daemon with configure file, using a client to query
+			  change journal, and check the file written by the client
