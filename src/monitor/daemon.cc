@@ -17,16 +17,24 @@ tracing_object tracings;
 
 filestream open_conf();
 
-void daemon_init()
+int daemon_init()
 {
 	conf = open_conf();
 
 	if (!conf.is_open())
 	{
 		daemon_report_error(DERR_CANNOT_OPEN_CONF_FILE); // May or may not exit
-		return ;
+		return DERR_CANNOT_OPEN_CONF_FILE;
 	}
 
+	/* MILESTONE 1: Write "OK!" to configure file */
+#if MILESTONE == 1
+	conf << UT("OK!") << std::endl;
+	conf.close();
+	return 0;
+#endif
+
+#if MILESTONE >= 2
 	conf.seekg(0, std::ios::end);
 	if (conf.tellg() == 0)
 	{
@@ -42,8 +50,15 @@ void daemon_init()
 		ar >> BOOST_SERIALIZATION_NVP(tracing_paths);
 	}
 	scan_online_partitons();
+#endif
+
+#if MILESTONE >= 3
 	start_tracing();
-	start_ipc();
+#endif
+
+#if MILESTONE >= 4
+	open_ipc();
+#endif
 }
 
 void daemon_release()
@@ -54,10 +69,19 @@ void daemon_release()
 	delete conf;
 	conf = NULL;
 #endif
+#if MILESTONE >= 3
+	stop_tracing();
+#endif 
+#if MILESTONE >= 4
+	close_ipc();
+#endif
+#if MILESTONE >= 2
 	conf.seekg(0, std::ios::beg);
 	barc_o ar(conf);
 	ar << BOOST_SERIALIZATION_NVP(known_partitions);
 	ar << BOOST_SERIALIZATION_NVP(tracing_paths);
+	conf.close();
+#endif
 }
 
 filestream open_conf()
