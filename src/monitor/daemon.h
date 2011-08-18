@@ -1,7 +1,7 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-void daemon_init();
+int daemon_init(); // return 0 on success
 void daemon_release();
 
 #endif
