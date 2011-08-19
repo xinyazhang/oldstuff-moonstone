@@ -9,7 +9,7 @@ unistr locate_conf_dir()
 
 	HRESULT result = SHGetFolderPathW(NULL,
 		CSIDL_COMMON_APPDATA,
-		-1,
+		NULL,
 		SHGFP_TYPE_CURRENT,
 		confpath);
 
