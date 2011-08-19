@@ -4,9 +4,10 @@
 #include <pal/stdtype.h>
 #include <boost/uuid/uuid.hpp>
 #include <boost/shared_ptr.hpp>
+#include <map>
 
-typedef boost::uuids:uuid uuid_t;
-typedef std::map<unistr, unistr> partition_locator;
+#define uuid_t boost::uuids::uuid
+typedef std::map<unistr, unistr> partition_locator; // Human-readable label-value pairs.
 
 struct partition
 {
@@ -16,7 +17,7 @@ struct partition
 	partition_locator locators;
 };
 
-typedef boost::shared_ptr<partition> partition_sptr
+typedef boost::shared_ptr<partition> partition_sptr;
 
 class partition_list
 	:public std::vector<partition_sptr>
@@ -24,7 +25,7 @@ class partition_list
 };
 
 partition_list scan_online_partitons();
-partition_sptr locate_partition(partition_list&, uuid_t);
+partition_sptr locate_partition(partition_list&, const uuid_t&);
 void partition_blank();
 
 extern int64_t kpi_last;

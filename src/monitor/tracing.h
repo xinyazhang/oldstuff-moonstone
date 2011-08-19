@@ -13,6 +13,10 @@ struct path_internal
 
 void start_tracing();
 
+#if MILESTONE >= 3
 extern std::vector<path_internal> tracing_paths;
+extern tracing_path_list tracing_paths;
+extern tracing_object tracings;
+#endif
 
 #endif
