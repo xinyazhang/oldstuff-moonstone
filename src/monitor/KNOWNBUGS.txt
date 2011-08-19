@@ -1,0 +1,3 @@
+The service open C:\ProgramData\lain\records.conf, but did not create the lain directory.
+
+The service does not exit normally.
