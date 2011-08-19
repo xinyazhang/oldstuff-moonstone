@@ -2,7 +2,7 @@
 #include "../daemon.h"
 #include "../version.h"
 
-const wchar_t* SERVICE_NAME = L"LAIRD";
+wchar_t SERVICE_NAME[] = L"laird";
 
 SERVICE_STATUS          service_status; 
 SERVICE_STATUS_HANDLE   status_handle; 
@@ -39,7 +39,7 @@ VOID WINAPI service_main(__in  DWORD /*dwArgc*/, __in  LPTSTR* /*lpszArgv*/)
 	service_status.dwCheckPoint = 0; 
 	service_status.dwWaitHint = 0; 
 
-	status_handle = RegisterServiceCtrlHandlerW(SERVICE_NAME, (LPHANDLER_FUNCTION)ControlHandler); 
+	status_handle = RegisterServiceCtrlHandlerW(SERVICE_NAME, (LPHANDLER_FUNCTION)handler); 
 	SetServiceStatus(status_handle, &service_status); // Report we are starting
 	
 	int err = daemon_init();
@@ -52,34 +52,38 @@ VOID WINAPI service_main(__in  DWORD /*dwArgc*/, __in  LPTSTR* /*lpszArgv*/)
 	}
 
 	service_status.dwCurrentState = SERVICE_RUNNING;
-	SetServiceStatus(status_handle, service_status);
+	SetServiceStatus(status_handle, &service_status);
 
 	daemon_release();
+
+	service_status.dwWin32ExitCode = 0; 
+	service_status.dwCurrentState = SERVICE_STOPPED; 
+	SetServiceStatus(status_handle, &service_status);
 }
 
-VOID WINAPI handler( __in  DWORD fdwControl)
+VOID WINAPI handler( __in  DWORD request)
 { 
-   switch(request) 
-   { 
-      case SERVICE_CONTROL_STOP: 
-         service_status.dwWin32ExitCode = 0; 
-         service_status.dwCurrentState = SERVICE_STOPPED; 
-         SetServiceStatus(status_handle, &service_status);
-         return; 
- 
-      case SERVICE_CONTROL_SHUTDOWN: 
-         ServiceStatus.dwWin32ExitCode = 0; 
-         ServiceStatus.dwCurrentState = SERVICE_STOPPED; 
-         SetServiceStatus (status_handle, &service_status);
-         return; 
-        
-      default:
-         break;
-    } 
- 
-    // Report current status
-    SetServiceStatus (hStatus, &ServiceStatus);
- 
-    return; 
+	switch(request) 
+	{ 
+		case SERVICE_CONTROL_STOP: 
+			service_status.dwWin32ExitCode = 0; 
+			service_status.dwCurrentState = SERVICE_STOPPED; 
+			SetServiceStatus(status_handle, &service_status);
+			return; 
+
+		case SERVICE_CONTROL_SHUTDOWN: 
+			service_status.dwWin32ExitCode = 0; 
+			service_status.dwCurrentState = SERVICE_STOPPED; 
+			SetServiceStatus (status_handle, &service_status);
+			return; 
+
+		default:
+			break;
+	} 
+
+	// Report current status
+	SetServiceStatus (status_handle, &service_status);
+
+	return; 
 }
 
