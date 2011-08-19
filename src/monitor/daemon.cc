@@ -1,20 +1,16 @@
 #include "../pal/stdtype.h"
+#include "version.h"
 #include "serialization.h"
 
 // Using "" for headers only including functions, or cross-platform data structs
 #include "daemon.h"
 #include "special_path.h"
 #include "daemon_error.h"
-#include <ipc.h>
+#include "ipc.h"
 
 using boost::serialization::make_nvp;
 
 filestream conf;
-partition_list known_partitions;
-partition_list online_partitions;
-tracing_path_list tracing_paths;
-tracing_object tracings;
-
 filestream open_conf();
 
 int daemon_init()
@@ -23,7 +19,7 @@ int daemon_init()
 
 	if (!conf.is_open())
 	{
-		daemon_report_error(DERR_CANNOT_OPEN_CONF_FILE); // May or may not exit
+		daemon_report_error(DERR_CANNOT_OPEN_CONF_FILE); // May or may not exist
 		return DERR_CANNOT_OPEN_CONF_FILE;
 	}
 
@@ -89,5 +85,10 @@ filestream open_conf()
 	unistr path = locate_conf_dir();
 	path += "/records.conf";
 
-	return filestream(path.native());
+	filestream fs;
+	fs.open(path.native(), std::ios_base::in|std::ios_base::out);
+	if (!fs.is_open())
+		fs.open(path.native(), std::ios_base::in|std::ios_base::out|std::ios_base::trunc);
+
+	return fs;
 }
