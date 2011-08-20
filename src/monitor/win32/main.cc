@@ -7,7 +7,6 @@ wchar_t SERVICE_NAME[] = L"laird";
 SERVICE_STATUS          service_status; 
 SERVICE_STATUS_HANDLE   status_handle; 
 
-
 VOID WINAPI service_main(
   __in  DWORD dwArgc,
   __in  LPTSTR *lpszArgv
@@ -17,16 +16,25 @@ VOID WINAPI handler(
   __in  DWORD fdwControl
 );
 
-void wmain(int argc, wchar_t* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
-   SERVICE_TABLE_ENTRYW ServiceTable[2];
-   ServiceTable[0].lpServiceName = SERVICE_NAME;
-   ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTIONW)service_main;
+	if (argc > 1) /* The daemon process do not accept any parameter */
+	{
+		int err = daemon_init();
+		if (err)
+			return -err;
+		err = daemon_main_loop();
+		daemon_release();
+		return -err;
+	}
+	SERVICE_TABLE_ENTRYW ServiceTable[2];
+	ServiceTable[0].lpServiceName = SERVICE_NAME;
+	ServiceTable[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTIONW)service_main;
 
-   ServiceTable[1].lpServiceName = NULL;
-   ServiceTable[1].lpServiceProc = NULL;
+	ServiceTable[1].lpServiceName = NULL;
+	ServiceTable[1].lpServiceProc = NULL;
 
-   StartServiceCtrlDispatcherW(ServiceTable);  
+	StartServiceCtrlDispatcherW(ServiceTable);  
 }
 
 VOID WINAPI service_main(__in  DWORD /*dwArgc*/, __in  LPTSTR* /*lpszArgv*/)
@@ -53,6 +61,8 @@ VOID WINAPI service_main(__in  DWORD /*dwArgc*/, __in  LPTSTR* /*lpszArgv*/)
 
 	service_status.dwCurrentState = SERVICE_RUNNING;
 	SetServiceStatus(status_handle, &service_status);
+
+	daemon_main_loop();
 
 	daemon_release();
 
