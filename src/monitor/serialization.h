@@ -5,13 +5,15 @@
 #include "tracing.h"
 
 #include <boost_arctype.h> //should include any archive files before serialization 
-
-#include <boost/uuid/uuid_serialize.hpp>
+#include <boost/serialization/split_free.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_serialize.hpp>
 
 #include <string>
 
@@ -24,7 +26,7 @@ void serialize(archive & ar, unistr& str, const unsigned int)
 	std::wstring wstr;
 	ar & wstr;
 
-	unistr = wstr.c_str();
+	str = wstr.c_str();
 }
 
 template<class archive>
@@ -36,11 +38,16 @@ void serialize(archive & ar, partition& part, const unsigned int)
 	/* device is NOT stored as its a runtime value */
 }
 
+template <class archive>
+void serialize(archive & ar, partition_list& c, const unsigned int version)
+{
+	boost::serialization::split_free(ar, c, version);
+} 
 
 template<class archive>
-void serialize(archive& ar, partition_list& plist, const unsigned int /* file_version */)
+void load(archive& ar, partition_list& plist, const unsigned int /* file_version */)
 {
-	clear();
+	plist.clear();
 	size_t count;
 	ar & BOOST_SERIALIZATION_NVP(count);
 	ar & BOOST_SERIALIZATION_NVP(kpi_last);
@@ -48,7 +55,19 @@ void serialize(archive& ar, partition_list& plist, const unsigned int /* file_ve
 	{
 		partition* part = new partition;
 		ar & make_nvp("partition", *part);
-		plist.push_back(boost::shared_ptr<partition>(part));
+		plist.push_back(boost::shared_ptr<partition>(part));// for
+	}
+}
+
+template<class archive>
+void save(archive& ar, partition_list& plist, const unsigned int /* file_version */)
+{
+	size_t count;
+	ar & BOOST_SERIALIZATION_NVP(count);
+	ar & BOOST_SERIALIZATION_NVP(kpi_last);
+	for(size_t i = 0; i < count; i++)
+	{
+		ar & make_nvp("partition", *plist[i]);
 	}
 }
 
