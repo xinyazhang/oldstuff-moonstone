@@ -4,6 +4,7 @@
 #include <pal/stdtype.h>
 #include <boost/uuid/uuid.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <map>
 
 #define uuid_t boost::uuids::uuid
@@ -22,9 +23,11 @@ typedef boost::shared_ptr<partition> partition_sptr;
 class partition_list
 	:public std::vector<partition_sptr>
 {
+public:
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
-partition_list scan_online_partitons();
+void scan_online_partitons();
 partition_sptr locate_partition(partition_list&, const uuid_t&);
 void partition_blank();
 

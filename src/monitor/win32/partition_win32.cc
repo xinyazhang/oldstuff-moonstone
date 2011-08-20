@@ -4,13 +4,13 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-partition_list scan_online_partitons()
+void scan_online_partitons()
 {
 	wchar_t volname[MAX_PATH+1];
 	HANDLE handle = FindFirstVolumeW(volname, MAX_PATH+1);
 
 	if (handle == INVALID_HANDLE_VALUE)
-		return partition_list();
+		return ;
 
 	do
 	{
@@ -18,6 +18,7 @@ partition_list scan_online_partitons()
 		std::wstring uuid_str(volname, 11, 36);
 		boost::uuids::string_generator gen;
 		uuid_t uuid = gen(uuid_str);
+		/* Add to known partition list if seen new */
 		partition_sptr part = locate_partition(known_partitions, uuid);
 		part->device = volname;
 
