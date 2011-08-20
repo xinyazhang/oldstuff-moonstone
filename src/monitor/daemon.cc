@@ -31,19 +31,30 @@ int daemon_init()
 #endif
 
 #if MILESTONE >= 2
+	uint64_t fsize = conf.tellg();
 	conf.seekg(0, std::ios::end);
-	if (conf.tellg() == 0)
+	if (0 == fsize)
 	{
+		/*
+		 * Empty configure file, create empty data structure in memory
+		 */
 		partition_blank();
+#if MILESTONE >= 3
 		tracing_blank();
+#endif
 	} else
 	{
+		/*
+		 * Load configuration to memory
+		 */
 		conf.seekg(0, std::ios::beg);
 
 		/* load partition list */
 		barc_i ar(conf);
 		ar >> BOOST_SERIALIZATION_NVP(known_partitions);
+#if MILESTONE >= 3
 		ar >> BOOST_SERIALIZATION_NVP(tracing_paths);
+#endif
 	}
 	scan_online_partitons();
 #endif
@@ -55,6 +66,12 @@ int daemon_init()
 #if MILESTONE >= 4
 	open_ipc();
 #endif
+	return 0;
+}
+
+int daemon_main_loop()
+{
+	return 0;
 }
 
 void daemon_release()
@@ -75,7 +92,9 @@ void daemon_release()
 	conf.seekg(0, std::ios::beg);
 	barc_o ar(conf);
 	ar << BOOST_SERIALIZATION_NVP(known_partitions);
+#if MILESTONE >= 3
 	ar << BOOST_SERIALIZATION_NVP(tracing_paths);
+#endif
 	conf.close();
 #endif
 }
