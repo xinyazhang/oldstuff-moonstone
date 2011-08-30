@@ -54,38 +54,36 @@ void serialize(archive & ar, partition& part, const unsigned int)
 	/* device is NOT stored as its a runtime value */
 }
 
-template <class archive>
-void serialize(archive & ar, partition_list& c, const unsigned int version)
-{
-	boost::serialization::split_free(ar, c, version);
-} 
-
 template<class archive>
 void load(archive& ar, partition_list& plist, const unsigned int /* file_version */)
 {
 	plist.clear();
 	size_t count;
-	ar & BOOST_SERIALIZATION_NVP(count);
-	ar & BOOST_SERIALIZATION_NVP(kpi_last);
+	ar >> BOOST_SERIALIZATION_NVP(count);
 	for(size_t i = 0; i < count; i++)
 	{
 		partition* part = new partition;
-		ar & make_nvp("partition", *part);
+		ar >> make_nvp("partition", *part);
 		plist.push_back(boost::shared_ptr<partition>(part));// for
 	}
 }
 
 template<class archive>
-void save(archive& ar, partition_list& plist, const unsigned int /* file_version */)
+void save(archive& ar, const partition_list& plist, const unsigned int /* file_version */)
 {
-	size_t count;
-	ar & BOOST_SERIALIZATION_NVP(count);
-	ar & BOOST_SERIALIZATION_NVP(kpi_last);
+	size_t count = plist.size();
+	ar << BOOST_SERIALIZATION_NVP(count);
 	for(size_t i = 0; i < count; i++)
 	{
-		ar & make_nvp("partition", *plist[i]);
+		ar << make_nvp("partition", *plist[i]);
 	}
 }
+
+template <class archive>
+void serialize(archive & ar, partition_list& c, const unsigned int version)
+{
+	boost::serialization::split_free(ar, c, version);
+} 
 
 template<class archive>
 void serialize(archive& ar, path_internal& path, const unsigned int)
