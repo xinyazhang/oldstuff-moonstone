@@ -12,6 +12,7 @@ using boost::serialization::make_nvp;
 
 filestream conf;
 filestream open_conf();
+filestream write_conf();
 
 int daemon_init()
 {
@@ -31,8 +32,8 @@ int daemon_init()
 #endif
 
 #if MILESTONE >= 2
-	uint64_t fsize = conf.tellg();
 	conf.seekg(0, std::ios::end);
+	uint64_t fsize = conf.tellg();
 	if (0 == fsize)
 	{
 		/*
@@ -51,6 +52,7 @@ int daemon_init()
 
 		/* load partition list */
 		barc_i ar(conf);
+		ar >> BOOST_SERIALIZATION_NVP(kpi_last);
 		ar >> BOOST_SERIALIZATION_NVP(known_partitions);
 #if MILESTONE >= 3
 		ar >> BOOST_SERIALIZATION_NVP(tracing_paths);
@@ -66,6 +68,7 @@ int daemon_init()
 #if MILESTONE >= 4
 	open_ipc();
 #endif
+	conf.close();
 	return 0;
 }
 
@@ -89,8 +92,9 @@ void daemon_release()
 	close_ipc();
 #endif
 #if MILESTONE >= 2
-	conf.seekg(0, std::ios::beg);
+	conf = write_conf();
 	barc_o ar(conf);
+	ar << BOOST_SERIALIZATION_NVP(kpi_last);
 	ar << BOOST_SERIALIZATION_NVP(known_partitions);
 #if MILESTONE >= 3
 	ar << BOOST_SERIALIZATION_NVP(tracing_paths);
@@ -108,6 +112,17 @@ filestream open_conf()
 	fs.open(path.native(), std::ios_base::in|std::ios_base::out);
 	if (!fs.is_open())
 		fs.open(path.native(), std::ios_base::in|std::ios_base::out|std::ios_base::trunc);
+
+	return fs;
+}
+
+filestream write_conf()
+{
+	unistr path = locate_conf_dir();
+	path += "/records.conf";
+
+	filestream fs;
+	fs.open(path.native(), std::ios_base::in|std::ios_base::out|std::ios_base::trunc);
 
 	return fs;
 }
