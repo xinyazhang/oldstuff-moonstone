@@ -6,6 +6,7 @@
 
 #include <boost_arctype.h> //should include any archive files before serialization 
 #include <boost/serialization/split_free.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -20,13 +21,28 @@
 namespace boost {
 namespace serialization {
 
+#if 0
 template<class archive>
-void serialize(archive & ar, unistr& str, const unsigned int)
+void load(archive & ar, unistr& str, const unsigned int version)
 {
 	std::wstring wstr;
-	ar & wstr;
+	ar & make_nvp("value", wstr);
+	str = wstr;
+}
 
-	str = wstr.c_str();
+template<class archive>
+void save(archive & ar, unistr& str, const unsigned int version)
+{
+	std::wstring wstr = str.c_str();
+	ar & make_nvp("value", wstr);
+}
+#endif
+
+template<class archive>
+void serialize(archive & ar, unistr& str, const unsigned int version)
+{
+	//boost::serialization::split_free(ar, str, version);
+	ar & make_nvp("value", str);
 }
 
 template<class archive>
@@ -75,8 +91,8 @@ template<class archive>
 void serialize(archive& ar, path_internal& path, const unsigned int)
 {
 	uuid_t uuid;
-	ar & uuid;
-	ar & path.path;
+	ar & make_nvp("uuid", uuid);
+	ar & make_nvp("path", path.path);
 	path.partition = locate_partition(known_partitions, uuid);
 }
 
