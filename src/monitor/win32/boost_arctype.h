@@ -1,7 +1,7 @@
 #ifndef BOOST_ARCTYPE_H
 #define BOOST_ARCTYPE_H
 
-#if 0
+#if 1
 
 #include <boost/archive/xml_wiarchive.hpp>
 #include <boost/archive/xml_woarchive.hpp>
