@@ -1,0 +1,5 @@
+- Transactional File Operations
+	Currently the record.conf is erased before written, big mistake.
+
+- Automatic Backup/Restore
+	Currently the configure files are not backuped, big mistake.
