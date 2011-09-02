@@ -38,7 +38,7 @@ Milestone 2
 	NOTE: These tests are done without service
 
 Milestone 3
-	GOAL:	write a daemon could index paths and changes[NTFS]
+	GOAL:	write a daemon could index changes[NTFS]
 	TEST:	- Run the daemon with configure file which daemon paths were
 			written, touch filesystems and then check the journal file
 	
@@ -48,3 +48,15 @@ Milestone 4
 			  an index query, and check the file written by the client 
 			- Run the daemon with configure file, using a client to query
 			  change journal, and check the file written by the client
+
+Milestone 5
+	GOAL:	write a lib (and a client) to accept events.
+
+MILESTONE 6
+	GOAL:	write client/server for interactive requrests.
+
+Milestone 7
+	GOAL:	write a daemon tracing partition online and offline
+
+Milestone ???
+	GOAL:	add error handling infrastructures and facilities

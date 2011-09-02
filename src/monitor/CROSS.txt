@@ -10,7 +10,7 @@ The cross platform document
 5. Send fd across processes
 	sendmsg+recvmsg vs ReadFile(to get target process id)+DuplicateHandle+WriteFile
 6. Read FS events
-	fanotify vs Journal
+	fanotify vs Journal ( FSCTL_QUERY_USN_JOURNAL +  FSCTL_READ_USN_JOURNAL )
 	- Only ``paths'' are the same between interfaces.
 7. daemonize vs ?
 	- Win32 don't need a ``daemonize'' ...
@@ -24,6 +24,8 @@ The cross platform document
 	return /etc vs SHGetFolderLocation
 12. Mount event
 	libudisk vs ?
+13. Partition Scan
+	libe2fs vs FSCTL_GET_NTFS_FILE_RECORD
 
 
 Some invariant types across platforms

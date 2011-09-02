@@ -1,3 +1,5 @@
 The service open C:\ProgramData\lain\records.conf, but did not create the lain directory.
 
 The service does not exit normally. - fixed
+
+Win32 monitor CAN NOT tracing more than 64 partitions (exceeds the limits of MAXIMUM_WAIT_OBJECTS)
