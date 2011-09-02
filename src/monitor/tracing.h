@@ -2,6 +2,7 @@
 #define TRACING_H
 
 #include <vector>
+#include "version.h"
 #include "../pal/unistr.h"
 #include "partition.h"
 
@@ -11,12 +12,12 @@ struct path_internal
 	unistr			path;
 };
 
-void start_tracing();
-
 #if MILESTONE >= 3
 extern std::vector<path_internal> tracing_paths;
-extern tracing_path_list tracing_paths;
-extern tracing_object tracings;
+
+void tracing_blank();
+void tracing_start(); /* Implemented in <platform>/ */
+void tracing_stop();
 #endif
 
 #endif

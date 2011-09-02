@@ -62,7 +62,7 @@ int daemon_init()
 #endif
 
 #if MILESTONE >= 3
-	start_tracing();
+	tracing_start();
 #endif
 
 #if MILESTONE >= 4
@@ -86,7 +86,7 @@ void daemon_release()
 	conf = NULL;
 #endif
 #if MILESTONE >= 3
-	stop_tracing();
+	tracing_stop();
 #endif 
 #if MILESTONE >= 4
 	close_ipc();
