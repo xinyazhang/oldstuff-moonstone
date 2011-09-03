@@ -8,6 +8,7 @@ static boost::thread* tracing_thread;
 /* Additional functions implemented in <platform>/ */
 void tracing_impl();
 void tracing_impl_tell_exit();
+void tracing_impl_tell_change();
 
 void tracing_blank()
 {
@@ -24,9 +25,10 @@ void start_tracing()
 				iter != online_partitions.end();
 				iter++)
 		{
-			path_internal cur;
-			cur.partition = *iter;
-			tracing_paths.push_back(cur);
+			path_internal* cur = new path_internal;
+			cur->partition = *iter;
+			cur->journal.journal_status = JOURNAL_HAVENT_DETECTED;
+			tracing_paths.push_back(boost::shared_ptr<path_internal>(cur));
 		}
 	}
 #endif
@@ -38,4 +40,9 @@ void tracing_stop()
 	tracing_impl_tell_exit();
 	tracing_thread->join();
 	delete tracing_thread;
+}
+
+void tracing_commit_changes()
+{
+	tracing_impl_tell_change();
 }

@@ -18,6 +18,8 @@
 
 #include <string>
 
+#include <journal.h>
+
 namespace boost {
 namespace serialization {
 
@@ -88,9 +90,11 @@ void serialize(archive & ar, partition_list& c, const unsigned int version)
 template<class archive>
 void serialize(archive& ar, path_internal& path, const unsigned int)
 {
-	uuid_t uuid;
-	ar & make_nvp("uuid", uuid);
-	ar & make_nvp("path", path.path);
+	ar & make_nvp("uuid", path.partition.uuid);
+	ar & make_nvp("path", path.paths);
+	ar & make_nvp("journal_status", path.journal_status);
+	if (path.journal_status == JOURNAL_ENABLED)
+		ar & make_nvp("journal", path.journal);
 	path.partition = locate_partition(known_partitions, uuid);
 }
 
