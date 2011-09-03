@@ -63,6 +63,12 @@
     <ClInclude Include="..\..\..\pal\unistr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\journal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\opened.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cc">
@@ -96,6 +102,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\partition_win32.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\opened.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

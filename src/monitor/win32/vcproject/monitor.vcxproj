@@ -92,6 +92,8 @@
     <ClInclude Include="..\..\version.h" />
     <ClInclude Include="..\boost_arctype.h" />
     <ClInclude Include="..\file_struct.h" />
+    <ClInclude Include="..\journal.h" />
+    <ClInclude Include="..\opened.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\pal\pathc_win.c" />
@@ -102,6 +104,7 @@
     <ClCompile Include="..\..\partition.cc" />
     <ClCompile Include="..\..\tracing.cc" />
     <ClCompile Include="..\main.cc" />
+    <ClCompile Include="..\opened.cc" />
     <ClCompile Include="..\partition_win32.cc" />
     <ClCompile Include="..\special_path.cc" />
     <ClCompile Include="..\tracing_win32.cc" />

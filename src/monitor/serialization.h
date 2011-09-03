@@ -23,7 +23,6 @@
 namespace boost {
 namespace serialization {
 
-#if 0
 template<class archive>
 void load(archive & ar, unistr& str, const unsigned int version)
 {
@@ -33,18 +32,17 @@ void load(archive & ar, unistr& str, const unsigned int version)
 }
 
 template<class archive>
-void save(archive & ar, unistr& str, const unsigned int version)
+void save(archive & ar, const unistr& str, const unsigned int version)
 {
 	std::wstring wstr = str.c_str();
 	ar & make_nvp("value", wstr);
 }
-#endif
 
 template<class archive>
 void serialize(archive & ar, unistr& str, const unsigned int version)
 {
-	//boost::serialization::split_free(ar, str, version);
-	ar & make_nvp("value", str);
+	boost::serialization::split_free(ar, str, version);
+	//ar & make_nvp("value", str);
 }
 
 template<class archive>
@@ -90,7 +88,10 @@ void serialize(archive & ar, partition_list& c, const unsigned int version)
 template<class archive>
 void serialize(archive& ar, path_internal& path, const unsigned int)
 {
-	ar & make_nvp("uuid", path.partition.uuid);
+	uuid_t uuid;
+	if (path.partition)
+		uuid = path.partition->uuid;
+	ar & make_nvp("uuid", uuid);
 	ar & make_nvp("path", path.paths);
 	ar & make_nvp("journal_status", path.journal_status);
 	if (path.journal_status == JOURNAL_ENABLED)

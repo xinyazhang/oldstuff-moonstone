@@ -41,6 +41,10 @@ Milestone 3
 	GOAL:	write a daemon could index changes[NTFS]
 	TEST:	- Run the daemon with configure file which daemon paths were
 			written, touch filesystems and then check the journal file
+
+Milestone 3.1
+	GOAL:	write a daemon could serialize changes[NTFS] to files
+	TEST:	...
 	
 Milestone 4
 	GOAL:	write a daemon providing services with IPC

@@ -1,16 +1,17 @@
 #include <vector>
-#include <windows.h>
-#include <WinIoCtl.h>
 #include <boost/thread.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
 #include "../tracing.h"
 #include <stdio.h>
+#include <Windows.h>
 
 #define JOURNAL_BUFFER_SIZE 0x20000
 
 static std::vector<HANDLE> waiting_handles;
 static tracing_paths_t waiting_traces;
 static HANDLE ev_exit, ev_change;
+static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 0};
 
 static enum SPECIAL_OBJECT_IDS
 {
@@ -50,43 +51,46 @@ static void init_opened(path_internal_sptr vol)
 {
 	unistr volname(UT("\\\\?\\Volume{"));
 	volname += boost::lexical_cast<std::wstring>(vol->partition->uuid);
-	volname += UT("}\\");
+	volname += UT("}");
 
 	if (vol->journal_status == JOURNAL_DISABLED)
 		return ;
 
 	opened_t& tracing_staff = vol->tracing_staff;
-	tracing_staff.volume_handle = CreateFile(volname.native(),
+	tracing_staff.volume_handle = CreateFileW(volname.native(),
 			GENERIC_READ | GENERIC_WRITE, 
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			NULL,
 			OPEN_EXISTING,
 			FILE_FLAG_OVERLAPPED,
 			NULL);
-	if (tracing_staff.volume_handle == INVALID_HANDLE_NAME)
+	if (tracing_staff.volume_handle == INVALID_HANDLE_VALUE)
 	{
+		DWORD err = GetLastError();
 		vol->journal_status = JOURNAL_DISABLED;
 		return;
 	}
+	DWORD ret_bytes;
 	BOOL bret = DeviceIoControl(tracing_staff.volume_handle,
 			FSCTL_QUERY_USN_JOURNAL,
 			NULL,
 			0,
-			&iter->cur_usn_meta,
-			sizeof(iter->cur_usn_meta),
-			NULL,
+			&tracing_staff.cur_usn_meta,
+			sizeof(tracing_staff.cur_usn_meta),
+			&ret_bytes,
 			NULL);
 	if (!bret)
 	{
+		DWORD err = GetLastError();
 		vol->journal_status = JOURNAL_DISABLED;
 		return;
 	}
 	vol->journal_status = JOURNAL_ENABLED;
 
-	iter->tracing_staff->usn_selecting = 
-		{0, 0xFFFFFFFF, FALSE, 0, 0, tracing_staff.cur_usn_meta.UsnJournalID};
+	tracing_staff.usn_selecting = default_read_data;
+	vol->journal.journal_id_last_seen = tracing_staff.usn_selecting.UsnJournalID = tracing_staff.cur_usn_meta.UsnJournalID;	
 	tracing_staff.overlap.hEvent = general_event_create();
-	tracing_staff.usn_buffer = boost::scoped_ptr<char>(new char[JOURNAL_BUFFER_SIZE]);
+	tracing_staff.usn_buffer.swap(boost::scoped_ptr<char>(new char[JOURNAL_BUFFER_SIZE]));
 }
 
 /*
@@ -119,28 +123,41 @@ static void build_waitings()
 			iter2sp != tracing_paths.end();
 			iter2sp++)
 	{
-		(*iter2sp)->handle_idx = waiting_handles.size();
-		waiting_handles.push_back((*iter2sp)->overlap.hEvent);
+		opened_t& staff = (*iter2sp)->tracing_staff;
+		if ((*iter2sp)->journal_status != JOURNAL_ENABLED)
+		{
+			CloseHandle(staff.volume_handle);
+			staff.volume_handle = INVALID_HANDLE_VALUE;
+			staff.overlap.hEvent = INVALID_HANDLE_VALUE;
+			continue;
+		}
+		staff.handle_index = waiting_handles.size();
+		waiting_handles.push_back(staff.overlap.hEvent);
 		waiting_traces.push_back(*iter2sp);
 	}
 }
 
 static void async_read(opened_t& staff)
 {
-	DeviceIoControl(staff->volume_handle, 
+	BOOL ret = DeviceIoControl(staff.volume_handle, 
 			FSCTL_READ_USN_JOURNAL, 
-			&staff->usn_selecting,
-			sizeof(staff->usn_selecting),
-			&staff->usn_buffer.get(),
+			&staff.usn_selecting,
+			sizeof(staff.usn_selecting),
+			staff.usn_buffer.get(),
 			JOURNAL_BUFFER_SIZE,
-			&staff->usn_read_bytes,
-			staff->overlap);
+			&staff.usn_read_bytes,
+			&staff.overlap);
+	if (!ret)
+	{
+		int err;
+		err = GetLastError();
+	}
 }
 
 static void async_read_all()
 {
-	for(tracing_paths_t::iterator iter2sp = tracing_paths.begin();
-			iter2sp != tracing_paths.end();
+	for(tracing_paths_t::iterator iter2sp = waiting_traces.begin();
+			iter2sp != waiting_traces.end();
 			iter2sp++)
 	{
 		async_read((*iter2sp)->tracing_staff);
@@ -158,15 +175,16 @@ static int waiting()
 
 static void release_all()
 {
-	CloseHandel(ev_exit);
-	CloseHandel(ev_change);
+	CloseHandle(ev_exit);
+	CloseHandle(ev_change);
 
-	concerning.clear();
-	for(std::vector<opened_t>::iterator iter = concerning.begin();
-			iter != concerning.end();
-			iter++)
+	for(tracing_paths_t::iterator iter2sp = tracing_paths.begin();
+			iter2sp != tracing_paths.end();
+			iter2sp++)
 	{
-		CloseHandel(iter->volume_handle);
+		CancelIo((*iter2sp)->tracing_staff.volume_handle);
+		CloseHandle((*iter2sp)->tracing_staff.volume_handle);
+		CloseHandle((*iter2sp)->tracing_staff.overlap.hEvent);
 	}
 }
 
@@ -177,11 +195,11 @@ static void collect_journal(path_internal_sptr path)
 	GetOverlappedResult(staff.volume_handle,
 			&staff.overlap,
 			&ret_bytes,
-			TRUE);
+			FALSE);
 
 	int left = ret_bytes - sizeof(USN);
 	// Find the first record
-	PUSN_RECORD record_ptr = (PUSN_RECORD)(((char*)Buffer) + sizeof(USN));  
+	PUSN_RECORD record_ptr = (PUSN_RECORD)(staff.usn_buffer.get() + sizeof(USN));  
 	printf("****************************************\n");
 
 	while( left > 0 )
@@ -198,10 +216,12 @@ static void collect_journal(path_internal_sptr path)
 		// Find the next record
 		record_ptr = (PUSN_RECORD)(((char*)record_ptr) + 
 				record_ptr->RecordLength); 
-		// Update starting USN for next call
-		path.journal.journal_id_last_seen = 
-			staff.usn_selecting.StartUsn = *(USN *)&record_ptr; 
 	}
+	// Update starting USN for next call
+	path->journal.last_recorded_usn = 
+		staff.usn_selecting.StartUsn = *(USN *)staff.usn_buffer.get();
+	//SetEvent(staff.overlap.hEvent);
+	async_read(staff);
 }
 
 void tracing_impl()
@@ -212,8 +232,8 @@ void tracing_impl()
 
 	while (true)
 	{
-		int handle_idx = waiting();
-		switch (handle_idx)
+		int idx = waiting();
+		switch (idx)
 		{
 			case TOLD_TO_EXIT:
 				release_all();

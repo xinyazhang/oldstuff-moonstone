@@ -7,6 +7,7 @@
 #include "special_path.h"
 #include "daemon_error.h"
 #include "ipc.h"
+#include <stdio.h>
 
 using boost::serialization::make_nvp;
 
@@ -74,6 +75,7 @@ int daemon_init()
 
 int daemon_main_loop()
 {
+	getchar();
 	return 0;
 }
 

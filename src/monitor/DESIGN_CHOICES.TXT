@@ -24,3 +24,8 @@ partition locators:
 tracing:
 	partition, relative path are XP
 	watching are not XP, as fanotify watches pathes but NTFS watches volumns
+
+NTFS watching module:
+	it's not a easy job as the tracing module do not:
+		1. store USN information
+		2.
