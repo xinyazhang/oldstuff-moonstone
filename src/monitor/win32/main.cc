@@ -1,8 +1,9 @@
 #include <windows.h>
 #include "../daemon.h"
 #include "../version.h"
+#include <string.h>
 
-wchar_t SERVICE_NAME[] = L"laird";
+wchar_t SERVICE_NAME[] = L"laind";
 
 SERVICE_STATUS          service_status; 
 SERVICE_STATUS_HANDLE   status_handle; 
@@ -18,7 +19,7 @@ VOID WINAPI handler(
 
 int wmain(int argc, wchar_t* argv[])
 {
-	if (argc > 1) /* The daemon process do not accept any parameter */
+	if (argc <= 1) /* Default to non daemon mode */
 	{
 		int err = daemon_init();
 		if (err)
