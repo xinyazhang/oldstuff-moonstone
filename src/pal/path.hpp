@@ -9,10 +9,10 @@ extern "C"
 #include "path.h"
 };
 
-std::vector<unistr> split_path(const unistr& path);
-unistr agg_path(const std::vector<unistr>& path_list);
-unistr abs_fullpath(const unistr&);
-bool is_dir(const unistr&);
-void fso_read_entry(fso_t&, dir_entry_data);
+std::vector<unistr> EXPORT_TO_DLL split_path(const unistr& path);
+unistr EXPORT_TO_DLL agg_path(const std::vector<unistr>& path_list);
+unistr EXPORT_TO_DLL abs_fullpath(const unistr&);
+bool EXPORT_TO_DLL is_dir(const unistr&);
+void EXPORT_TO_DLL fso_read_entry(fso_t&, dir_entry_data);
 
 #endif

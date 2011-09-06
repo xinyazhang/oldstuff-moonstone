@@ -43,9 +43,12 @@ Milestone 3
 			written, touch filesystems and then check the journal file
 
 Milestone 3.1
-	GOAL:	write a daemon could serialize changes[NTFS] to files
-	TEST:	...
+	GOAL:	write a daemon could get USN full paths.
 	
+Milestone 3.2
+	GOAL:	write a daemon could serialize new changes[NTFS] to files
+	TEST:	...
+
 Milestone 4
 	GOAL:	write a daemon providing services with IPC
 	TEST:	- Run the daemon with configure file, using a client to start
