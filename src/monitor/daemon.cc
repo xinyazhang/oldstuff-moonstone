@@ -1,9 +1,10 @@
-#include "../pal/stdtype.h"
 #include "version.h"
+#include "../pal/stdtype.h"
 #include "serialization.h"
 
 // Using "" for headers only including functions, or cross-platform data structs
 #include "daemon.h"
+#include "lsconf.h"
 #include "special_path.h"
 #include "daemon_error.h"
 #include "ipc.h"
@@ -43,6 +44,7 @@ int daemon_init()
 		partition_blank();
 #if MILESTONE >= 3
 		tracing_blank();
+		platform_depedent_init();
 #endif
 	} else
 	{
@@ -57,6 +59,7 @@ int daemon_init()
 		ar >> BOOST_SERIALIZATION_NVP(known_partitions);
 #if MILESTONE >= 3
 		ar >> BOOST_SERIALIZATION_NVP(tracing_paths);
+		platform_depedent_load(ar);
 #endif
 	}
 	scan_online_partitons();
@@ -100,6 +103,7 @@ void daemon_release()
 	ar << BOOST_SERIALIZATION_NVP(known_partitions);
 #if MILESTONE >= 3
 	ar << BOOST_SERIALIZATION_NVP(tracing_paths);
+	platform_depedent_save(ar);
 #endif
 	conf.close();
 #endif
