@@ -5,13 +5,14 @@
 #include "../tracing.h"
 #include <stdio.h>
 #include <Windows.h>
-
-#define JOURNAL_BUFFER_SIZE 0x20000
+#include "logusn.h"
+#include "../special_path.h"
 
 static std::vector<HANDLE> waiting_handles;
 static tracing_paths_t waiting_traces;
 static HANDLE ev_exit, ev_change;
 static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 0};
+static logusn_context_t* logusn_ctx;
 
 static enum SPECIAL_OBJECT_IDS
 {
@@ -88,7 +89,15 @@ static void init_opened(path_internal_sptr vol)
 	vol->journal_status = JOURNAL_ENABLED;
 
 	tracing_staff.usn_selecting = default_read_data;
-	vol->journal.journal_id_last_seen = tracing_staff.usn_selecting.UsnJournalID = tracing_staff.cur_usn_meta.UsnJournalID;	
+	tracing_staff.usn_selecting.UsnJournalID = tracing_staff.cur_usn_meta.UsnJournalID;	
+	if (vol->journal.journal_id_last_seen != tracing_staff.cur_usn_meta.UsnJournalID)
+	{
+		logusn_ctx->ev_uuid(vol->partition->uuid);
+		logusn_ctx->ev_jid(tracing_staff.cur_usn_meta.UsnJournalID);
+		vol->journal.last_recorded_usn = 0;
+	}
+	vol->journal.journal_id_last_seen = tracing_staff.cur_usn_meta.UsnJournalID;
+
 	tracing_staff.overlap.hEvent = general_event_create();
 	tracing_staff.usn_buffer.swap(boost::scoped_ptr<char>(new char[JOURNAL_BUFFER_SIZE]));
 }
@@ -101,6 +110,7 @@ static void init_opened(path_internal_sptr vol)
  */
 static void open_handles()
 {
+	logusn_ctx = logusn_create_for_write(locate_conf_dir());
 	ev_exit = general_event_create();
 	ev_change = general_event_create();
 
@@ -186,10 +196,14 @@ static void release_all()
 		CloseHandle((*iter2sp)->tracing_staff.volume_handle);
 		CloseHandle((*iter2sp)->tracing_staff.overlap.hEvent);
 	}
+	delete logusn_ctx;
 }
 
 static void collect_journal(path_internal_sptr path)
 {
+	// Log the UUID of the partition
+	logusn_ctx->ev_uuid(path->partition->uuid);
+
 	opened_t& staff(path->tracing_staff);
 	DWORD ret_bytes;
 	GetOverlappedResult(staff.volume_handle,
@@ -197,10 +211,16 @@ static void collect_journal(path_internal_sptr path)
 			&ret_bytes,
 			FALSE);
 
-	int left = ret_bytes - sizeof(USN);
+	// Log the USN
+	size_t left = ret_bytes - sizeof(USN);
+
+	logusn_ctx->ev_usn_records(*(USN *)staff.usn_buffer.get(),
+			staff.usn_buffer.get() + sizeof(USN),
+			left);
 	// Find the first record
 	PUSN_RECORD record_ptr = (PUSN_RECORD)(staff.usn_buffer.get() + sizeof(USN));  
-	printf("****************************************\n");
+
+	//printf("****************************************\n");
 
 	while( left > 0 )
 	{
