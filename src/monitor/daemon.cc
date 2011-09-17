@@ -7,7 +7,6 @@
 #include "lsconf.h"
 #include "special_path.h"
 #include "daemon_error.h"
-#include "ipc.h"
 #include <stdio.h>
 
 using boost::serialization::make_nvp;

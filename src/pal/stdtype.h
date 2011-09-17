@@ -24,4 +24,10 @@ typedef std::fstream filestream;
 #endif
 #endif
 
+#ifdef _WIN32
+#define native_fd void*
+#else
+#define native_fd int
+#endif
+
 #endif

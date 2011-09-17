@@ -49,15 +49,15 @@ Milestone 3.2
 	GOAL:	write a daemon could serialize new changes[NTFS] to files
 	TEST:	Requires M3.3
 
-Milestone 3.3
-	GOAL:	write a client could access these changes
-
 Milestone 4
 	GOAL:	write a daemon providing services with IPC
 	TEST:	- Run the daemon with configure file, using a client to start
 			  an index query, and check the file written by the client 
 			- Run the daemon with configure file, using a client to query
 			  change journal, and check the file written by the client
+
+Milestone 4.1
+	GOAL:	write a client could access these changes
 
 Milestone 5
 	GOAL:	write a lib (and a client) to accept events.
