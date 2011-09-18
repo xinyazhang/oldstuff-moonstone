@@ -24,7 +24,9 @@ ipc_packet* ipc_read_packet(native_fd fd)
 
 ipc_packet* ipc_allocate_packet(size_t payload)
 {
-	return (ipc_packet*)malloc(payload + IPC_HEADER_SIZE);
+	ipc_packet* packet = (ipc_packet*)malloc(payload + IPC_HEADER_SIZE);
+	packet->payload_size = payload;
+	return packet;
 }
 
 void ipc_recycle_packet(ipc_packet* packet)
