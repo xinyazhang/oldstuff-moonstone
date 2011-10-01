@@ -63,7 +63,8 @@ Milestone 5
 	GOAL:	write a lib (and a client) to accept events.
 
 MILESTONE 6
-	GOAL:	write client/server for interactive requrests.
+	GOAL:	A complete error report system
+	xxxGOAL:	write client/server for interactive requrests.
 
 Milestone 7
 	GOAL:	write a daemon tracing partition online and offline
