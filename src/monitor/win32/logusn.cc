@@ -1,16 +1,23 @@
 #include "logusn.h"
 #include "../serialization.h"
 #include <stdio.h>
+#include "../packet_handler.h"
+#include <pal/ipc.h>
+#include <windows.h>
+
+#define LOGUSN_FILE_SIZE_LIMIT 10485760
 
 using boost::serialization::make_nvp;
 
 int lastfid;
-
-#define LOGUSN_FILE_SIZE_LIMIT 10485760
+static int serv_journal_req(ipc_packet*, ph_cookie);
+static int serv_journal_ack(ipc_packet*, ph_cookie);
 
 void logusn_init()
 {
 	lastfid = 0;
+	ph_register(PT_PRIV_JOURNAL_REQUEST, serv_journal_req);
+	ph_register(PT_PRIV_JOURNAL_ACK, serv_journal_ack);
 }
 
 void logusn_load(barc_i& ar)
@@ -166,4 +173,39 @@ logusn_context_t* logusn_create_for_read(const unistr& varpath, int fid, int64_t
 	logusn_read_context_t* ctx = new logusn_read_context_t(fid2filename(varpath, lastfid));
 	ctx->seekg(initseek);
 	return ctx;
+}
+
+struct journal_req_t
+{
+	ipc_packet_header header;
+	int32_t fid;
+};
+
+static int serv_journal_req(ipc_packet* packet, ph_cookie cookie)
+{
+	native_fd fd = (native_fd)cookie;
+	journal_req_t* req = (journal_req_t*)packet;
+	unistr fn = fid2filename(varpath, req->fid);
+	HANDLE file = CreateFileW(fn.native(),
+			GENERIC_READ,
+			FILE_SHARE_READ|FILE_SHARE_WRITE,
+			NULL,
+			OPEN_EXISTING,
+			0,
+			NULL);
+	ipc_send_fd(fd, file);
+	CloseHandle(file);
+}
+
+struct journal_ack_t
+{
+	ipc_packet_header header;
+	int32_t fid;
+};
+
+static int serv_journal_ack(ipc_packet*, ph_cookie)
+{
+	journal_req_t* req = (journal_req_t*)packet;
+	unistr fn = fid2filename(varpath, req->fid);
+	DeleteFileW(fn.native());
 }
