@@ -7,6 +7,8 @@
 #include "lsconf.h"
 #include "special_path.h"
 #include "daemon_error.h"
+#include "packet_handler.h"
+#include "sp.h"
 #include <stdio.h>
 
 using boost::serialization::make_nvp;
@@ -69,7 +71,8 @@ int daemon_init()
 #endif
 
 #if MILESTONE >= 4
-	open_ipc();
+	ph_init();
+	sp_init();
 #endif
 	conf.close();
 	return 0;
@@ -93,7 +96,8 @@ void daemon_release()
 	tracing_stop();
 #endif 
 #if MILESTONE >= 4
-	close_ipc();
+	ph_clean();
+	sp_close();
 #endif
 #if MILESTONE >= 2
 	conf = write_conf();
