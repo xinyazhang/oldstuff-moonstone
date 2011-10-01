@@ -68,6 +68,9 @@ int ipc_write(native_fd fd, const void* data, size_t bytes)
 
 int ipc_read(native_fd fd, void* data, size_t bytes)
 {
+	if (bytes <= 0)
+		return 0;
+
 	DWORD read = 0;
 	ReadFile(fd, data, (DWORD)bytes, &read, NULL);
 	return read;
@@ -101,7 +104,7 @@ void ipc_send_fd(native_fd target, native_fd sent)
 	sent_value = (uint64_t)sent_handle;
 	ipc_packet* packet = ipc_allocate_packet(sizeof(sent_value));
 	memcpy(packet->payload, &sent_value, sizeof(sent_value));
-	packet->type = PT_WIN32_HANDLE;
+	packet->header.type = PT_WIN32_HANDLE;
 	ipc_write_packet(target, packet);
 
 	ipc_recycle_packet(packet);
@@ -110,7 +113,7 @@ void ipc_send_fd(native_fd target, native_fd sent)
 native_fd ipc_recv_fd(native_fd source)
 {
 	ipc_packet* packet = ipc_read_packet(source);
-	if (packet->type != PT_WIN32_HANDLE)
+	if (packet->header.type != PT_WIN32_HANDLE)
 		return INVALID_HANDLE_VALUE;
 	uint64_t value;
 	memcpy(&value, packet->payload, sizeof(value));
