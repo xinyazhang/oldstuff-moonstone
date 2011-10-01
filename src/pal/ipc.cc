@@ -5,6 +5,16 @@ int ipc_write_packet(native_fd fd, ipc_packet* packet)
 	return ipc_write(fd, packet, packet->payload_size + IPC_HEADER_SIZE);
 }
 
+int ipc_direct_write_packet(native_fd fd,
+	   	uint32_t type, uint32_t payload_size, const char* payload)
+{
+	ipc_packet_header header;
+	header.type = type;
+	header.payload_size = payload_size;
+	return ipc_write(fd, &header, IPC_HEADER_SIZE) + 
+		ipc_write(fd, payload, payload_size);
+}
+
 ipc_packet* ipc_read_packet(native_fd fd)
 {
 	uint32_t type, payload;

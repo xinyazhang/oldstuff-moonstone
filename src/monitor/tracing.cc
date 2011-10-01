@@ -9,6 +9,7 @@ static boost::thread* tracing_thread;
 void tracing_impl();
 void tracing_impl_tell_exit();
 void tracing_impl_tell_change();
+void tracing_service_init();
 
 void tracing_blank()
 {
