@@ -9,6 +9,7 @@
 #include "daemon_error.h"
 #include "packet_handler.h"
 #include "sp.h"
+#include "general_service.h"
 #include <stdio.h>
 
 using boost::serialization::make_nvp;
@@ -73,6 +74,7 @@ int daemon_init()
 #if MILESTONE >= 4
 	ph_init();
 	sp_init();
+	gs_init();
 #endif
 	conf.close();
 	return 0;
@@ -96,6 +98,7 @@ void daemon_release()
 	tracing_stop();
 #endif 
 #if MILESTONE >= 4
+	gs_clean();
 	ph_clean();
 	sp_close();
 #endif
