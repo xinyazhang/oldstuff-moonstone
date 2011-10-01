@@ -15,8 +15,8 @@ ipc_packet* ipc_read_packet(native_fd fd)
 
 	/* PAYLOAD */
 	packet = ipc_allocate_packet(payload);
-	packet->type = type;
-	packet->payload_size = payload;
+	packet->header.type = type;
+	packet->header.payload_size = payload;
 	ipc_read(fd, &packet->payload, packet->payload_size);
 
 	return packet;
@@ -25,7 +25,7 @@ ipc_packet* ipc_read_packet(native_fd fd)
 ipc_packet* ipc_allocate_packet(size_t payload)
 {
 	ipc_packet* packet = (ipc_packet*)malloc(payload + IPC_HEADER_SIZE);
-	packet->payload_size = payload;
+	packet->header.payload_size = payload;
 	return packet;
 }
 

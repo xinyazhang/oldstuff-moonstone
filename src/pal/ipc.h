@@ -5,11 +5,20 @@
 
 const static int IPC_HEADER_SIZE = sizeof(uint32_t)+sizeof(uint32_t);
 
-struct ipc_packet
+#if defined(_MSC_VER)
+#pragma warning(disable : 4200) // Disable C4200 as it's useful
+#endif
+
+struct ipc_packet_header
 {
 	uint32_t type;
 	uint32_t payload_size;
-	char payload[1];
+};
+
+struct ipc_packet
+{
+	ipc_packet_header header;
+	char payload[];
 };
 
 /*
