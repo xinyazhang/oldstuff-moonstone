@@ -3,6 +3,7 @@
 #include <pal/ipc.h>
 #include <pal/proc.h>
 #include "sp.h"
+#include "auth.h"
 #include "packet_handler.h"
 
 static boost:thread* sp_thread = NULL;
@@ -34,6 +35,12 @@ void sp_accepting()
 	do
 	{
 		native_fd fd = ipc_accept(sp_fd);
+		if (!auth_ipc_client(fd))
+		{
+			ipc_close_connect(fd);
+			continue;
+		}
+
 		if (!ipc_valid_native_fd(fd))
 			break;
 
