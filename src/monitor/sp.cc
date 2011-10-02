@@ -6,7 +6,7 @@
 #include "auth.h"
 #include "packet_handler.h"
 
-static boost:thread* sp_thread = NULL;
+static boost::thread* sp_thread = NULL;
 static const unistr sp_name(UT("MOONSTONE"));
 static native_fd sp_fd;
 static native_fd term_fd;
@@ -32,9 +32,10 @@ void sp_close()
 
 void sp_accepting()
 {
+	native_fd fd;
 	do
 	{
-		native_fd fd = ipc_accept(sp_fd);
+		fd = ipc_accept(sp_fd);
 		if (!auth_ipc_client(fd))
 		{
 			ipc_close_connect(fd);

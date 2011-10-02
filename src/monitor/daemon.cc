@@ -10,6 +10,7 @@
 #include "packet_handler.h"
 #include "sp.h"
 #include "general_service.h"
+#include "priv.h"
 #include <stdio.h>
 
 using boost::serialization::make_nvp;

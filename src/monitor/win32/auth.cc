@@ -5,6 +5,7 @@
 bool auth_ipc_client(native_fd fd)
 {
 	BOOL member = FALSE;
+	SID_IDENTIFIER_AUTHORITY nt_auth = SECURITY_NT_AUTHORITY;
 	ULONG pid;
 	if (!GetNamedPipeClientProcessId(fd, &pid))
 	{
@@ -20,16 +21,15 @@ bool auth_ipc_client(native_fd fd)
 		goto failed_in_open_token;
 
 	PSID admins;
-	PSID_IDENTIFIER_AUTHORITY nt_auth = SECURITY_NT_AUTHORITY;
 	if (!AllocateAndInitializeSid(&nt_auth, 
 				2, 
-				SECURITYBUILTINDOMAINRID, 
-				DOMAINALTASRIDADMINS, 
+				SECURITY_BUILTIN_DOMAIN_RID, 
+				DOMAIN_ALIAS_RID_ADMINS, 
 				0, 0, 0, 0, 0, 0, 
 				&admins))
 		goto failed_in_alloc_sid;
 
-	ChekcTokenMemberShip(token, admins, &member);
+	CheckTokenMembership(token, admins, &member);
 
 	FreeSid(admins);
 failed_in_alloc_sid:

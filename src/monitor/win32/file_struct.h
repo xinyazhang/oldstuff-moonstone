@@ -2,7 +2,7 @@
 #define WIN32_FILE_STRUCT_H
 
 #include <fstream>
-#include <stringstream>
+#include <sstream>
 
 typedef std::wfstream filestream;
 typedef std::wstringstream native_sstream;

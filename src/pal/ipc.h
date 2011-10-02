@@ -54,7 +54,7 @@ EXPORT_TO_DLL int ipc_read(native_fd, void*, size_t);
               
 EXPORT_TO_DLL int ipc_write_packet(native_fd, ipc_packet* );
 EXPORT_TO_DLL int ipc_direct_write_packet(native_fd,
-	   	uint32_t type, const char* payload, uint32_t payload_size);
+	   	uint32_t type, const void* payload, uint32_t payload_size);
 EXPORT_TO_DLL ipc_packet* ipc_read_packet(native_fd);
 
 EXPORT_TO_DLL ipc_packet* ipc_allocate_packet(size_t payload);

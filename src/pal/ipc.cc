@@ -2,11 +2,11 @@
 
 int ipc_write_packet(native_fd fd, ipc_packet* packet)
 {
-	return ipc_write(fd, packet, packet->payload_size + IPC_HEADER_SIZE);
+	return ipc_write(fd, packet, packet->header.payload_size + IPC_HEADER_SIZE);
 }
 
 int ipc_direct_write_packet(native_fd fd,
-	   	uint32_t type, const char* payload, uint32_t payload_size)
+	   	uint32_t type, const void* payload, uint32_t payload_size)
 {
 	ipc_packet_header header;
 	header.type = type;
@@ -20,14 +20,14 @@ ipc_packet* ipc_read_packet(native_fd fd)
 	uint32_t type, payload;
 	ipc_packet* packet;
 	/* HEADER */
-	ipc_read(fd, &type, sizeof(packet->type));
-	ipc_read(fd, &payload, sizeof(packet->payload_size));
+	ipc_read(fd, &type, sizeof(packet->header.type));
+	ipc_read(fd, &payload, sizeof(packet->header.payload_size));
 
 	/* PAYLOAD */
 	packet = ipc_allocate_packet(payload);
 	packet->header.type = type;
 	packet->header.payload_size = payload;
-	ipc_read(fd, &packet->payload, packet->payload_size);
+	ipc_read(fd, &packet->payload, packet->header.payload_size);
 
 	return packet;
 }

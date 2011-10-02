@@ -29,7 +29,7 @@ void ph_cookie_destroy(ph_cookie)
 
 void ph_process(ipc_packet* packet, ph_cookie cookie)
 {
-	hash_map<IPC_PACKET_TYPE, ph_t>::iterator iter = ph_map.find(packet->type);
+	hash_map<IPC_PACKET_TYPE, ph_t>::iterator iter = ph_map.find((IPC_PACKET_TYPE)packet->header.type);
 	if (iter != ph_map.end())
 	{
 		(*iter->second)(packet, cookie);
