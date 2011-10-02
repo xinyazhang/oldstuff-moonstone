@@ -6,7 +6,7 @@ int ipc_write_packet(native_fd fd, ipc_packet* packet)
 }
 
 int ipc_direct_write_packet(native_fd fd,
-	   	uint32_t type, uint32_t payload_size, const char* payload)
+	   	uint32_t type, const char* payload, uint32_t payload_size)
 {
 	ipc_packet_header header;
 	header.type = type;

@@ -10,8 +10,8 @@ static int ipc_write_sssp(native_fd fd, uint32_t type, native_sstream& ss)
 {
 	ipc_direct_write_packet(fd, 
 			type, 
-			(ss.str().size()+1) * sizeof(unichar),
-			ss.str().c_str());
+			ss.str().c_str(),
+			(ss.str().size()+1) * sizeof(unichar));
 }
 
 static int serv_list_vol(ipc_packet* /* NOBODY */, ph_cookie cookie)
