@@ -21,7 +21,7 @@ SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "d:/usr/local/include")
 ADD_SUBDIRECTORY( pal )
 ADD_SUBDIRECTORY( dal )
 ADD_SUBDIRECTORY( kernel )
-ADD_SUBDIRECTORY( monitor )
+ADD_SUBDIRECTORY( moonstone )
 #ADD_SUBDIRECTORY( testcases )
 
 #add_subdirectory( gui )
