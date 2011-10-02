@@ -42,7 +42,7 @@ static void concern_internal_path(path_internal& path)
 	}
 	opened_t op;
 	op.partition = path.partition;
-	op.volume_handle = INVALID_HANDLE_NAME;
+	op.volume_handle = INVALID_HANDLE_VALUE;
 	op.interested_paths.push_back(path.path);
 	concerning.push_back(op);
 }
