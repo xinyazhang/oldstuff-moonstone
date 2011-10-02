@@ -10,14 +10,18 @@
 using boost::serialization::make_nvp;
 
 int lastfid;
+#if 0
 static int serv_journal_req(ipc_packet*, ph_cookie);
 static int serv_journal_ack(ipc_packet*, ph_cookie);
+#endif
 
 void logusn_init()
 {
+#if 0
 	lastfid = 0;
 	ph_register(PT_PRIV_JOURNAL_REQUEST, serv_journal_req);
 	ph_register(PT_PRIV_JOURNAL_ACK, serv_journal_ack);
+#endif
 }
 
 void logusn_load(barc_i& ar)
@@ -175,6 +179,7 @@ logusn_context_t* logusn_create_for_read(const unistr& varpath, int fid, int64_t
 	return ctx;
 }
 
+#if 0
 struct journal_req_t
 {
 	ipc_packet_header header;
@@ -195,6 +200,7 @@ static int serv_journal_req(ipc_packet* packet, ph_cookie cookie)
 			NULL);
 	ipc_send_fd(fd, file);
 	CloseHandle(file);
+	return 0;
 }
 
 struct journal_ack_t
@@ -209,3 +215,4 @@ static int serv_journal_ack(ipc_packet*, ph_cookie)
 	unistr fn = fid2filename(varpath, req->fid);
 	DeleteFileW(fn.native());
 }
+#endif
