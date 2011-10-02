@@ -67,7 +67,7 @@ int daemon_init()
 	scan_online_partitons();
 #endif
 
-#if MILESTONE >= 3
+#if MILESTONE == 3
 	tracing_start();
 #endif
 
@@ -75,6 +75,7 @@ int daemon_init()
 	ph_init();
 	sp_init();
 	gs_init();
+	priv_init();
 #endif
 	conf.close();
 	return 0;
@@ -98,6 +99,7 @@ void daemon_release()
 	tracing_stop();
 #endif 
 #if MILESTONE >= 4
+	priv_clean();
 	gs_clean();
 	ph_clean();
 	sp_close();
