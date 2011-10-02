@@ -281,6 +281,7 @@ void tracing_impl_tell_change()
 	SetEvent(ev_change);
 }
 
+#if 0
 static int serv_list_vol(ipc_packet* packet, ph_cookie cookie)
 {
 	uuid_t uuid = read_uuid(packet);
@@ -288,8 +289,11 @@ static int serv_list_vol(ipc_packet* packet, ph_cookie cookie)
 	volname += boost::lexical_cast<std::wstring>(vol->partition->uuid);
 	volname += UT("}");
 }
+#endif
 
 void tracing_service_init()
 {
+#if 0
 	ph_register(PT_PRIV_WIN32_NTFS_TRACING_INITIALIZE, serv_init_ntfs_tracing);
+#endif
 }
