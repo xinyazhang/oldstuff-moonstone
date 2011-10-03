@@ -10,23 +10,31 @@ typedef int64_t idx_t;
 #define USE_INT64_INDEX
 
 #ifndef UNICODE_SELECTED
-#error "Please choose UTF-16LE or UTF-8
+
+#	error "Please choose UTF-16LE or UTF-8
+
 #else
 
-#ifdef USE_UTF16LE
-#include <fstream>
+#	ifdef USE_UTF16LE
+#		include <fstream>
+#		include <sstream>
 typedef std::wfstream filestream;
-#endif
-
-#ifdef USE_UTF8
-#include <fstream>
+typedef std::wstringstream native_sstream;
+#		define nativelize_QString(str) ((unichar*)((str).utf16()))
+#	endif
+#	ifdef USE_UTF8
+#		include <fstream>
+#		include <sstream>
 typedef std::fstream filestream;
-#endif
+typedef std::stringstream native_sstream;
+#		define nativelize_QString(str) ((str).toUtf8().data())
+#	endif
+
 #endif
 
 #ifdef _WIN32
 #define native_fd void*
-#else
+#else /* Must be a POSIX system */
 #define native_fd int
 #endif
 
