@@ -40,3 +40,8 @@ void sql_stmt::col(int c, idx_t& value)
 {
 	internal_->col(c, value);
 }
+
+void sql_stmt::clear()
+{
+	internal_.reset();
+}

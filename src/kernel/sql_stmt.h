@@ -30,6 +30,8 @@ public:
 	bool step();
 	void col(int c, unistr& );
 	void col(int c, idx_t& );
+
+	void clear();
 private:
 	boost::shared_ptr<sql_stmt_interface> internal_;
 };
