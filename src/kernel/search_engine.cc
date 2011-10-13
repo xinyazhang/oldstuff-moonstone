@@ -2,6 +2,7 @@
 #include <boost/thread.hpp>
 #include <boost/mutex.hpp>
 #include <queue>
+#include <algorithm>
 #include "Database.h"
 
 class line_data
@@ -22,6 +23,9 @@ public:
 		:cb_cookie(cookie), cb_func(func), thread_exit(0), db(_db)
 	{
 		thread = new boost::thread(boost::bind(&search, serv));
+		front = new std::vector<line_data>;
+		read = new std::vector<line_data>;
+		reading = new std::vector<line_data>;
 	}
 	~search_service()
 	{
@@ -30,6 +34,8 @@ public:
 		trigger.unlock();
 		thread->join();
 		delete thread;
+		delete front;
+		delete reading;
 	}
 
 	void* cb_cookie;
@@ -37,16 +43,21 @@ public:
 
 	boost::thread* thread;
 	boost::condition_variable cond;
-	boost::mutex lock;
+	boost::mutex lock; // protect thread_exit and task_queue
 	int thread_exit;
 	std::deque<unistr> task_queue;
 
 	Database* db;
-	sql_stmt searching_stmt;
-	uint64_t searching_row_count;
-	sql_stmt reading_stmt;
-	uint64_t reading_row_count;
-	std::vector<line_data> buffer;
+	std::vector<line_data> *front; // UI thread
+	std::vector<line_data> *read; // UI, working shared
+	std::vector<line_data> *reading; // working thread
+	boost::mutex flip_lock; // protect read
+
+	void flip()
+	{
+		boost::scoped_lock sl(flip_lock);
+		std::swap(read, front);
+	}
 };
 
 static sql_stmt parse_search(search_service* serv, const unistr& pat)
@@ -69,20 +80,12 @@ static sql_stmt parse_search(search_service* serv, const unistr& pat)
 		if (i < pats.size())
 			where_sub += " AND ";
 	}
-	/*
-	 * Counting...
-	 */
-	sql_stmt stmt = db->create_stmt_ex(
-			"SELECT COUNT(*) FROM known_files WHERE"+where_sub);
-	for(int i = 1; i <= pats.size(); i++)
-		stmt.bind(i, "%"+pats[i-1]+"%");
-	stmt.step();
-	stmt.col(1, serv->searching_row_count);
 
-	stmt = db->create_stmt_ex(
+	sql_stmt stmt = db->create_stmt_ex(
 			"SELECT (inode,volid) FROM known_files WHERE "
 		   	+ where_sub);
-	stmt.step();
+	for(int i = 1; i <= pats.size(); i++)
+		stmt.bind(i, "%"+pats[i-1]+"%");
 
 	return stmt;
 }
@@ -106,8 +109,19 @@ static void search(search_service* serv)
 			return ;
 
 		/* Searching... */
+		serv->reading.clear();
+		sql_stmt stmt = prepare_search(serv, search_req);
+		while(stmt.step())
+		{
+			line_data ld;
+			stmt.col(1, ld.inode)
+			stmt.col(2, ld.volid)
+			serv->reading.push_back(ld);
+		}
+		serv->flip_lock.lock();
+		std::swap(serv->reading, serv->read);
+		serv->flip_lock.unlock();
 
-		serv->searching_stmt = prepare_search(serv, search_req);
 		(*(serv->cb_func))(serv->cb_cookie, SE_JOB_DONE);
 	}while(true);
 }
@@ -142,32 +156,24 @@ search_engine_t::post_search(class search_service* serv,
 void 
 search_engine_t::update_service_state(class search_service* serv)
 {
-	boost::mutex::scoped_lock lock(serv->lock);
-	serv->reading_stmt = serv->searching_stmt;
-	serv->reading_row_count = serv->searching_row_count;
-	serv->buffer.clear();
+	serv->flip();
 }
 
 int 
 search_engine_t::line_count(class search_service* serv)
 {
-	return serv->reading_row_count;
+	return serv->front.size();
 }
 
 unistr 
 search_engine_t::data(class search_service* serv, int row, int column)
 {
-	line_data ld;
-	while(serv->buffer.size() < row)
-	{
-		stmt.step();
-		stmt.col(1, ld.inode);
-		stmt.col(2, ld.volid);
-		serv->buffer.push_back(ld);
-	}
-	ld = serv->buffer[row - 1];
+	ld = (*serv->front)[row - 1];
 	if (!ld.looked)
+	{
 		generate_fullpath(serv->db, ld);
+		(*serv->front)[row - 1] = ld;
+	}
 	return ld.data[column];
 }
 
