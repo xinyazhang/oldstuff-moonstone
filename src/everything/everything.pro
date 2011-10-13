@@ -10,17 +10,14 @@ TARGET = everything
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    searchfiledbmodel.cpp \
-    Preferences.cc
+SOURCES +=\
+    Preferences.cc \
+    main.cc \
+    mainwindow.cc \
+    searchfiledbmodel.cc
 
 HEADERS  += mainwindow.h \
     searchfiledbmodel.h \
     Preferences.h
 
 FORMS    += mainwindow.ui
-
-
-
-
