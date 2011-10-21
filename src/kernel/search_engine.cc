@@ -4,6 +4,7 @@
 #include <queue>
 #include <algorithm>
 #include "Database.h"
+#include "notifier.h"
 
 class line_data
 {
@@ -17,15 +18,18 @@ public:
 static void generate_fullpath(Database* db, line_data&);
 
 class search_service
+	:public notifier
 {
 public:
 	search_service(void* cookie, cb_func_t func, Database* _db)
-		:cb_cookie(cookie), cb_func(func), thread_exit(0), db(_db)
+		:thread_exit(0), db(_db)
 	{
 		thread = new boost::thread(boost::bind(&search, serv));
 		front = new std::vector<line_data>;
 		read = new std::vector<line_data>;
 		reading = new std::vector<line_data>;
+
+		register_callback(func, cookie);
 	}
 	~search_service()
 	{
@@ -38,7 +42,6 @@ public:
 		delete reading;
 	}
 
-	void* cb_cookie;
 	search_engine_t::cb_func_t cb_func;
 
 	boost::thread* thread;
@@ -122,7 +125,8 @@ static void search(search_service* serv)
 		std::swap(serv->reading, serv->read);
 		serv->flip_lock.unlock();
 
-		(*(serv->cb_func))(serv->cb_cookie, SE_JOB_DONE);
+		serv->broadcast(SE_JOB_DONE);
+		// (*(serv->cb_func))(serv->cb_cookie, SE_JOB_DONE);
 	}while(true);
 }
 

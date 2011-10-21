@@ -15,7 +15,6 @@ class search_engine_t
 public:
 	search_engine_t(class Database* );
 
-	typedef int (*cb_func_t)(void* cookie, ENGINE_EVENT);
 	class search_service* setup_service(void* cookie, cb_func_t);
 	void finalize_service(class search_service*);
 
