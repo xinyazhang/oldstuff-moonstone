@@ -34,6 +34,7 @@ public:
 	void begin_transaction();
 	void final_transaction();
 	void abort_transaction();
+
 	sql_stmt create_insert_stmt(Database::TableSelector, int col_number);
 	sql_stmt create_simsel_stmt(TableSelector, const unistr& locator, const unistr& selcontent);
 	sql_stmt create_selall_stmt(TableSelector, int locatorn, const char* locators[]);
@@ -55,6 +56,9 @@ public:
 	AsyncWQ* asyncwq();
 	snapshotter* ss();
 	ftman_t* ftman();
+
+	filemgr_t* filemgr();
+	volmgr_t* volmgr();
 private:
 	unistr prefix_;
 	static const unistr table_name_postfix_[]; // it seems we must use this
