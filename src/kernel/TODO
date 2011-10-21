@@ -35,3 +35,40 @@
 
 20100508
 * Impl. all tag_edit_action's subclass and theirs factory methods
+
+20111013
+search_engine inherited notifier
+done index_engine_t
+
+20111014
+done watching_t
+	-todo check and create (IPC?)
+done indexer_win32
+	- todo dump journal to db
+FOR_EACH macro
+ipc_center for IPC.
+
+20111018
+done watching_t::dump
+	- switch Reason in dump
+
+ipc_center
+
+dbmgr->volmgr
+	transaction
+dbmgr->filemgr
+	various modifications
+
+20111019
+ipc_center
+volmgr and filemgr's IMPL.
+Modify Database
+
+20111021
+xxx not a simple ipc center, we need a new ``connect to server'' procedure...
+using privilege instead.
+
+
+LTE:
+- Database Initialization
+- Perference to build db
