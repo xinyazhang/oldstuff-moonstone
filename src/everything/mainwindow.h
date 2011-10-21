@@ -11,20 +11,21 @@ namespace Ui {
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	explicit MainWindow(class Preferences*, QWidget *parent = 0);
+	~MainWindow();
 
-private slots:
-    void on_lineEdit_textChanged(const QString &arg1);
+	private slots:
+		void on_lineEdit_textChanged(const QString &arg1);
 
-    void on_searching_textChanged(const QString &arg1);
+	void on_searching_textChanged(const QString &arg1);
 
 private:
-    SearchFileDBModel* search_model;
-    Ui::MainWindow *ui;
+	SearchFileDBModel* search_model;
+	Ui::MainWindow *ui;
+	class Preferences* pref_;
 };
 
 static const int EVENT_SEARCHDONE = QEvent::User+1;

@@ -24,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -39,6 +39,23 @@
         </item>
         <item>
          <widget class="QTreeView" name="result"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Local Volumes</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QListView" name="volume_lists"/>
+        </item>
+        <item>
+         <widget class="QDialogButtonBox" name="buttonBox">
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -93,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>875</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -6,7 +6,7 @@
 class SearchFileDBModel : public QAbstractItemModel
 {
 public:
-    SearchFileDBModel();
+    SearchFileDBModel(class Preferences* pref);
 
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -22,7 +22,7 @@ public:
 
     int change_searching_text(const QString& str);
 
-    static int EventCallback(void* /*SearchFileDBModel*, ENGINE_EVENT*/, ENGINE_EVENT);
+    static int EventCallback(void* /*SearchFileDBModel*, ENGINE_EVENT*/, ENGINE_EVENT, void*);
     bool event ( QEvent * e );
     void update_result();
 private:

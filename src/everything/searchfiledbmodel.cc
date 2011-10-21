@@ -76,10 +76,10 @@ int SearchFileDBModel::change_searching_text(const QString& str)
     pref->search_engine->post_search(se_cookie, nativelize_QString(str));
 }
 
-int SearchFileDBModel::EventCallback(void* cookie, ENGINE_EVENT ev)
+int SearchFileDBModel::EventCallback(void* cookie, ENGINE_EVENT ev, void*)
 {
-    SearchFileDBModel* model = (SearchFileDBModel*)cookie;
-    QCoreApplication::postEvent(model, new QEvent(EVENT_SEARCHDONE));
+	SearchFileDBModel* model = (SearchFileDBModel*)cookie;
+	QCoreApplication::postEvent(model, new QEvent(EVENT_SEARCHDONE));
 }
 
 int SearchFileDBModel::event(QEvent* e)
