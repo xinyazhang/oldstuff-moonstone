@@ -89,6 +89,13 @@ void db_sqlite_impl::check_version() // would modify initialized_
 static const unistr sql_template[] =
 {
 	UT("PRAGMA encoding = \"UTF-16\";"), 
+	UT("CREATE TABLE IF NOT EXISTS known_vols(id INTEGER PRIMARY KEY ASC AUTOINCREMENT, uuid TEXT UNIQUE);"),
+	UT("CREATE TABLE IF NOT EXISTS known_dentry(volid INTEGER REFERENCES known_vols(id), inode INTEGER, parent INTEGER, name TEXT, check INTEGER, PRIMARY KEY(volid, inode));"),
+	UT("CREATE TABLE IF NOT EXISTS known_file(volid INTERGER REFERENCES known_vols(id), inode INTEGER, refc INTEGER, PRIMARY KEY(volid, inode));"),
+	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER);")
+
+		/* More items like hashing would be added later*/
+#if 0
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_META(version INTEGER);"),
 	UT("INSERT INTO $PREFIX_META VALUES(1);"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_tnode(idx INTEGER PRIMARY KEY ASC AUTOINCREMENT, refc INTEGER, mastername TEXT, comment TEXT);"),
@@ -98,11 +105,12 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_fso(fsoid INTEGER PRIMARY KEY ASC AUTOINCREMENT, parentid INTEGER REFERENCES $PREFIX_fso(fsoid) ON DELETE CASCADE, name TEXT, size INTEGER, fs_date INTEGER, recusive_date INTEGER, hash_algo INTEGER, hash BLOB, UNIQUE(parentid, name));"),
 	UT("INSERT INTO $PREFIX_fso values(0, 0, \"/\", 0, 0, 0, NULL, NULL)"),
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_ft(fsoid INTERGER REFERENCES $PREFIX_fso(fsoid) ON DELETE CASCADE, tnode INTEGER REFERENCES $PREFIX_tnode(idx) ON DELETE CASCADE, PRIMARY KEY(fsoid, tnode));")
+#endif
 };
 
 int db_sqlite_impl::initialize_sql_number() const
 {
-	return 9; // magical number, but it doesn't matter
+	return 5; // magical number, but it doesn't matter
 }
 
 void db_sqlite_impl::build_sqls()
