@@ -1,0 +1,38 @@
+ipc_center						cancelled, privilege instead
+
+Database Initialization					done through change sqls
+Perference to build db					done
+
+privilege						done
+	- open_volume
+
+Database Reincarnation					done
+volmgr and filemgr's IMPL.				done
+UI adjustment						
+	- List volume
+		- pal ls_volume				done
+		- a model
+	- Add volume
+		- stack add 
+	- Remove volume
+		- stack remove 
+	- Apply
+		- emit changes
+	- Cancel
+		- revert changes
+
+=COMPILE=
+=TEST=
+
+-STE.NEXT-
+Path generation
+Volume Change
+
+-MTE-
+NOT Trigger UAC, using Daemon
+	- IPC for handle
+
+-LTE-
+blob and hash
+	- filemgr_t::blobchange
+symlink support
