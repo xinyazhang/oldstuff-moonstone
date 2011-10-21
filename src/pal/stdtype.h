@@ -4,7 +4,8 @@
 #include "int_type.h"
 #include "unistr.h"
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
+
+typedef boost::shared_ptr shared_ptr;
 
 typedef int64_t idx_t;
 #define USE_INT64_INDEX
@@ -37,5 +38,7 @@ typedef std::stringstream native_sstream;
 #else /* Must be a POSIX system */
 #define native_fd int
 #endif
+
+typedef int (*cb_func_t)(void* cookie, int type, void* data);
 
 #endif
