@@ -11,7 +11,7 @@
 class indexer_win32
 {
 public:
-	typedef std::vector<volume> watching_container;
+	typedef std::vector<watching_t> watching_container;
 private:
 	/* worker */
 	Database* db_mgr;
@@ -19,7 +19,7 @@ private:
 	volatile bool quiting, changing;
 	native_fd interrupter, change_done;
 	boost::mutex lock_on_change;
-	vol_container watching;
+	watching_container watching;
 	std::vector<native_fd> fd_array;
 
 	/* Manager */
@@ -50,7 +50,7 @@ public:
 	~indexer_win32()
 	{
 		close_threads();
-		for(watching_t::iterator iter = watching.begin(); 
+		for(watching_container::iterator iter = watching.begin(); 
 				iter != watching.end();
 				iter++)
 		{
@@ -98,6 +98,19 @@ public:
 		return true;
 	}
 
+	std::vector<volume> indexing_volumes() const
+	{
+		std::vector<volume> ret;
+		boost::scoped_lock l(lock_on_change);
+		for(watching_container::iterator iter = watching.begin(); 
+				iter != watching.end();
+				iter++)
+		{
+			ret.push_back(iter->vol);
+		}
+		return ret;
+	}
+
 	void mgr()
 	{
 		while (true) {
@@ -125,7 +138,6 @@ public:
 	{
 		changing = true;
 		flag_event(interrupter);
-		boost::lock_guard lg(lock_on_change);
 
 		watching_container::iterator iter = 
 			std::find(watching.beign(), watching.end(), vol);
@@ -142,6 +154,7 @@ public:
 		else
 			watchnew->init(db_mgr);
 
+		boost::lock_guard lg(lock_on_change); // Edit watching
 		watching.push_back(watchnew);
 		// OK for win32 but must be changed in Linux
 		fd_array.push_back(watchnew.waitobj());
@@ -155,7 +168,6 @@ public:
 	{
 		changing = true;
 		flag_event(interrupter);
-		boost::lock_guard lg(lock_on_change);
 
 		watching_container::iterator iter = 
 			std::find(watching.beign(), watching.end(), vol);
@@ -163,6 +175,7 @@ public:
 		if (iter == watching.end())
 			return false; // didn't exist
 
+		boost::lock_guard lg(lock_on_change);
 		watching_t::close(*iter);
 		watching.erase(iter);
 		fd_array.clear();
@@ -246,4 +259,9 @@ bool index_engine_t::queue_volume(const struct volume& vol)
 bool index_engine_t::remove_volume(const struct volume& vol)
 {
 	return indexer_->queue_remove(vol);
+}
+
+std::vector<volume> index_engine_t::volume_list() const
+{
+	return idnexer_->indexing_volumes();
 }

@@ -16,6 +16,7 @@ public:
 
 	bool queue_volume(const struct volume&);
 	bool remove_volume(const struct volume&);
+	bool volume_list() const;
 private:
 	class indexer_t* indexer_;
 };
