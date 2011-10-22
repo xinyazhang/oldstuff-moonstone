@@ -79,6 +79,8 @@ public:
 
 		quiting = true;
 		flag_event(interrupter);
+		flag_event(change_done);
+		thread->join();
 	}
 
 	bool queue_add(const struct volume& vol)
@@ -207,10 +209,11 @@ public:
 		do {
 			wait_event(change_done); // Initially idle, No change, No work
 		} while (!watching.empty());
+
 		/*
 		 * Waiting and dump into database
 		 */
-		while (true) {
+		while (!quiting) {
 			lock_on_change.lock();
 			int idx = wait_array();
 			if (idx == 0) {

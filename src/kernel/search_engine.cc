@@ -38,9 +38,10 @@ public:
 	~search_service()
 	{
 		thread_exit = 1;
-		//task_queue.push_back(unistr());
+		task_queue.push_back(unistr()); // NULL task to stop waiting.
 		cond.notify_all();
-		thread->join();
+		if (thread)
+			thread->join();
 		delete thread;
 		delete front;
 		delete reading;
