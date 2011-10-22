@@ -8,7 +8,7 @@ struct watching_t
 {
 	native_fd fd;
 	/* the two should be loaded from db */
-	int64_t kpi;
+	volume vol;
 	uint64_t lastjid;
 	uint64_t lastusn;
 	/* Asynchronized processing staff */

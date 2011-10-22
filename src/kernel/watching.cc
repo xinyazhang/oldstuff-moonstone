@@ -15,6 +15,7 @@ static HANDLE general_event_create()
 watching_t watching_t::create(Database* dbmgr, const struct volume& vol)
 {
 	watching_t watch;
+	watching.vol = vol;
 #if 0
 	watch.fd = INVALID_HANDLE_VALUE;
 	native_fd server = ipc_center::lock_server_connect();
@@ -34,9 +35,9 @@ watching_t watching_t::create(Database* dbmgr, const struct volume& vol)
 	/*
 	 * Sync from DB
 	 */
-	dbmgr->volmgr()->witness(vol.uuid, &watch.kpi);
+	dbmgr->volmgr()->witness(vol.uuid, &watch.vol.kpi);
 	if (detect_fstype(watch.fd) == FILESYSTEM_NTFS) {
-		dbmgr->volmgr()->load_ntfs(watch.kpi, &watch.lastjid, &watch.lastusn);
+		dbmgr->volmgr()->load_ntfs(watch.vol.kpi, &watch.lastjid, &watch.lastusn);
 	} else {
 		CloseHandle(watch.fd);
 		watch.fd = INVALID_HANDLE_VALUE;
@@ -73,8 +74,8 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 	usn_param = default_read_data;
 	if (usn_meta.UsnJournalID != lastjid) {
 		dbmgr->begin_transaction();
-		dbmgr->filemgr()->checkbegin(kpi);
-		dbmgr->volmgr()->update_lastjid(kpi, usn_meta.UsnJournalID);
+		dbmgr->filemgr()->checkbegin(vol.kpi);
+		dbmgr->volmgr()->update_lastjid(vol.kpi, usn_meta.UsnJournalID);
 		recheck = true;
 	} else {
 		recheck = false;
@@ -130,7 +131,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		/* Process the REASON! */
 		DWORD r = record_ptr->Reason;
 
-		dentry_t dentry(kpi,
+		dentry_t dentry(vol.kpi,
 				record_ptr->FileReferenceNumber, /* inode */
 				record_ptr->ParentFileReferenceNumber, /* parent's inode */
 				FileName, /* filename */
@@ -163,8 +164,8 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	lastusn = usn_param.StartUsn;
 
 	if (check && lastusn >= usn_meta.NextUsn - 1) {
-		dbmgr->filemgr()->checkdone(kpi);
-		dbmgr->volmgr()->update_ntfsext(kpi, lastjid, lastusn);
+		dbmgr->filemgr()->checkdone(vol.kpi);
+		dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
 		dbmgr->final_transaction();
 	}
 	dispach_read();
