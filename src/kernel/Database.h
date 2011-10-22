@@ -32,6 +32,7 @@ public:
 	class filemgr_t* filemgr();
 	class volmgr_t* volmgr();
 private:
+	class DatabaseInterface* db_;
 	class filemgr_t* filemgr_;
 	class volmgr_t* volmgr_;
 

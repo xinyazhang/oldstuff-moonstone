@@ -2,18 +2,10 @@
 #include "filemgr.h"
 #include "volmgr.h"
 #include <dal/DatabaseInterface.h>
-
-const unistr Database::table_name_postfix_[] =
-{
-	"tnode",
-	"tag",
-	"tagtag_relation",
-	"fso",
-	"ft"
-};
+#include "sql_stmt.h"
 
 Database::Database(DatabaseInterface* i)
-	:db_(i), prefix_(i->prefix()), nest_(0)
+	:db_(i), nest_(0)
 {
 	filemgr_ = new filemgr_t(this);
 	volmgr_ = new volmgr_t(this);

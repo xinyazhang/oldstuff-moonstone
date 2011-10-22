@@ -1,6 +1,7 @@
 #ifndef FILEMGR_H
 #define FILEMGR_H
 
+#include <pal/stdtype.h>
 struct dentry_t;
 
 class filemgr_t
