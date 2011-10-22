@@ -19,7 +19,10 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	if (role != Qt::DisplayRole)
+	if (role == Qt::CheckStateRole)
+		return QVariant(false);
+
+	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
 	return uuid2unistr(vol_list[index.row()].uuid);
@@ -30,7 +33,12 @@ Qt::ItemFlags VolumeModel::flags(const QModelIndex &index) const
 	if (!index.isValid())
 		return Qt::ItemIsEnabled;
 
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
+	Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+	if (index.column() == 0)
+		flags |= Qt::ItemIsUserCheckable;
+
+	return flags;
 }
 
 //const char* headers[] = {"Name", "Path", "Size", "Date Modified"};
@@ -65,9 +73,12 @@ QModelIndex VolumeModel::parent(const QModelIndex &index) const
 	return QModelIndex(); /* No tree structure ... */
 }
 
-int VolumeModel::rowCount(const QModelIndex &) const
+int VolumeModel::rowCount(const QModelIndex& index) const
 {
-	return (int)vol_list.size();
+	if (!index.isValid()) /* Root */
+		return (int)vol_list.size();
+	else
+		return 0;
 }
 
 int VolumeModel::columnCount(const QModelIndex&) const

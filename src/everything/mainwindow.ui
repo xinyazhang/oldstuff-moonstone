@@ -48,7 +48,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QListView" name="volume_list"/>
+         <widget class="QTreeView" name="volume_list"/>
         </item>
         <item>
          <widget class="QDialogButtonBox" name="buttonBox">
@@ -110,7 +110,7 @@
      <x>0</x>
      <y>0</y>
      <width>875</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
