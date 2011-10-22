@@ -1,2 +1,0 @@
-2010/05/08
-- Merge different groups into one (alias is also affected) 
