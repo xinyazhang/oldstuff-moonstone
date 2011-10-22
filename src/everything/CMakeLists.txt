@@ -1,0 +1,11 @@
+SET(QT_REQUIRED TRUE)
+FIND_PACKAGE(Qt4 REQUIRED)
+
+AUX_SOURCE_DIRECTORY( . GUI_SRC )
+QT4_WRAP_UI(UI_H mainwindow.ui)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+QT4_WRAP_CPP(MOC_SRC mainwindow.h searchfiledbmodel.h volumemodel.h)
+
+ADD_EXECUTABLE(everything WIN32 ${UI_H} ${GUI_SRC} ${MOC_SRC})
+TARGET_LINK_LIBRARIES(everything pal dal kernel QtCore4 QtGui4)
