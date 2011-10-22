@@ -1,7 +1,6 @@
 #include <vector>
 #include <boost/thread.hpp>
 #include <pal/ipc.h>
-#include <pal/proc.h>
 #include "sp.h"
 #include "auth.h"
 #include "packet_handler.h"
