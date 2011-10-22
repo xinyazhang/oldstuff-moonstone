@@ -19,13 +19,20 @@ public:
 	 * Preferences
 	 */
 	partition_list known_partitions;
+	
+	/*
+	 * Destructor
+	 */
+	~Preferences(); /* Singletion */
 
+	static Preferences* pref();
 	/*
 	 * Constructor
 	 */
-	static Preferences* build();
+private:
+	Preferences();
 };
 
-Preferences* pref(); /* Singletion */
+inline Preferences* pref() { return Preferences::pref(); } 
 
 #endif // PREFERENCES_H

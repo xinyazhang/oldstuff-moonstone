@@ -7,32 +7,33 @@
 #include <kernel/search_engine.h>
 #include <dal/supported_db.h>
 
-Preferences* pref()
+Preferences* Preferences::pref()
 {
-    static Preferences* pref = NULL;
-    if (!pref)
-    {
-        /* init */
-		pref = Preferences::build();
-    }
-    return pref;
+    static Preferences pref;
+    return &pref;
 }
 
-Preferences* Preferences::build()
+Preferences::Preferences()
 {
 	/*
 	 * Fixed function
 	 */
-	Preferences* pref = new Preferences;
-	pref->db_engine = new db_sqlite_impl("NOWHERELAND");	
+	db_engine = new db_sqlite_impl("NOWHERELAND");
+	/*ASSERT*/ db_engine->connect();
 
-	pref->db_mgr = new Database(pref->db_engine);
-	if (!pref->db_mgr->initialized())
-		pref->db_mgr->initialize();
+	db_mgr = new Database(db_engine);
+	if (!db_mgr->initialized())
+		db_mgr->initialize();
 
-	pref->search_engine = new search_engine_t(pref->db_mgr);
+	search_engine = new search_engine_t(db_mgr);
 
-	pref->indexer = new index_engine_t(pref->db_mgr);
+	indexer = new index_engine_t(db_mgr);
+}
 
-	return pref;
+Preferences::~Preferences()
+{
+	delete indexer;
+	delete search_engine;
+	delete db_mgr;
+	delete db_engine;
 }
