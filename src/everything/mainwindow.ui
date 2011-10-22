@@ -48,12 +48,12 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QListView" name="volume_lists"/>
+         <widget class="QListView" name="volume_list"/>
         </item>
         <item>
          <widget class="QDialogButtonBox" name="buttonBox">
           <property name="standardButtons">
-           <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
+           <set>QDialogButtonBox::Apply|QDialogButtonBox::Reset</set>
           </property>
          </widget>
         </item>

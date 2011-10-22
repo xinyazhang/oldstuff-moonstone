@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "searchfiledbmodel.h"
+#include "volumemodel.h"
 #include <QtCore/QEvent>
 
 namespace Ui {
@@ -24,6 +25,7 @@ public:
 
 private:
 	SearchFileDBModel* search_model;
+        VolumeModel* vol_model;
 	Ui::MainWindow *ui;
 	class Preferences* pref_;
 };

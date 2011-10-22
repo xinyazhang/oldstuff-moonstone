@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "searchfiledbmodel.h"
+#include "volumemodel.h"
 
 MainWindow::MainWindow(class Preferences* pref, QWidget *parent) :
     QMainWindow(parent),
@@ -7,13 +9,16 @@ MainWindow::MainWindow(class Preferences* pref, QWidget *parent) :
 	pref_(pref)
 {
 	ui->setupUi(this);
-	ui->result->setModel();
 	search_model = new SearchFileDBModel(pref());
-	setWindowState(Qt::WindowMaximized);
+        ui->result->setModel(search_model);
+        vol_model = new VolumeModel(pref());
+        ui->volume_list->setModel(vol_model);
+        setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
 {
+        delete vol_model;
 	delete search_model;
 	delete ui;
 }
@@ -21,4 +26,14 @@ MainWindow::~MainWindow()
 void MainWindow::on_searching_textChanged(const QString &arg1)
 {
 	search_model->change_searching_text(arg1);
+}
+
+void MainWindow::on_buttonBox_accepted()
+{
+        vol_model->apply_changes();
+}
+
+void MainWindow::on_buttonBox_rejected()
+{
+        vol_model->clear_changes();
 }

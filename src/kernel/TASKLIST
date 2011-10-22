@@ -11,7 +11,14 @@ volmgr and filemgr's IMPL.				done
 UI adjustment						
 	- List volume
 		- pal ls_volume				done
-		- a model
+		- a model				done, maybe
+native event
+	- CreateEvent					done
+=COMPILE=
+=TEST=
+
+-STE.NEXT-
+UI adjustment						
 	- Add volume
 		- stack add 
 	- Remove volume
@@ -20,19 +27,16 @@ UI adjustment
 		- emit changes
 	- Cancel
 		- revert changes
-native event
-	- CreateEvent
 
-=COMPILE=
-=TEST=
-
--STE.NEXT-
+-STE-
 Path generation
 Volume Change
+	- Event CB Facility
 
 -MTE-
 NOT Trigger UAC, using Daemon
 	- IPC for handle
+Event Driven Engine
 
 -LTE-
 blob and hash
