@@ -10,3 +10,6 @@ lib
 
 /exper/testfs.cpp
 /exper/testfs.exe
+
+*.ui.autosave
+.session
