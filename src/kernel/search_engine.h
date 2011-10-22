@@ -10,7 +10,7 @@ enum ENGINE_EVENT
 	SE_LAST_EVENT
 };
 
-class search_engine_t
+class EXPORT_TO_DLL search_engine_t
 {
 public:
 	search_engine_t(class Database* );

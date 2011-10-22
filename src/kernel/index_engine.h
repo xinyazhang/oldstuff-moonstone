@@ -2,12 +2,13 @@
 #define INDEX_ENGINE_H
 
 #include "notifier.h"
+#include <pal/stdtype.h>
 
 /*
  * Currently: win32+NTFS only
  */
 
-class index_engine_t
+class EXPORT_TO_DLL index_engine_t
 	:public notifier
 {
 public:
