@@ -10,6 +10,7 @@
 db_sqlite_impl::db_sqlite_impl(const unistr& filename, const unistr& prefix)
 	:filename_(filename), DatabaseInterface(prefix), handle_(NULL)
 {
+	check_version();
 }
 
 void db_sqlite_impl::begin_transaction()
