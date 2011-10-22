@@ -14,8 +14,10 @@ UI adjustment
 		- a model				done, maybe
 native event
 	- CreateEvent					done
-=COMPILE=
-=TEST=
+=COMPILE=						done
+=TEST=							done
+
+=CLEAN UP=
 
 -STE.NEXT-
 UI adjustment						
