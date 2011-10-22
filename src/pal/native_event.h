@@ -11,10 +11,10 @@
 
 #include "stdtype.h"
 
-native_fd create_event(bool initvalue); // for platform uniform, must be AUTO UNFLAG
-void close_event(native_fd);
-void wait_event(native_fd);
-void flag_event(native_fd);
+EXPORT_TO_DLL native_fd create_event(bool initvalue); // for platform uniform, must be AUTO UNFLAG
+EXPORT_TO_DLL void close_event(native_fd);
+EXPORT_TO_DLL void wait_event(native_fd);
+EXPORT_TO_DLL void flag_event(native_fd);
 
 /* NO WAIT */
 

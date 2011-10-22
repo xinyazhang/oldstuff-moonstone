@@ -12,7 +12,7 @@
 #define KERNEL_SQL_STMT_H
 
 #include <boost/shared_ptr.hpp>
-#include "common_declare.h"
+#include <pal/stdtype.h>
 
 class sql_stmt_interface;
 
@@ -23,6 +23,7 @@ public:
 
 	void bind(int c);//bind void;
 	void bind(int c, idx_t );
+	void bind(int c, uint64_t );
 	void bind(int c, const unistr&);
 
 	int execute();
@@ -30,6 +31,7 @@ public:
 	bool step();
 	void col(int c, unistr& );
 	void col(int c, idx_t& );
+	void col(int c, uint64_t& );
 
 	void clear();
 private:

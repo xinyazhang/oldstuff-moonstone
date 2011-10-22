@@ -21,6 +21,11 @@ void stmt_sqlite_impl::bind(int c, idx_t idx)
 	sqlite3_bind_idx(stmt_, c, idx);
 }
 
+void stmt_sqlite_impl::bind(int c, uint64_t idx)
+{
+	sqlite3_bind_int64(stmt_, c, (int64_t)idx);
+}
+
 void stmt_sqlite_impl::bind(int c, const unistr& str)
 {
 	int ret = sqlite3_bind_text_native(stmt_, c, str.native(), -1, SQLITE_TRANSIENT);
@@ -58,4 +63,9 @@ void stmt_sqlite_impl::col(int c, unistr& value)
 void stmt_sqlite_impl::col(int c, idx_t& value)
 {
 	value = sqlite3_column_idx(stmt_, c - 1);
+}
+
+void stmt_sqlite_impl::col(int c, uint64_t& value)
+{
+	value = (uint64_t)sqlite3_column_int64(stmt_, c - 1);
 }

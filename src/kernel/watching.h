@@ -1,8 +1,9 @@
 #ifndef WATCHING_H
 #define WATCHING_H
 
-#include <pal/stdtype.h>
 #include <windows.h>
+#include <pal/stdtype.h>
+#include <pal/volume.h>
 
 struct watching_t
 {
@@ -16,11 +17,11 @@ struct watching_t
 	READ_USN_JOURNAL_DATA usn_param;
 	OVERLAPPED overlap;
 	shared_ptr<char> usn_buffer;
-	DWORND usn_read_bytes;
+	DWORD usn_read_bytes;
 	/* State */
 	bool recheck;
 
-	static watching_t create(Database*, const struct volume&);
+	static watching_t create(class Database*, const struct volume&);
 	static void close(watching_t&);
 
 	bool check();
@@ -29,5 +30,7 @@ struct watching_t
 	void dump(class Database*);
 	native_fd waitobj();
 };
+
+inline bool operator==(const watching_t& w, const volume& v) { return w.vol == v;}
 
 #endif

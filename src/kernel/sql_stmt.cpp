@@ -16,6 +16,11 @@ void sql_stmt::bind(int c, idx_t value)
 	internal_->bind(c, value);
 }
 
+void sql_stmt::bind(int c, uint64_t value)
+{
+	internal_->bind(c, value);
+}
+
 void sql_stmt::bind(int c, const unistr& value)
 {
 	internal_->bind(c, value);
@@ -37,6 +42,11 @@ void sql_stmt::col(int c, unistr& value)
 }
 
 void sql_stmt::col(int c, idx_t& value)
+{
+	internal_->col(c, value);
+}
+
+void sql_stmt::col(int c, uint64_t& value)
 {
 	internal_->col(c, value);
 }

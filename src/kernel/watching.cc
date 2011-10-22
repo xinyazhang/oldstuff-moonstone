@@ -3,6 +3,8 @@
 #include <pal/ipc_packet_type.h>
 #include "privilege.h"
 #include "Database.h"
+#include "volmgr.h"
+#include "filemgr.h"
 #include "dentry.h"
 
 #define JOURNAL_BUFFER_SIZE 16384
@@ -15,7 +17,7 @@ static HANDLE general_event_create()
 watching_t watching_t::create(Database* dbmgr, const struct volume& vol)
 {
 	watching_t watch;
-	watching.vol = vol;
+	watch.vol = vol;
 #if 0
 	watch.fd = INVALID_HANDLE_VALUE;
 	native_fd server = ipc_center::lock_server_connect();
@@ -42,24 +44,25 @@ watching_t watching_t::create(Database* dbmgr, const struct volume& vol)
 		CloseHandle(watch.fd);
 		watch.fd = INVALID_HANDLE_VALUE;
 	}
+	return watch;
 }
 
 /*
  * Check whether we could watch the volume
  *
  */
-bool watching_t::check(const watching_t& watch)
+bool watching_t::check()
 {
-	if (watch.fd == INVALID_HANDLE_VALUE)
+	if (fd == INVALID_HANDLE_VALUE)
 		return false;
 
 	DWORD ret_bytes;
-	BOOL bret = DeviceIoControl(watch.fd,
+	BOOL bret = DeviceIoControl(fd,
 			FSCTL_QUERY_USN_JOURNAL,
 			NULL,
 			0,
-			&watch.usn_meta,
-			sizeof(watch.usn_meta),
+			&usn_meta,
+			sizeof(usn_meta),
 			&ret_bytes,
 			NULL);
 	if (!bret)
@@ -83,8 +86,8 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 	}
 
 	lastjid = usn_param.UsnJournalID;
-	usn_buffer = shared_ptr(new char[JOURNAL_BUFFER_SIZE]);
-	overlap = general_event_create();
+	usn_buffer = shared_ptr<char>(new char[JOURNAL_BUFFER_SIZE]);
+	overlap.hEvent = general_event_create();
 }
 
 void watching_t::dispach_read()
@@ -99,7 +102,7 @@ void watching_t::dispach_read()
 			&overlap);
 }
 
-bool watching_t::close(watching_t& watch)
+void watching_t::close(watching_t& watch)
 {
 	CancelIo(watch.fd);
 	CloseHandle(watch.fd);
@@ -113,8 +116,8 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		USN_REASON_DATA_OVERWRITE|
 		USN_REASON_DATA_TRUNCATION);
 	DWORD ret_bytes;
-	GetOverlappedResult(staff.volume_handle,
-			&staff.overlap,
+	GetOverlappedResult(fd,
+			&overlap,
 			&ret_bytes,
 			FALSE);
 	size_t left = ret_bytes - sizeof(USN);
@@ -134,7 +137,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		dentry_t dentry(vol.kpi,
 				record_ptr->FileReferenceNumber, /* inode */
 				record_ptr->ParentFileReferenceNumber, /* parent's inode */
-				FileName, /* filename */
+				record_ptr->FileName, /* filename */
 				record_ptr->FileNameLength/2 /* filename length, -1 for \0 term */
 				);
 
@@ -160,10 +163,10 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		record_ptr = (PUSN_RECORD)(((char*)record_ptr) + 
 				record_ptr->RecordLength); 
 	}
-	usn_param.StartUsn = *(USN *)staff.usn_buffer.get();
+	usn_param.StartUsn = *(USN *)usn_buffer.get();
 	lastusn = usn_param.StartUsn;
 
-	if (check && lastusn >= usn_meta.NextUsn - 1) {
+	if (recheck && lastusn >= usn_meta.NextUsn - 1) {
 		dbmgr->filemgr()->checkdone(vol.kpi);
 		dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
 		dbmgr->final_transaction();

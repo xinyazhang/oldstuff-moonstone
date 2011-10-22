@@ -30,6 +30,12 @@ unistr::unistr(const wchar_t* w)
 	//*this = QString::fromWCharArray(w);
 }
 
+unistr::unistr(const wchar_t* w, size_t s)
+	:wstring(w, s)
+{
+	//*this = QString::fromWCharArray(w);
+}
+
 unistr::unistr(const unistr& another)
 	:wstring(another.native())
 {

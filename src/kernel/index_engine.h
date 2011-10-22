@@ -11,12 +11,12 @@ class index_engine_t
 	:public notifier
 {
 public:
-	index_engine_t(Database* db_mgr);
+	index_engine_t(class Database* db_mgr);
 	~index_engine_t();
 
 	bool queue_volume(const struct volume&);
 	bool remove_volume(const struct volume&);
-	bool volume_list() const;
+	std::vector<volume> volume_list() const;
 private:
 	class indexer_t* indexer_;
 };

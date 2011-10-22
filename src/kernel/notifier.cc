@@ -11,5 +11,5 @@ void notifier::broadcast(int type, void* data)
 	for(std::vector<fnc>::iterator iter = registered_.begin();
 			iter != registered_.end();
 			iter++)
-		(*(iter->func))(iter->cookie, type, data);
+		(*(iter->cb_func))(iter->cb_cookie, type, data);
 }

@@ -2,6 +2,7 @@
 #define PRIVILEGE_H
 
 #include <pal/stdtype.h>
+#include <pal/volume.h>
 
 namespace privilege
 {

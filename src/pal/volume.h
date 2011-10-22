@@ -19,13 +19,13 @@ struct volume
 
 EXPORT_TO_DLL std::vector<volume> ls_volume();
 
-bool operator==(const volume& lv, const volume& rv)
+inline bool operator==(const volume& lv, const volume& rv)
 {
 	return lv.uuid == rv.uuid;
 }
 
 inline const void* uuid2bb(uuids u) { return &u.data[0]; }
-unistr uuid2unistr(const uuids&);
+EXPORT_TO_DLL unistr uuid2unistr(const uuids&);
 
 enum FS_TYPE
 {
@@ -36,6 +36,6 @@ enum FS_TYPE
 	FILESYSTEM_LAST
 };
 
-FS_TYPE detect_fstype(native_fd);
+EXPORT_TO_DLL FS_TYPE detect_fstype(native_fd);
 
 #endif

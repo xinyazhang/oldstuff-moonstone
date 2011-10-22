@@ -1,14 +1,17 @@
 #include <vector>
-#include <pal/common.h>
+#include <deque>
+#include <algorithm>
 #include <pal/volume.h>
 #include <pal/native_event.h>
 #include "index_engine.h"
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
-#include <boost/mutex.hpp>
+#include <boost/thread/mutex.hpp>
 #include "watching.h"
 
-class indexer_win32
+typedef boost::mutex::scoped_lock scoped_lock;
+
+class indexer_t
 {
 public:
 	typedef std::vector<watching_t> watching_container;
@@ -18,13 +21,13 @@ private:
 	boost::thread *thread;
 	volatile bool quiting, changing;
 	native_fd interrupter, change_done;
-	boost::mutex lock_on_change;
+	mutable boost::mutex lock_on_change;
 	watching_container watching;
 	std::vector<native_fd> fd_array;
 
 	/* Manager */
 	boost::thread* manager;
-	boost::mutex lock_on_queue;
+	mutable boost::mutex lock_on_queue;
 	boost::condition_variable mgr_cond;
 	enum CHANGE_TYPE {
 		ADD,
@@ -34,20 +37,20 @@ private:
 	struct watching_change
 	{
 		CHANGE_TYPE ct;
-		uuids voluuid;
+		volume vol;
 	};
 	std::deque<watching_change> queued;
 public:
-	indexer_win32(Database* mgr)
+	indexer_t(Database* mgr)
 		:db_mgr(mgr), quiting(false), changing(false)
 	{
 		interrupter = create_event(false);
-		changer = create_event(false);
+		change_done = create_event(false);
 		fd_array.push_back(interrupter);
 		create_threads();
 	}
 
-	~indexer_win32()
+	~indexer_t()
 	{
 		close_threads();
 		for(watching_container::iterator iter = watching.begin(); 
@@ -57,7 +60,7 @@ public:
 			watching_t::close(*iter);
 		}
 		close_event(interrupter);
-		close_event(changer);
+		close_event(change_done);
 	}
 
 	void create_threads()
@@ -69,7 +72,7 @@ public:
 	void close_threads()
 	{
 		lock_on_queue.lock();
-		wc = {QUIT, uuids()};
+		watching_change wc = {QUIT, volume()};
 		lock_on_queue.unlock();
 		mgr_cond.notify_one();
 		manager->join();
@@ -80,18 +83,18 @@ public:
 
 	bool queue_add(const struct volume& vol)
 	{
-		watching_change wc = {ADD, vol.uuid};
-		boost::scoped_lock l(lock_on_queue);
+		watching_change wc = {ADD, vol};
+		scoped_lock l(lock_on_queue);
 		queued.push_back(wc);
 		mgr_cond.notify_one();
 
 		return true;
 	}
 
-	void queue_remove(const struct volume& vol)
+	bool queue_remove(const struct volume& vol)
 	{
-		watching_change wc = {REMOVE, vol.uuid};
-		boost::scoped_lock l(lock_on_queue);
+		watching_change wc = {REMOVE, vol};
+		scoped_lock l(lock_on_queue);
 		queued.push_back(wc);
 		mgr_cond.notify_one();
 
@@ -101,8 +104,8 @@ public:
 	std::vector<volume> indexing_volumes() const
 	{
 		std::vector<volume> ret;
-		boost::scoped_lock l(lock_on_change);
-		for(watching_container::iterator iter = watching.begin(); 
+		scoped_lock l(lock_on_change);
+		for(watching_container::const_iterator iter = watching.begin(); 
 				iter != watching.end();
 				iter++)
 		{
@@ -114,7 +117,7 @@ public:
 	void mgr()
 	{
 		while (true) {
-			boost::unique_lock lk(lock_on_queue);
+			scoped_lock lk(lock_on_queue);
 			while (queued.empty()) {
 				mgr_cond.wait(lk);
 			}
@@ -123,9 +126,9 @@ public:
 			lk.unlock();
 
 			if (work.ct == ADD)
-				add_volume(work.voluuid);
+				add_volume(work.vol);
 			else if (work.ct == REMOVE)
-				remove_volume(work.voluuid);
+				remove_volume(work.vol);
 			else
 				return ;
 		}
@@ -140,7 +143,7 @@ public:
 		flag_event(interrupter);
 
 		watching_container::iterator iter = 
-			std::find(watching.beign(), watching.end(), vol);
+			std::find(watching.begin(), watching.end(), vol);
 
 		if (iter != watching.end())
 			return false; // already watching
@@ -149,12 +152,12 @@ public:
 		 * Add watching
 		 */
 		watching_t watchnew = watching_t::create(db_mgr, vol); // would load data from db and call IPC.
-		if (!watching_t::check(watchnew))
+		if (!watchnew.check())
 			return false;
 		else
-			watchnew->init(db_mgr);
+			watchnew.init(db_mgr);
 
-		boost::lock_guard lg(lock_on_change); // Edit watching
+		boost::lock_guard<boost::mutex> lg(lock_on_change); // Edit watching
 		watching.push_back(watchnew);
 		// OK for win32 but must be changed in Linux
 		fd_array.push_back(watchnew.waitobj());
@@ -170,12 +173,12 @@ public:
 		flag_event(interrupter);
 
 		watching_container::iterator iter = 
-			std::find(watching.beign(), watching.end(), vol);
+			std::find(watching.begin(), watching.end(), vol);
 
 		if (iter == watching.end())
 			return false; // didn't exist
 
-		boost::lock_guard lg(lock_on_change);
+		boost::lock_guard<boost::mutex> lg(lock_on_change);
 		watching_t::close(*iter);
 		watching.erase(iter);
 		fd_array.clear();
@@ -183,7 +186,7 @@ public:
 		for(watching_container::iterator iter = watching.begin();
 				iter != watching.end();
 				iter++)
-			fd_array.push_back(watching.waitobj());
+			fd_array.push_back(iter->waitobj());
 
 		changing = false;
 		flag_event(change_done);
@@ -197,11 +200,6 @@ public:
 				FALSE,
 				INFINITE);
 		return (int)(idx - WAIT_OBJECT_0);
-	}
-
-	void dump_jounal(int watch_idx)
-	{
-		watching[watch_idx].dump(db_mgr);
 	}
 
 	void run()
@@ -224,18 +222,18 @@ public:
 					wait_event(change_done);
 				}
 			} else {
-				dump_journal(idx - 1);
+				watching[idx - 1].dump(db_mgr);
 				lock_on_change.unlock();
 			}
 		}
 	}
 
 private:
-	static void thecall(indexer_win32* obj)
+	static void thecall(indexer_t* obj)
 	{
 		obj->run();
 	}
-	static void thecall2(indexer_win32* obj)
+	static void thecall2(indexer_t* obj)
 	{
 		obj->mgr();
 	}
@@ -243,7 +241,7 @@ private:
 
 index_engine_t::index_engine_t(Database* db_mgr)
 {
-	indexer_ = new indexer_win32(db_mgr);
+	indexer_ = new indexer_t(db_mgr);
 }
 
 index_engine_t::~index_engine_t()
@@ -263,5 +261,5 @@ bool index_engine_t::remove_volume(const struct volume& vol)
 
 std::vector<volume> index_engine_t::volume_list() const
 {
-	return idnexer_->indexing_volumes();
+	return indexer_->indexing_volumes();
 }

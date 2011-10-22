@@ -16,6 +16,7 @@ class EXPORT_TO_DLL unistr
 public:
 	unistr();
 	unistr(const wchar_t* uni);
+	unistr(const wchar_t* uni, size_t len);
 	unistr(const std::wstring& stdstr):std::wstring(stdstr) {}
 	unistr(const unistr& another);
 	unistr(const char* ascii);

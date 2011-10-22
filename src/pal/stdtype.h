@@ -34,9 +34,9 @@ typedef std::stringstream native_sstream;
 #endif
 
 #ifdef _WIN32
-#define native_fd void*
+typedef void* native_fd;
 #else /* Must be a POSIX system */
-#define native_fd int
+typedef int native_fd;
 #endif
 
 typedef int (*cb_func_t)(void* cookie, int type, void* data);

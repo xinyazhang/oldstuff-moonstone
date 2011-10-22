@@ -1,9 +1,9 @@
 #ifndef KERNEL_DATABASE_H
 #define KERNEL_DATABASE_H
 
-#include "common_declare.h"
 #include <vector>
 #include <boost/thread/mutex.hpp>
+#include "sql_stmt.h"
 
 class EXPORT_TO_DLL Database
 {

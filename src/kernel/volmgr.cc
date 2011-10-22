@@ -16,7 +16,7 @@ void volmgr_t::witness(const uuids& uuid, int64_t* kpi)
 		stmt.col(1, *kpi);
 	} else {
 		unistr insql(UT("INSERT INTO known_vols VALUES($1);"));
-		sql_stmt instmt = dbmgr->create_stmt_ex(insql);
+		sql_stmt instmt = dbmgr_->create_stmt_ex(insql);
 		if (instmt.step()) {
 			witness(uuid, kpi);
 		} else
@@ -35,12 +35,12 @@ void volmgr_t::load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn)
 	} else {
 		*jid = 0;
 		*read_usn = 0;
-		sql_stmt instmt = dbmgr_->create(
+		sql_stmt instmt = dbmgr_->create_stmt_ex(
 				UT("INSERT INTO known_ntfs VALUES($1, $2, $3);"));
 		instmt.bind(1, kpi);
-		instmt.bind(2, 0);
-		instmt.bind(3, 0);
-		sql_stmt.step();
+		instmt.bind(2, (int64_t)0);
+		instmt.bind(3, (int64_t)0);
+		instmt.execute();
 	}
 }
 
@@ -50,7 +50,7 @@ void volmgr_t::update_lastjid(int64_t kpi, uint64_t jid)
 			UT("UPDATE known_ntfs SET journal_id=$1 WHERE id=$2;"));
 	stmt.bind(1, jid);
 	stmt.bind(2, kpi);
-	stmt.step();
+	stmt.execute();
 }
 
 void volmgr_t::update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn)

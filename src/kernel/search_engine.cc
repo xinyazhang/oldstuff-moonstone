@@ -1,10 +1,14 @@
 #include "search_engine.h"
 #include <boost/thread.hpp>
-#include <boost/mutex.hpp>
+#include <boost/thread/mutex.hpp>
 #include <queue>
 #include <algorithm>
 #include "Database.h"
 #include "notifier.h"
+#include "sql_stmt.h"
+using boost::mutex;
+
+static void search(search_service* serv);
 
 class line_data
 {
@@ -24,7 +28,7 @@ public:
 	search_service(void* cookie, cb_func_t func, Database* _db)
 		:thread_exit(0), db(_db)
 	{
-		thread = new boost::thread(boost::bind(&search, serv));
+		thread = new boost::thread(boost::bind(&search, this));
 		front = new std::vector<line_data>;
 		read = new std::vector<line_data>;
 		reading = new std::vector<line_data>;
@@ -34,15 +38,13 @@ public:
 	~search_service()
 	{
 		thread_exit = 1;
-		task_queue.push_back(unistr());
-		trigger.unlock();
+		//task_queue.push_back(unistr());
+		cond.notify_all();
 		thread->join();
 		delete thread;
 		delete front;
 		delete reading;
 	}
-
-	search_engine_t::cb_func_t cb_func;
 
 	boost::thread* thread;
 	boost::condition_variable cond;
@@ -58,12 +60,12 @@ public:
 
 	void flip()
 	{
-		boost::scoped_lock sl(flip_lock);
+		mutex::scoped_lock sl(flip_lock);
 		std::swap(read, front);
 	}
 };
 
-static sql_stmt parse_search(search_service* serv, const unistr& pat)
+static sql_stmt prepare_search(search_service* serv, const unistr& pat)
 {
 	Database* db = serv->db;
 	unistr sql();
@@ -101,25 +103,26 @@ static void search(search_service* serv)
 		unistr search_req;
 		{
 			boost::mutex::scoped_lock lock(serv->lock);
-			while (task_queue.empty())
+			while (serv->task_queue.empty())
 				serv->cond.wait(lock);
 			thread_exit = serv->thread_exit;
-			search_req = task_queue.pop_back();
-			task_queue.clear();
+			search_req = serv->task_queue.back();
+			serv->task_queue.pop_back();
+			serv->task_queue.clear();
 		}
 
 		if (thread_exit)
 			return ;
 
 		/* Searching... */
-		serv->reading.clear();
+		serv->reading->clear();
 		sql_stmt stmt = prepare_search(serv, search_req);
 		while(stmt.step())
 		{
 			line_data ld;
-			stmt.col(1, ld.inode)
-			stmt.col(2, ld.volid)
-			serv->reading.push_back(ld);
+			stmt.col(1, ld.inode);
+			stmt.col(2, ld.volid);
+			serv->reading->push_back(ld);
 		}
 		serv->flip_lock.lock();
 		std::swap(serv->reading, serv->read);
@@ -166,13 +169,13 @@ search_engine_t::update_service_state(class search_service* serv)
 int 
 search_engine_t::line_count(class search_service* serv)
 {
-	return serv->front.size();
+	return serv->front->size();
 }
 
 unistr 
 search_engine_t::data(class search_service* serv, int row, int column)
 {
-	ld = (*serv->front)[row - 1];
+	line_data ld = (*serv->front)[row - 1];
 	if (!ld.looked)
 	{
 		generate_fullpath(serv->db, ld);
