@@ -2,18 +2,18 @@
 #include "ui_mainwindow.h"
 #include "searchfiledbmodel.h"
 #include "volumemodel.h"
+#include "Preferences.h"
 
-MainWindow::MainWindow(class Preferences* pref, QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-	pref_(pref)
+    ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 	search_model = new SearchFileDBModel(pref());
-        ui->result->setModel(search_model);
-        vol_model = new VolumeModel(pref());
-        ui->volume_list->setModel(vol_model);
-        setWindowState(Qt::WindowMaximized);
+	ui->result->setModel(search_model);
+	vol_model = new VolumeModel(pref());
+	ui->volume_list->setModel(vol_model);
+	setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()

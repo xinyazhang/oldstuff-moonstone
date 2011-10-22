@@ -14,10 +14,21 @@ SOURCES +=\
     Preferences.cc \
     main.cc \
     mainwindow.cc \
-    searchfiledbmodel.cc
+    searchfiledbmodel.cc \
+    volumemodel.cc \
+    searchfiledbmodel.cc \
+    Preferences.cc \
+    mainwindow.cc \
+    main.cc
 
 HEADERS  += mainwindow.h \
     searchfiledbmodel.h \
-    Preferences.h
+    Preferences.h \
+    volumemodel.h \
+    searchfiledbmodel.h \
+    Preferences.h \
+    mainwindow.h
 
 FORMS    += mainwindow.ui
+
+

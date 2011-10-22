@@ -1,5 +1,8 @@
 #include "searchfiledbmodel.h"
 #include "Preferences.h"
+#include <QtCore/QCoreApplication>
+#include <kernel/search_engine.h>
+#include "mainwindow.h"
 
 SearchFileDBModel::SearchFileDBModel(Preferences* preference)
     :pref(preference)
@@ -35,7 +38,7 @@ const char* headers[] = {"Name", "Path", "Size", "Date Modified"};
 
 QVariant SearchFileDBModel::headerData(int section,
                 Qt::Orientation orientation,
-                int role = Qt::DisplayRole) const
+                int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
             return headers[section];
@@ -45,7 +48,7 @@ QVariant SearchFileDBModel::headerData(int section,
 
 QModelIndex SearchFileDBModel::index(int row,
                 int column,
-                const QModelIndex &parent = QModelIndex()) const
+                const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
             return QModelIndex();
@@ -74,15 +77,17 @@ int SearchFileDBModel::columnCount(const QModelIndex&) const
 int SearchFileDBModel::change_searching_text(const QString& str)
 {
     pref->search_engine->post_search(se_cookie, nativelize_QString(str));
+	return 0;
 }
 
-int SearchFileDBModel::EventCallback(void* cookie, ENGINE_EVENT ev, void*)
+int SearchFileDBModel::EventCallback(void* cookie, int ev, void*)
 {
 	SearchFileDBModel* model = (SearchFileDBModel*)cookie;
-	QCoreApplication::postEvent(model, new QEvent(EVENT_SEARCHDONE));
+	QCoreApplication::postEvent(model, new QEvent((QEvent::Type)EVENT_SEARCHDONE));
+	return 0;
 }
 
-int SearchFileDBModel::event(QEvent* e)
+bool SearchFileDBModel::event(QEvent* e)
 {
     if (e->type()==EVENT_SEARCHDONE)
     {

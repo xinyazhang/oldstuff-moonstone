@@ -1,13 +1,15 @@
-#ifndef SEARCHFILEDBMODEL_H
-#define SEARCHFILEDBMODEL_H
+#ifndef VOLUMEMODE_H
+#define VOLUMEMODE_H
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
 #include <pal/volume.h>
 
 class VolumeModel: public QAbstractItemModel
 {
+	Q_OBJECT;
 public:
 	VolumeModel(class Preferences* pref);
+	~VolumeModel();
 
 	QVariant data(const QModelIndex &index, int role) const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -21,7 +23,7 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-	void accept_changes();
+	void apply_changes();
 	void clear_changes();
 private:
 	class Preferences* pref;

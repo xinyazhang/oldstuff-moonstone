@@ -1,4 +1,7 @@
 #include "volumemodel.h"
+#include "Preferences.h"
+#include <kernel/index_engine.h>
+#include <pal/volume.h>
 
 VolumeModel::VolumeModel(Preferences* preference)
     :pref(preference)
@@ -34,7 +37,7 @@ Qt::ItemFlags VolumeModel::flags(const QModelIndex &index) const
 
 QVariant VolumeModel::headerData(int section,
 		Qt::Orientation orientation,
-		int role = Qt::DisplayRole) const
+		int role) const
 {
 #if 0
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -46,12 +49,12 @@ QVariant VolumeModel::headerData(int section,
 
 QModelIndex VolumeModel::index(int row,
 		int column,
-		const QModelIndex &parent = QModelIndex()) const
+		const QModelIndex &parent) const
 {
 	if (!hasIndex(row, column, parent))
 		return QModelIndex();
 
-	if ( row < 0 || row >= pref->search_engine->line_count(se_cookie) )
+	if ( row < 0 || row >= vol_list.size() )
 		return QModelIndex();
 
 	return createIndex(row, column);
@@ -64,10 +67,18 @@ QModelIndex VolumeModel::parent(const QModelIndex &index) const
 
 int VolumeModel::rowCount(const QModelIndex &) const
 {
-	return vol_list.size();
+	return (int)vol_list.size();
 }
 
 int VolumeModel::columnCount(const QModelIndex&) const
 {
 	return 1;
+}
+
+void VolumeModel::apply_changes()
+{
+}
+
+void VolumeModel::clear_changes()
+{
 }

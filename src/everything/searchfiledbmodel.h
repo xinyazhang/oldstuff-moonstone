@@ -1,12 +1,15 @@
 #ifndef SEARCHFILEDBMODEL_H
 #define SEARCHFILEDBMODEL_H
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
+#include <kernel/search_engine.h>
 
 class SearchFileDBModel : public QAbstractItemModel
 {
+	Q_OBJECT;
 public:
 	SearchFileDBModel(class Preferences* pref);
+	~SearchFileDBModel();
 
 	QVariant data(const QModelIndex &index, int role) const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -22,7 +25,7 @@ public:
 
 	int change_searching_text(const QString& str);
 
-	static int EventCallback(void* /*SearchFileDBModel*, ENGINE_EVENT*/, ENGINE_EVENT, void*);
+	static int EventCallback(void* /*SearchFileDBModel*, ENGINE_EVENT*/, int, void*);
 	bool event ( QEvent * e );
 	void update_result();
 private:
