@@ -71,10 +71,11 @@ public:
 
 	void close_threads()
 	{
-		lock_on_queue.lock();
 		watching_change wc = {QUIT, volume()};
+		lock_on_queue.lock();
+		queued.push_back(wc);
 		lock_on_queue.unlock();
-		mgr_cond.notify_one();
+		mgr_cond.notify_all();
 		manager->join();
 
 		quiting = true;
