@@ -1,7 +1,7 @@
 #ifndef PAL_VOLUME_H
 #define PAL_VOLUME_H
 
-#include <stdtype.h>
+#include "stdtype.h"
 #include <vector>
 #include <boost/uuid/uuid.hpp>
 #include <map>
@@ -14,7 +14,7 @@ struct volume
 	int64_t kpi; // Known Partition Index, an number counting from 1
 	uuids uuid; // Partition's UUID
 	unistr device; // Partition's device
-	partition_locator locators;
+	volume_locator locators;
 };
 
 EXPORT_TO_DLL std::vector<volume> ls_volume();

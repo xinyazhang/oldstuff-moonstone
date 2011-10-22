@@ -1,5 +1,10 @@
+#if defined(_MSC_VER)
+#pragma warning(disable : 4996) // Disable deprecated std::swap_ranges, std::equal
+#endif
+
 #include "volume.h"
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/string_generator.hpp>
 #include <boost/lexical_cast.hpp>
 #include <windows.h>
 #include <pal/stdtype.h>
@@ -29,12 +34,12 @@ FS_TYPE detect_fstype(native_fd fd)
 
 std::vector<volume> ls_volume()
 {
-	std::vector<volname> ret;
+	std::vector<volume> ret;
 	wchar_t volname[MAX_PATH+1];
 	HANDLE handle = FindFirstVolumeW(volname, MAX_PATH+1);
 
 	if (handle == INVALID_HANDLE_VALUE)
-		return ;
+		return ret;
 
 	do
 	{

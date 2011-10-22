@@ -5,7 +5,7 @@
 #include "unistr.h"
 #include <boost/shared_ptr.hpp>
 
-typedef boost::shared_ptr shared_ptr;
+using boost::shared_ptr;
 
 typedef int64_t idx_t;
 #define USE_INT64_INDEX

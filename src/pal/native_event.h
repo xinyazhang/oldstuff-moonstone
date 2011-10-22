@@ -9,7 +9,7 @@
  * For linux, it is event_fd
  */
 
-#include <stdtype.h>
+#include "stdtype.h"
 
 native_fd create_event(bool initvalue); // for platform uniform, must be AUTO UNFLAG
 void close_event(native_fd);
