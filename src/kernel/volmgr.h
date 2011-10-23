@@ -3,7 +3,7 @@
 
 #include <pal/volume.h>
 
-class volmgr_t
+class EXPORT_TO_DLL volmgr_t
 {
 public:
 	volmgr_t(class Database* );

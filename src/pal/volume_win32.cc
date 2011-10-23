@@ -14,7 +14,7 @@ unistr uuid2unistr(const uuids& uuid)
 	return boost::lexical_cast<std::wstring>(uuid);
 }
 
-uuids unistr2uuid(const unistr& uuid_str);
+uuids unistr2uuid(const unistr& uuid_str)
 {
 	boost::uuids::string_generator gen;
 	return gen(uuid_str);
@@ -67,7 +67,7 @@ std::vector<volume> ls_volume()
 void detect_mount_points(volume& vol)
 {
 	vol.mount_points.clear();
-	unistr volname(UT("\\?\Volume{"));
+	unistr volname(UT("\\\\?\\Volume{"));
 	volname += uuid2unistr(vol.uuid);
 	volname += UT("}");
 	unichar buf[4096];

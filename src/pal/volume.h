@@ -34,8 +34,8 @@ struct volume
 {
 	int64_t kpi; // Known Partition Index, an number counting from 1
 	uuids uuid; // Partition's UUID
-	int status;
-	int filesystem;
+	int64_t status;
+	int64_t filesystem;
 	unistr device; // Partition's device
 	std::vector<unistr> mount_points;
 	volume_locator locators;

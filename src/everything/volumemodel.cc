@@ -1,12 +1,14 @@
 #include "volumemodel.h"
 #include "Preferences.h"
+#include <kernel/Database.h>
+#include <kernel/volmgr.h>
 #include <kernel/index_engine.h>
 #include <pal/volume.h>
 
 VolumeModel::VolumeModel(Preferences* preference)
     :pref(preference)
 {
-	vol_list = pref->dbmgr->volmgr()->known_volumes();
+	vol_list = pref->db_mgr->volmgr()->known_volumes();
 }
 
 VolumeModel::~VolumeModel()

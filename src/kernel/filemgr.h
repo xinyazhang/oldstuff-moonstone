@@ -4,7 +4,7 @@
 #include <pal/stdtype.h>
 struct dentry_t;
 
-class filemgr_t
+class EXPORT_TO_DLL filemgr_t
 {
 public:
 	filemgr_t(class Database* );

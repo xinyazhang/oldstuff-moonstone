@@ -8,7 +8,7 @@ volmgr_t::volmgr_t(Database* dbmgr)
 	sql_stmt stmt = dbmgr->create_stmt_ex(UT("SELECT * FROM known_vols;"));
 	while (stmt.step()) {
 		volume vol;
-		unistr voluuid
+		unistr voluuid;
 		stmt.col(1, vol.kpi);
 		stmt.col(2, voluuid);
 		vol.uuid = unistr2uuid(voluuid);
@@ -17,7 +17,12 @@ volmgr_t::volmgr_t(Database* dbmgr)
 
 		known.push_back(vol);
 	}
-	known += ls_volume();
+
+	{
+		std::vector<volume> sys = ls_volume();
+		known.insert(known.end(), sys.begin(), sys.end());
+	}
+
 	for (std::vector<volume>::iterator iter = known.begin();
 			iter != known.end();
 			iter++) {
