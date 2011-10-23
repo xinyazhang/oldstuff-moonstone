@@ -17,9 +17,18 @@ native event
 =COMPILE=						done
 =TEST=							done
 7cffc2e4ce31d0a798a3db9295ef20bd6e766299
-=CLEAN UP=
+=CLEAN UP=						done
+0b54218789cf74a60501160a1486cf32ab49dd12
 
 -STE.NEXT-
+Extend volume for wider usage
+	- KNOWN/ONLINE/TRACING/...			done
+	- UI calls volmgr instead of pal functions
+		- load from db				done
+		- call ls_volume			done
+	- detect_mount_points				done
+==C&T==
+
 UI adjustment						
 	- Add volume
 		- stack add 
