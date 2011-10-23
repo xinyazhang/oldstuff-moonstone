@@ -28,7 +28,6 @@ public:
 private:
 	class Preferences* pref;
 	std::vector<volume> vol_list;
-	std::vector<volume> watching_list;
 };
 
 #endif

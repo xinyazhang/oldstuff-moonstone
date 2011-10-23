@@ -6,8 +6,7 @@
 VolumeModel::VolumeModel(Preferences* preference)
     :pref(preference)
 {
-	vol_list = ls_volume();
-	watching_list = pref->indexer->volume_list();
+	vol_list = pref->dbmgr->volmgr()->known_volumes();
 }
 
 VolumeModel::~VolumeModel()
@@ -47,11 +46,6 @@ QVariant VolumeModel::headerData(int section,
 		Qt::Orientation orientation,
 		int role) const
 {
-#if 0
-	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-		return headers[section];
-#endif
-
 	return QVariant();
 }
 
