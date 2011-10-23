@@ -85,8 +85,10 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 		usn_param.StartUsn = lastusn;
 	}
 
-	lastjid = usn_param.UsnJournalID;
+	lastjid = usn_meta.UsnJournalID;
+	usn_param.UsnJournalID = lastjid;
 	usn_buffer = shared_ptr<char>(new char[JOURNAL_BUFFER_SIZE]);
+	memset(&overlap, 0, sizeof(overlap));
 	overlap.hEvent = general_event_create();
 }
 
@@ -100,6 +102,10 @@ void watching_t::dispach_read()
 			JOURNAL_BUFFER_SIZE,
 			&usn_read_bytes,
 			&overlap);
+	if (!ret) {
+		int err;
+		err = GetLastError();
+	}
 }
 
 void watching_t::close(watching_t& watch)
@@ -123,12 +129,14 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	size_t left = ret_bytes - sizeof(USN);
 	PUSN_RECORD record_ptr = (PUSN_RECORD)(usn_buffer.get() + sizeof(USN));  
 	while (left > 0) {
+#if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
 		printf("File name: %.*S\n", 
-				record_ptr->FileNameLength/2, 
+				record_ptr->FileNameLength/2, s
 				record_ptr->FileName );
 		printf("Reason: %x\n", record_ptr->Reason );
 		printf("\n");
+#endif
 
 		unistr filename(record_ptr->FileName, record_ptr->FileNameLength/2);
 		/* Process the REASON! */
