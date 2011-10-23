@@ -20,13 +20,20 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	if (role == Qt::CheckStateRole)
+	if (role == Qt::CheckStateRole && index.column() == 0)
 		return QVariant(false);
 
 	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
-	return uuid2unistr(vol_list[index.row()].uuid);
+	if (index.column() == 0)
+		return uuid2unistr(vol_list[index.row()].uuid);
+	else if (index.isValid()) {
+		if (index.column() <= vol_list[index.row()].mount_points.size()) {
+			return vol_list[index.row()].mount_points[index.column()-1];
+		} 
+	}
+	return QVariant();
 }
 
 Qt::ItemFlags VolumeModel::flags(const QModelIndex &index) const
@@ -79,7 +86,7 @@ int VolumeModel::rowCount(const QModelIndex& index) const
 
 int VolumeModel::columnCount(const QModelIndex&) const
 {
-	return 1;
+	return 2;
 }
 
 void VolumeModel::apply_changes()
