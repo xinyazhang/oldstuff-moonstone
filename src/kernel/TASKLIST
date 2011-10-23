@@ -27,22 +27,30 @@ Extend volume for wider usage
 		- load from db				done
 		- call ls_volume			done
 	- detect_mount_points				done
-==C&T==
+==C&T==							done
 
-UI adjustment						
-	- Add volume
-		- stack add 
-	- Remove volume
-		- stack remove 
-	- Apply
-		- emit changes
-	- Cancel
-		- revert changes
+UI adjustment						done
+	- Add volume					done
+		- set bit				done
+	- Remove volume					done
+		- set bit 				done
+	- Apply						done
+		- emit changes				done
+	- Cancel					done
+		- revert changes			done
+
+=C&T=							done
+
+-STE.NEXT-
+Stop reading if all read
+Check SQL writes
+Path generation
 
 -STE-
-Path generation
 Volume Change
 	- Event CB Facility
+Volume ``STILL_TRACING'' BIT initialization
+Volume Info store to DB
 
 -MTE-
 NOT Trigger UAC, using Daemon
