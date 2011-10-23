@@ -14,6 +14,12 @@ unistr uuid2unistr(const uuids& uuid)
 	return boost::lexical_cast<std::wstring>(uuid);
 }
 
+uuids unistr2uuid(const unistr& uuid_str);
+{
+	boost::uuids::string_generator gen;
+	return gen(uuid_str);
+}
+
 FS_TYPE detect_fstype(native_fd fd)
 {
 	wchar_t fs_namebuf[MAX_PATH+1];
@@ -55,4 +61,26 @@ std::vector<volume> ls_volume()
 	} while(0 != FindNextVolumeW(handle, volname, MAX_PATH+1) );
 
 	return ret;
+}
+
+
+void detect_mount_points(volume& vol)
+{
+	vol.mount_points.clear();
+	unistr volname(UT("\\?\Volume{"));
+	volname += uuid2unistr(vol.uuid);
+	volname += UT("}");
+	unichar buf[4096];
+	HANDLE fh = FindFirstVolumeMountPointW(volname.native(),
+			buf,
+			4096);
+	if (fh == INVALID_HANDLE_VALUE)
+		return ;
+	vol.mount_points.push_back(unistr(buf));
+	while (FindNextVolumeMountPoint(fh,
+				buf,
+				4096)) {
+		vol.mount_points.push_back(unistr(buf));
+	}
+	FindVolumeMountPointClose(fh);
 }
