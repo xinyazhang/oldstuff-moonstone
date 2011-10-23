@@ -14,12 +14,28 @@ enum VOLUME_FLAG_SHIFT
 	VOL_KNOWN_SHIFT = 0,
 	VOL_ONLINE_SHIFT = 1,
 	VOL_TRACING_SHIFT = 2,
+
+	VOL_UI_STILL_TRACING_SHIFT = 3,
 	VOL_LAST_SHIFT
 };
 
 #define VOL_KNOWN (1 << VOL_KNOWN_SHIFT)
 #define VOL_ONLINE (1 << VOL_ONLINE_SHIFT)
 #define VOL_TRACING (1 << VOL_TRACING_SHIFT)
+#define VOL_DB_MASK (VOL_KNOWN|VOL_TRACING)
+
+#define VOL_UI_STILL_TRACING (1 << VOL_UI_STILL_TRACING_SHIFT)
+
+inline void FLAG_BITS(int64_t& flag, int64_t bits) { flag |= bits; }
+inline void UNFLAG_BITS(int64_t& flag, int64_t bits) { flag &= ~bits; }
+inline void SET_BITS(int64_t& flag, int64_t bits, bool v)
+{
+	if (v) 
+		FLAG_BITS(flag, bits);
+	else
+		UNFLAG_BITS(flag, bits);
+}
+inline int64_t MASK_BITS(int64_t flag, int64_t mask) { return flag & mask; }
 
 enum FS_TYPE
 {

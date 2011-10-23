@@ -57,6 +57,8 @@ std::vector<volume> ls_volume()
 		volume vol;
 		vol.kpi = -1;
 		vol.uuid = uuid;
+		vol.filesystem = 0;
+		vol.status = VOL_ONLINE;
 		ret.push_back(vol);
 	} while(0 != FindNextVolumeW(handle, volname, MAX_PATH+1) );
 
