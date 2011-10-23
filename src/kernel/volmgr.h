@@ -14,8 +14,11 @@ public:
 	void load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn);
 	void update_lastjid(int64_t kpi, uint64_t jid);
 	void update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn);
+	std::vector<volume> known_volumes() const;
 private:
 	class Database* dbmgr_;
+
+	std::vector<volume> known;
 };
 
 #endif

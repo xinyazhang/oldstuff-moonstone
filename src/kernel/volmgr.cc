@@ -5,6 +5,29 @@
 volmgr_t::volmgr_t(Database* dbmgr)
 	:dbmgr_(dbmgr)
 {
+	sql_stmt stmt = dbmgr->create_stmt_ex(UT("SELECT * FROM known_vols;"));
+	while (stmt.step()) {
+		volume vol;
+		unistr voluuid
+		stmt.col(1, vol.kpi);
+		stmt.col(2, voluuid);
+		vol.uuid = unistr2uuid(voluuid);
+		stmt.col(3, vol.status);
+		stmt.col(4, vol.filesystem);
+
+		known.push_back(vol);
+	}
+	known += ls_volume();
+	for (std::vector<volume>::iterator iter = known.begin();
+			iter != known.end();
+			iter++) {
+		detect_mount_points(*iter);
+	}
+}
+
+std::vector<volume> volmgr_t::known_volumes() const
+{
+	return known;
 }
 
 void volmgr_t::witness(const uuids& uuid, int64_t* kpi)
