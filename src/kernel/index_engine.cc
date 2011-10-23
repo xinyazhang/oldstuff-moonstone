@@ -160,6 +160,7 @@ public:
 		else
 			watchnew.init(db_mgr);
 
+		watchnew.dispach_read();
 		boost::lock_guard<boost::mutex> lg(lock_on_change); // Edit watching
 		watching.push_back(watchnew);
 		// OK for win32 but must be changed in Linux
@@ -207,9 +208,11 @@ public:
 
 	void run()
 	{
+		/*
 		do {
 			wait_event(change_done); // Initially idle, No change, No work
-		} while (!watching.empty());
+		} while (watching.empty());
+		*/
 
 		/*
 		 * Waiting and dump into database
