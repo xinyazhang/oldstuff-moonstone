@@ -5,6 +5,7 @@
 #include "searchfiledbmodel.h"
 #include "volumemodel.h"
 #include <QtCore/QEvent>
+#include <QtGui/QAbstractButton>
 
 namespace Ui {
     class MainWindow;
@@ -20,8 +21,7 @@ public:
 
 private slots:
 	void on_searching_textChanged(const QString &arg1);
-	void on_buttonBox_accepted();
-	void on_buttonBox_rejected();
+	void on_buttonBox_clicked(QAbstractButton *button);
 private:
 	SearchFileDBModel* search_model;
         VolumeModel* vol_model;
