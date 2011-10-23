@@ -69,18 +69,15 @@ void detect_mount_points(volume& vol)
 	vol.mount_points.clear();
 	unistr volname(UT("\\\\?\\Volume{"));
 	volname += uuid2unistr(vol.uuid);
-	volname += UT("}");
-	unichar buf[4096];
-	HANDLE fh = FindFirstVolumeMountPointW(volname.native(),
-			buf,
-			4096);
-	if (fh == INVALID_HANDLE_VALUE)
-		return ;
-	vol.mount_points.push_back(unistr(buf));
-	while (FindNextVolumeMountPoint(fh,
-				buf,
-				4096)) {
-		vol.mount_points.push_back(unistr(buf));
+	volname += UT("}\\");
+	unichar buf[65536];
+	DWORD len;
+	if (GetVolumePathNamesForVolumeName(volname.native(),
+		buf, 65536, &len)) {
+			DWORD ptr = 0;
+			while (buf[ptr]) {
+				vol.mount_points.push_back(unistr(buf+ptr));
+				ptr += vol.mount_points.back().size()+1;
+			}
 	}
-	FindVolumeMountPointClose(fh);
 }
