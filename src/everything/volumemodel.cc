@@ -20,20 +20,51 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	if (role == Qt::CheckStateRole && index.column() == 0)
-		return QVariant(false);
+	if (role == Qt::CheckStateRole && index.column() == 0) {
+		int64_t st = vol_list[index.row()].status;
+		if (st & (VOL_UI_STILL_TRACING))
+			return QVariant(Qt::Checked);
+		else
+			return QVariant(Qt::Unchecked);
+	}
 
 	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
-	if (index.column() == 0)
+	if (index.column() == 1)
 		return uuid2unistr(vol_list[index.row()].uuid);
-	else if (index.isValid()) {
-		if (index.column() <= vol_list[index.row()].mount_points.size()) {
-			return vol_list[index.row()].mount_points[index.column()-1];
+	else if (index.column() == 0) {
+		if (!vol_list[index.row()].mount_points.empty()) {
+			return vol_list[index.row()].mount_points.front();
 		} 
+	} else if (index.column() == 2) {
+		unistr st;
+		const volume& vol(vol_list[index.row()]);
+		if (vol.status & VOL_ONLINE)
+			st += UT("ONLINE");
+		if (vol.status & VOL_TRACING)
+			st += UT(" TRACING");
+		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
+			if (vol.status & VOL_UI_STILL_TRACING)
+				st += UT(" Will be tracing");
+			else
+				st += UT(" Will not be tracing");
+		}
+		return st;
 	}
 	return QVariant();
+}
+
+bool VolumeModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+	if (role == Qt::CheckStateRole && index.column() == 0) {
+		volume& vol(vol_list[index.row()]);
+		bool still = vol.status & VOL_UI_STILL_TRACING;
+		SET_BITS(vol.status, VOL_UI_STILL_TRACING, !still);
+		emit dataChanged(index, index);
+		return true;
+	}
+	return false;
 }
 
 Qt::ItemFlags VolumeModel::flags(const QModelIndex &index) const
@@ -86,13 +117,34 @@ int VolumeModel::rowCount(const QModelIndex& index) const
 
 int VolumeModel::columnCount(const QModelIndex&) const
 {
-	return 2;
+	return 3;
 }
 
 void VolumeModel::apply_changes()
 {
+	for(std::vector<volume>::iterator iter = vol_list.begin();
+		iter != vol_list.end();
+		iter++) {
+		volume& vol(*iter);
+		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
+			if (vol.status & VOL_UI_STILL_TRACING) {
+				/* Add */
+				pref->indexer->queue_volume(vol);
+			} else {
+				/* Remove */
+				pref->indexer->remove_volume(vol);
+			}
+			SET_BITS(vol.status, VOL_TRACING, !!(vol.status&VOL_UI_STILL_TRACING));
+		}
+	}
 }
 
 void VolumeModel::clear_changes()
 {
+	for(std::vector<volume>::iterator iter = vol_list.begin();
+		iter != vol_list.end();
+		iter++)
+	{
+		SET_BITS(iter->status, VOL_UI_STILL_TRACING, !!(iter->status & VOL_TRACING));
+	}
 }
