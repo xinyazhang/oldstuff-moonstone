@@ -14,12 +14,12 @@ void filemgr_t::checkbegin(int64_t kpi)
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 			UT("UPDATE known_dentry SET checked=0 WHERE volid=$1;"));
 	stmt.bind(1, kpi);
-	stmt.step();
+	stmt.execute();
 
 	stmt = dbmgr_->create_stmt_ex(
 			UT("UPDATE known_file SET refc=0 WHERE volid=$1;"));
 	stmt.bind(1, kpi);
-	stmt.step();
+	stmt.execute();
 }
 
 void filemgr_t::witness(const dentry_t& dentry)
@@ -28,7 +28,7 @@ void filemgr_t::witness(const dentry_t& dentry)
 			UT("UPDATE OR IGNORE known_dentry SET checked=1 WHERE volid=$1 AND inode=$2;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	stmt.step();
+	stmt.execute();
 }
 
 void filemgr_t::blobchange(const dentry_t&)
@@ -44,19 +44,19 @@ void filemgr_t::ack(const dentry_t& dentry)
 	stmt.bind(2, dentry.inode);
 	stmt.bind(3, dentry.pinode);
 	stmt.bind(4, dentry.fname);
-	stmt.step();
+	stmt.execute();
 
 	stmt = dbmgr_->create_stmt_ex(
 			UT("INSERT INTO known_file VALUES($1, $2, 1);"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	if (!stmt.step()) {
+	if (!stmt.execute()) {
 		/* Insertion of new inode failed, update existence inode */
 		stmt = dbmgr_->create_stmt_ex(
 				UT("UPDATE known_file SET refc = refc + 1 WHERE volid = $1 AND inode = $2;"));
 		stmt.bind(1, dentry.kpi);
 		stmt.bind(2, dentry.inode);
-		stmt.step();
+		stmt.execute();
 	}
 }
 
@@ -66,19 +66,19 @@ void filemgr_t::nak(const dentry_t& dentry)
 			UT("DELETE FROM known_dentry WHERE volid = $1 AND inode = $2;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	stmt.step();
+	stmt.execute();
 
 	stmt = dbmgr_->create_stmt_ex(
 			UT("UPDATE known_file SET refc=refc-1 WHERE volid = $1 AND inode = $2;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	stmt.step();
+	stmt.execute();
 
 	stmt = dbmgr_->create_stmt_ex(
 			UT("DELETE FROM known_file WHERE volid = $1 AND inode = $2 AND refc=0;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	stmt.step();
+	stmt.execute();
 }
 
 void filemgr_t::existance_flip(const dentry_t& dentry)
@@ -102,7 +102,7 @@ void filemgr_t::rename(const dentry_t& dentry)
 	stmt.bind(1, dentry.fname);
 	stmt.bind(2, dentry.kpi);
 	stmt.bind(3, dentry.inode);
-	stmt.step();
+	stmt.execute();
 }
 
 void filemgr_t::symlinkchange(const dentry_t&)

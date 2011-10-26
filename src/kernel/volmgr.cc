@@ -43,9 +43,10 @@ void volmgr_t::witness(const uuids& uuid, int64_t* kpi)
 	if (stmt.step()) {
 		stmt.col(1, *kpi);
 	} else {
-		unistr insql(UT("INSERT INTO known_vols VALUES($1);"));
+		unistr insql(UT("INSERT INTO known_vols(uuid,status,filesystem) VALUES($1,0,0);"));
 		sql_stmt instmt = dbmgr_->create_stmt_ex(insql);
-		if (instmt.step()) {
+		instmt.bind(1, uuid2unistr(uuid));
+		if (instmt.execute()) {
 			witness(uuid, kpi);
 		} else
 			*kpi = -1;
@@ -88,5 +89,5 @@ void volmgr_t::update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn)
 	stmt.bind(1, jid);
 	stmt.bind(2, usn);
 	stmt.bind(3, kpi);
-	stmt.step();
+	stmt.execute();
 }
