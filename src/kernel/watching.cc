@@ -149,7 +149,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 				record_ptr->FileNameLength/2 /* filename length, -1 for \0 term */
 				);
 
-		dbmgr->filemgr()->witness(dentry);
+		//dbmgr->filemgr()->witness(dentry);
 
 		if (r & USN_BLOB_CHANGE) {
 			dbmgr->filemgr()->blobchange(dentry);
