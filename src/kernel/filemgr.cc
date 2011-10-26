@@ -39,7 +39,7 @@ void filemgr_t::blobchange(const dentry_t&)
 void filemgr_t::ack(const dentry_t& dentry)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("INSERT OR IGNORE INTO known_dentry VALUES($1, $2, $3, $4, 0);"));
+			UT("INSERT OR IGNORE INTO known_dentry VALUES($1, $2, $3, $4, 1);"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
 	stmt.bind(3, dentry.pinode);
@@ -50,7 +50,7 @@ void filemgr_t::ack(const dentry_t& dentry)
 			UT("INSERT INTO known_file VALUES($1, $2, 1);"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
-	if (!stmt.execute()) {
+	if (stmt.execute()) {
 		/* Insertion of new inode failed, update existence inode */
 		stmt = dbmgr_->create_stmt_ex(
 				UT("UPDATE known_file SET refc = refc + 1 WHERE volid = $1 AND inode = $2;"));
