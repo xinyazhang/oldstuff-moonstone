@@ -1,5 +1,6 @@
 #include "stmt_sqlite_impl.h"
 #include "sqlite3pal.h"
+#include <stdio.h>
 
 stmt_sqlite_impl::stmt_sqlite_impl(sqlite3_stmt* stmt, sqlite3* db)
 	:stmt_(stmt), db_(db)
@@ -45,8 +46,12 @@ int stmt_sqlite_impl::execute()
 	}
 	if ( ret == SQLITE_DONE )
 		return 0;
-	else
+	else {
+#ifndef NDEBUG
+		fwprintf(stderr, L"ERROR CODE: %s\n", (wchar_t*)sqlite3_errmsg16(db_));
+#endif
 		return sqlite3_errcode(db_);
+	}
 }
 
 bool stmt_sqlite_impl::step()
