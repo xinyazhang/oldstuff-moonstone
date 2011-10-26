@@ -12,7 +12,7 @@ filemgr_t::filemgr_t(Database* mgr)
 void filemgr_t::checkbegin(int64_t kpi)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_dentry SET check=0 WHERE volid=$1;"));
+			UT("UPDATE known_dentry SET checked=0 WHERE volid=$1;"));
 	stmt.bind(1, kpi);
 	stmt.step();
 
@@ -25,7 +25,7 @@ void filemgr_t::checkbegin(int64_t kpi)
 void filemgr_t::witness(const dentry_t& dentry)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE OR IGNORE known_dentry SET check=1 WHERE volid=$1 AND inode=$2;"));
+			UT("UPDATE OR IGNORE known_dentry SET checked=1 WHERE volid=$1 AND inode=$2;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
 	stmt.step();
@@ -113,7 +113,7 @@ void filemgr_t::symlinkchange(const dentry_t&)
 void filemgr_t::checkdone(int64_t kpi)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("DELETE FROM known_dentry WHERE volid=$1 AND check=0;"));
+			UT("DELETE FROM known_dentry WHERE volid=$1 AND checked=0;"));
 	stmt.bind(1, kpi);
 	stmt.execute();
 	stmt = dbmgr_->create_stmt_ex(
