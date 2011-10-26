@@ -1,7 +1,7 @@
 #include "Database.h"
 #include "filemgr.h"
 #include "volmgr.h"
-#include <dal/DatabaseInterface.h>
+#include <kernel/dal/DatabaseInterface.h>
 #include "sql_stmt.h"
 
 Database::Database(DatabaseInterface* i)

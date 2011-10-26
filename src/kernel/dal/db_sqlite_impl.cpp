@@ -51,7 +51,7 @@ sql_stmt_interface* db_sqlite_impl::create_stmt(const unistr& sqlraw)
 	unistr sql = sqlraw;
 	boost::replace_all(sql, UT("$"), UT("?"));
 #ifndef NDEBUG
-	wprintf(L"SQL: %s\n", sql.native());
+	fwprintf(stderr, L"SQL: %s\n", sql.native());
 #endif
 	size_t ret = sqlite3_prepare_native(handle_, sql.native(), sql.size() * sizeof(unichar), &stmt, NULL);
 	if ( SQLITE_OK != ret )

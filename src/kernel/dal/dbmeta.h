@@ -1,7 +1,7 @@
 #ifndef DATABASE_ABSTRACT_LAYER_DATABASE_METADATA_H
 #define DATABASE_ABSTRACT_LAYER_DATABASE_METADATA_H
 
-#include "../pal/stdtype.h"
+#include <pal/stdtype.h>
 
 class DatabaseInterface;
 

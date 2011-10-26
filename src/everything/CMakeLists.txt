@@ -9,4 +9,4 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 QT4_WRAP_CPP(MOC_SRC mainwindow.h searchfiledbmodel.h volumemodel.h)
 
 ADD_EXECUTABLE(everything WIN32 ${UI_H} ${GUI_SRC} ${MOC_SRC} ${GUI_HEADER})
-TARGET_LINK_LIBRARIES(everything pal dal kernel QtCore4 QtGui4)
+TARGET_LINK_LIBRARIES(everything pal kernel QtCore4 QtGui4)

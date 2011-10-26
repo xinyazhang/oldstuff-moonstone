@@ -2,7 +2,7 @@
 #define DATABASE_ABSTRACT_LAYER_DATABASE_INTERFACE_H
 
 #include <boost/thread/mutex.hpp>
-#include "../pal/stdtype.h"
+#include <pal/stdtype.h>
 
 class sql_stmt_interface;
 

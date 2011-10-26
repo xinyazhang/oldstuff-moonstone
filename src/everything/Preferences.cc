@@ -5,7 +5,7 @@
 #include <kernel/filemgr.h>
 #include <kernel/volmgr.h>
 #include <kernel/search_engine.h>
-#include <dal/supported_db.h>
+#include <kernel/dal/supported_db.h>
 
 Preferences* Preferences::pref()
 {

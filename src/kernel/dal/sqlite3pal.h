@@ -1,8 +1,8 @@
 #ifndef DATABASE_ABSTRACT_LAYER_SQLITE_PLATFORM_ABSTRACTION_H
 #define DATABASE_ABSTRACT_LAYER_SQLITE_PLATFORM_ABSTRACTION_H
 
-#include "../pal/unicode.h"
-#include "../pal/stdtype.h"
+#include <pal/unicode.h>
+#include <pal/stdtype.h>
 #include "sqlite3.h"
 
 #ifdef USE_INT64_INDEX

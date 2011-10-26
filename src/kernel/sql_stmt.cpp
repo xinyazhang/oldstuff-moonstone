@@ -1,5 +1,5 @@
 #include "sql_stmt.h"
-#include "../dal/sql_stmt_interface.h"
+#include "dal/sql_stmt_interface.h"
 
 sql_stmt::sql_stmt(sql_stmt_interface* i)
 	:internal_(i)
