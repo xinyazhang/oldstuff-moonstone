@@ -73,7 +73,7 @@ bool watching_t::check()
 
 void watching_t::init(Database* dbmgr)
 {
-static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 0};
+static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 8, 0};
 	usn_param = default_read_data;
 	if (usn_meta.UsnJournalID != lastjid) {
 		dbmgr->begin_transaction();
@@ -127,7 +127,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 			&ret_bytes,
 			FALSE);
 	size_t left = ret_bytes - sizeof(USN);
-	PUSN_RECORD record_ptr = (PUSN_RECORD)(usn_buffer.get() + sizeof(USN));  
+	PUSN_RECORD record_ptr = (PUSN_RECORD)(usn_buffer.get() + sizeof(USN));
 	while (left > 0) {
 #if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
@@ -171,14 +171,16 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		record_ptr = (PUSN_RECORD)(((char*)record_ptr) + 
 				record_ptr->RecordLength); 
 	}
-	usn_param.StartUsn = *(USN *)usn_buffer.get();
-	lastusn = usn_param.StartUsn;
+	USN usn_next = *(USN *)usn_buffer.get();
 
-	if (recheck && lastusn >= usn_meta.NextUsn - 1) {
+	usn_param.StartUsn = usn_next;
+	if (recheck && usn_next >= lastusn) {
 		dbmgr->filemgr()->checkdone(vol.kpi);
 		dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
+		lastusn = usn_next;
 		dbmgr->final_transaction();
-	}
+	} else if (!recheck)
+		lastusn = usn_next;
 	dispach_read();
 }
 
