@@ -57,6 +57,10 @@ int stmt_sqlite_impl::execute()
 bool stmt_sqlite_impl::step()
 {
 	int ret = sqlite3_step(stmt_);
+#ifndef NDEBUG
+	if (SQLITE_ROW != ret)
+		fwprintf(stderr, L"ERROR CODE: %s\n", (wchar_t*)sqlite3_errmsg16(db_));
+#endif
 	return SQLITE_ROW == ret;
 }
 
