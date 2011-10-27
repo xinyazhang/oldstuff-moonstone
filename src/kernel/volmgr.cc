@@ -18,10 +18,7 @@ volmgr_t::volmgr_t(Database* dbmgr)
 		known.push_back(vol);
 	}
 
-	{
-		std::vector<volume> sys = ls_volume();
-		known.insert(known.end(), sys.begin(), sys.end());
-	}
+	append_online_volume(known);
 
 	for (std::vector<volume>::iterator iter = known.begin();
 			iter != known.end();
