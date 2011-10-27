@@ -148,22 +148,34 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 				record_ptr->FileName, /* filename */
 				record_ptr->FileNameLength/2 /* filename length, -1 for \0 term */
 				);
-
+#if 0
+		if (dentry.fname == UT("Thunderbird.7z"))
+		{
+#endif
 		//dbmgr->filemgr()->witness(dentry);
 
 		if (r & USN_BLOB_CHANGE) {
 			dbmgr->filemgr()->blobchange(dentry);
-		} else if (r & USN_REASON_FILE_CREATE) {
-			dbmgr->filemgr()->ack(dentry);
-		} else if (r & USN_REASON_FILE_DELETE) {
+		}
+		if (r & USN_REASON_FILE_DELETE) {
 			dbmgr->filemgr()->nak(dentry);
-		} else if (r & USN_REASON_HARD_LINK_CHANGE) {
+		}
+		if (r & USN_REASON_FILE_CREATE && !(r & USN_REASON_FILE_DELETE)) {
+			dbmgr->filemgr()->ack(dentry);
+		}
+		if (r & USN_REASON_HARD_LINK_CHANGE) {
 			dbmgr->filemgr()->existance_flip(dentry);
-		} else if (r & USN_REASON_RENAME_NEW_NAME) {
+		}
+		if (r & USN_REASON_RENAME_NEW_NAME) {
 			dbmgr->filemgr()->rename(dentry);
-		} else if (r & USN_REASON_REPARSE_POINT_CHANGE) {
+		}
+		if (r & USN_REASON_REPARSE_POINT_CHANGE) {
 			dbmgr->filemgr()->symlinkchange(dentry);
 		}
+
+#if 0
+		}
+#endif
 
 		left -= record_ptr->RecordLength;
 
