@@ -58,6 +58,7 @@ struct volume
 };
 
 EXPORT_TO_DLL std::vector<volume> ls_volume();
+EXPORT_TO_DLL void append_online_volume(std::vector<volume>&);
 
 inline bool operator==(const volume& lv, const volume& rv)
 {

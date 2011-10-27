@@ -65,6 +65,43 @@ std::vector<volume> ls_volume()
 	return ret;
 }
 
+void append_online_volume(std::vector<volume>& vollist)
+{
+	wchar_t volname[MAX_PATH+1];
+	HANDLE handle = FindFirstVolumeW(volname, MAX_PATH+1);
+
+	if (handle == INVALID_HANDLE_VALUE)
+		return ;
+
+	do
+	{
+/* extract UUID from \\?\Volume{4c1b02c1-d990-11dc-99ae-806e6f6e6963} */
+		std::wstring uuid_str(volname, 11, 36);
+		boost::uuids::string_generator gen;
+		uuids uuid = gen(uuid_str);
+		/* Add to list */
+		bool exist = false;
+		for(std::vector<volume>::iterator iter = vollist.begin();
+			iter != vollist.end();
+			iter++)	{
+				if (iter->uuid == uuid) {
+					exist = true;
+					iter->status |= VOL_ONLINE;
+					break;
+				}
+		}
+		
+		if (!exist) {
+			volume vol;
+			vol.kpi = -1;
+			vol.uuid = uuid;
+			vol.filesystem = 0;
+			vol.status = VOL_ONLINE;
+			vollist.push_back(vol);
+		}
+	} while(0 != FindNextVolumeW(handle, volname, MAX_PATH+1) );
+}
+
 
 void detect_mount_points(volume& vol)
 {
