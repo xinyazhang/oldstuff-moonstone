@@ -81,17 +81,18 @@ static sql_stmt prepare_search(search_service* serv, const unistr& pat)
 	}
 	for(int i = 1; i <= pats.size(); i++)
 	{
-		where_sub += " name LIKE $";
+		where_sub += " name LIKE '%'||$";
 		where_sub += unistr::number(i);
+		where_sub += "||'%'";
 		if (i < pats.size())
 			where_sub += " AND ";
 	}
 
 	sql_stmt stmt = db->create_stmt_ex(
-			"SELECT (inode,volid) FROM known_files WHERE "
-		   	+ where_sub);
+			"SELECT * FROM known_dentry WHERE "
+		   	+ where_sub +";");
 	for(int i = 1; i <= pats.size(); i++)
-		stmt.bind(i, "%"+pats[i-1]+"%");
+		stmt.bind(i, pats[i-1]);
 
 	return stmt;
 }
@@ -121,8 +122,8 @@ static void search(search_service* serv)
 		while(stmt.step())
 		{
 			line_data ld;
-			stmt.col(1, ld.inode);
-			stmt.col(2, ld.volid);
+			stmt.col(1, ld.volid);
+			stmt.col(2, ld.inode);
 			serv->reading->push_back(ld);
 		}
 		serv->flip_lock.lock();
@@ -176,11 +177,11 @@ search_engine_t::line_count(class search_service* serv)
 unistr 
 search_engine_t::data(class search_service* serv, int row, int column)
 {
-	line_data ld = (*serv->front)[row - 1];
+	line_data ld = (*serv->front)[row];
 	if (!ld.looked)
 	{
 		generate_fullpath(serv->db, ld);
-		(*serv->front)[row - 1] = ld;
+		(*serv->front)[row] = ld;
 	}
 	return ld.data[column];
 }
@@ -189,9 +190,11 @@ void
 generate_fullpath(Database* db, line_data& ld)
 {
 	sql_stmt stmt = db->create_stmt_ex(
-			"SELECT name FROM known_files WHERE inode = $1");
+			"SELECT name FROM known_dentry WHERE inode = $1");
 
-	stmt.col(1, ld.data[0]);
+	stmt.bind(1, ld.inode);
+	if (stmt.step())
+		stmt.col(1, ld.data[0]);
 	ld.data[1] = ld.data[2] = ld.data[3] = "TODO";
 	ld.looked = true;
 }
