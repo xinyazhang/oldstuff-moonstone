@@ -40,8 +40,10 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 	} else if (index.column() == 2) {
 		unistr st;
 		const volume& vol(vol_list[index.row()]);
+		if (vol.kpi > 0)
+			st += UT("KNOWN");
 		if (vol.status & VOL_ONLINE)
-			st += UT("ONLINE");
+			st += UT(" ONLINE");
 		if (vol.status & VOL_TRACING)
 			st += UT(" TRACING");
 		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
