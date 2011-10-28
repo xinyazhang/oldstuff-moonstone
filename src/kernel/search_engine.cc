@@ -189,12 +189,39 @@ search_engine_t::data(class search_service* serv, int row, int column)
 void
 generate_fullpath(Database* db, line_data& ld)
 {
-	sql_stmt stmt = db->create_stmt_ex(
-			"SELECT name FROM known_dentry WHERE inode = $1");
+	sql_stmt stmt = db->create_stmt_ex(UT("SELECT name,parent FROM known_dentry WHERE inode=$1 AND volid=$2"));
 
 	stmt.bind(1, ld.inode);
-	if (stmt.step())
+	stmt.bind(2, ld.volid);
+	if (stmt.step()) {
+		idx_t parent = 0;
 		stmt.col(1, ld.data[0]);
-	ld.data[1] = ld.data[2] = ld.data[3] = "TODO";
+		stmt.col(2, parent);
+
+		db->begin_transaction();
+		unistr cur(ld.data[0]);
+		unistr_list inversed_list;
+		do {
+			inversed_list.push_back(cur);
+			stmt = db->create_stmt_ex(UT("SELECT name,parent FROM known_dentry WHERE inode=$ AND volid=$2"));
+			stmt.bind(1, parent);
+			stmt.bind(2, ld.volid);
+			if (!stmt.step())
+				break;
+			stmt.col(1, cur);
+			stmt.col(2, parent);
+		} while (true);
+		db->final_transaction();
+
+		ld.data[1].clear();
+		if (!inversed_list.empty())
+			for(unistr_list::reverse_iterator iter = inversed_list.rbegin();
+				iter != inversed_list.rend();
+				iter++) {
+				ld.data[1] += *iter;
+				ld.data[1] += UT("/");
+			}
+	}
+	ld.data[2] = ld.data[3] = "TODO";
 	ld.looked = true;
 }
