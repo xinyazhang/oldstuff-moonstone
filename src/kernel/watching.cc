@@ -128,6 +128,10 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 			FALSE);
 	size_t left = ret_bytes - sizeof(USN);
 	PUSN_RECORD record_ptr = (PUSN_RECORD)(usn_buffer.get() + sizeof(USN));
+
+	if (!recheck)
+		dbmgr->begin_transaction(); // Per buffer transaction if not re-checking, for performance
+
 	while (left > 0) {
 #if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
@@ -138,7 +142,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		printf("\n");
 #endif
 
-		unistr filename(record_ptr->FileName, record_ptr->FileNameLength/2);
+		//unistr filename(record_ptr->FileName, record_ptr->FileNameLength/2);
 		/* Process the REASON! */
 		DWORD r = record_ptr->Reason;
 
@@ -166,8 +170,11 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		if (r & USN_REASON_HARD_LINK_CHANGE) {
 			dbmgr->filemgr()->existance_flip(dentry);
 		}
+		if (r & USN_REASON_RENAME_OLD_NAME) {
+			dbmgr->filemgr()->rename_old(dentry);
+		}
 		if (r & USN_REASON_RENAME_NEW_NAME) {
-			dbmgr->filemgr()->rename(dentry);
+			dbmgr->filemgr()->rename_new(dentry);
 		}
 		if (r & USN_REASON_REPARSE_POINT_CHANGE) {
 			dbmgr->filemgr()->symlinkchange(dentry);
@@ -191,8 +198,10 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
 		lastusn = usn_next;
 		dbmgr->final_transaction();
-	} else if (!recheck)
+	} else if (!recheck) {
 		lastusn = usn_next;
+		dbmgr->final_transaction();
+	}
 	dispach_read();
 }
 
