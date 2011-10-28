@@ -42,20 +42,65 @@ UI adjustment						done
 =C&T=							done
 
 -STE.NEXT-
-Stop reading if all read
-Check SQL writes
-Path generation
+Stop reading if all read				done
+Check SQL writes					done
+	- new vol					done
+	- new dentry					done
+	- new file					done
+Check JOURNAL analysis
+	- Duplicated files found in database, why?	done
+		+ CLOSE|CREATE|DELETE Reason...		comp
+Merge Vol from DB and the ONLINE one			done
+Search File						done
+=C&T=							done
+
+dentry primary key=(volid, parent, name)		done
+rename divided into old and new				done
+	- merely move dentry, and don't touch inode
+SQL Speedup						done
+	- BEGIN TRANSACTION if not ReCheck		done
+
+=C&T=							done
+
+-STE-
+Path generation						done
+Fix Bug of missing directories				done
+	- e.g. directory "general" is missing, why?
+		ok i see, witness is useful!
+Fix Bug of extra directories				done
+	- What's the "New folder"?
+		ok i see, do not witness on RENAME_OLD
+Volume ``STILL_TRACING'' BIT initialization
+	- i.e. Continue tracing after exited
+Volume Info store to DB
+Append Mount Point
+
+=C&T=							
+-STE.NEXT-
+Event Driven Engine
+Indexing Progress
+Bug in reading journal: 
+	- Why did the process write to D:/$LogFile?
+		but never if the db exists?
+
+=C&T=							
 
 -STE-
 Volume Change
 	- Event CB Facility
-Volume ``STILL_TRACING'' BIT initialization
-Volume Info store to DB
+Volume ReCheck Mechanism
+Future Optimization
+    - Stack Event for each query and eliminate the dump
 
 -MTE-
 NOT Trigger UAC, using Daemon
 	- IPC for handle
-Event Driven Engine
+USN Journal Version Check.
+String Improvement
+	- eliminate unnecessary string copy
+	- unistrref
+	- using the forth argument in 
+	sqlite3_bind_text16
 
 -LTE-
 blob and hash
