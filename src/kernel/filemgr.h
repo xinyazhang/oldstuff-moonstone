@@ -15,11 +15,15 @@ public:
 	void ack(const dentry_t&); // The dentry exists
 	void nak(const dentry_t&); // The dentry is removed
 	void existance_flip(const dentry_t&); // The dentry is filped (exits->removed, nonexits->exits)
-	void rename(const dentry_t&); // The name of a dentry is updated
+	void rename_old(const dentry_t&); // The name of a dentry is updated
+	void rename_new(const dentry_t&); // The name of a dentry is updated
 	void symlinkchange(const dentry_t&); // The dentry is a symlink and has been updated
 	void checkdone(int64_t kpi); // The reindex of the volume is done, all dentry hasn't been witnessed should be considered removed
 private:
 	class Database* dbmgr_;
+
+	void rm_dentry(const dentry_t&);
+	void add_dentry(const dentry_t&);
 };
 
 #endif

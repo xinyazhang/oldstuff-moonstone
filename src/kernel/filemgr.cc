@@ -38,15 +38,10 @@ void filemgr_t::blobchange(const dentry_t&)
 
 void filemgr_t::ack(const dentry_t& dentry)
 {
-	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("INSERT OR IGNORE INTO known_dentry VALUES($1, $2, $3, $4, 1);"));
-	stmt.bind(1, dentry.kpi);
-	stmt.bind(2, dentry.inode);
-	stmt.bind(3, dentry.pinode);
-	stmt.bind(4, dentry.fname);
-	stmt.execute();
+	add_dentry(dentry);
 
-	stmt = dbmgr_->create_stmt_ex(
+	/* inode management */
+	sql_stmt stmt = dbmgr_->create_stmt_ex(
 			UT("INSERT INTO known_file VALUES($1, $2, 1);"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
@@ -62,13 +57,10 @@ void filemgr_t::ack(const dentry_t& dentry)
 
 void filemgr_t::nak(const dentry_t& dentry)
 {
-	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("DELETE FROM known_dentry WHERE volid = $1 AND inode = $2;"));
-	stmt.bind(1, dentry.kpi);
-	stmt.bind(2, dentry.inode);
-	stmt.execute();
+	rm_dentry(dentry);
 
-	stmt = dbmgr_->create_stmt_ex(
+	/* inode management */
+	sql_stmt stmt = dbmgr_->create_stmt_ex(
 			UT("UPDATE known_file SET refc=refc-1 WHERE volid = $1 AND inode = $2;"));
 	stmt.bind(1, dentry.kpi);
 	stmt.bind(2, dentry.inode);
@@ -95,14 +87,35 @@ void filemgr_t::existance_flip(const dentry_t& dentry)
 	}
 }
 
-void filemgr_t::rename(const dentry_t& dentry)
+void filemgr_t::add_dentry(const dentry_t& dentry)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_dentry SET name=$1 WHERE volid=$1 AND inode=$2;"));
-	stmt.bind(1, dentry.fname);
-	stmt.bind(2, dentry.kpi);
-	stmt.bind(3, dentry.inode);
+			UT("INSERT OR IGNORE INTO known_dentry VALUES($1, $2, $3, $4, 1);"));
+	stmt.bind(1, dentry.kpi);
+	stmt.bind(2, dentry.inode);
+	stmt.bind(3, dentry.pinode);
+	stmt.bind(4, dentry.fname);
 	stmt.execute();
+}
+
+void filemgr_t::rm_dentry(const dentry_t& dentry)
+{
+	sql_stmt stmt = dbmgr_->create_stmt_ex(
+			UT("DELETE FROM known_dentry WHERE volid = $1 AND parent = $2 AND name=$3;"));
+	stmt.bind(1, dentry.kpi);
+	stmt.bind(2, dentry.pinode);
+	stmt.bind(3, dentry.fname);
+	stmt.execute();
+}
+
+void filemgr_t::rename_old(const dentry_t& dentry)
+{
+	rm_dentry(dentry);
+}
+
+void filemgr_t::rename_new(const dentry_t& dentry)
+{
+	add_dentry(dentry);
 }
 
 void filemgr_t::symlinkchange(const dentry_t&)
