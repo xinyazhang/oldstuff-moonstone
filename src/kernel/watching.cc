@@ -7,7 +7,7 @@
 #include "filemgr.h"
 #include "dentry.h"
 
-#define JOURNAL_BUFFER_SIZE 16384
+#define JOURNAL_BUFFER_SIZE 262144
 
 static HANDLE general_event_create()
 {
@@ -152,6 +152,10 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 				record_ptr->FileName, /* filename */
 				record_ptr->FileNameLength/2 /* filename length, -1 for \0 term */
 				);
+#if 1
+		if (dentry.fname == UT("New folder"))
+			dentry.fname = UT("New folder");
+#endif
 #if 0
 		if (dentry.fname == UT("Thunderbird.7z"))
 		{
@@ -164,9 +168,6 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		if (r & USN_REASON_FILE_DELETE) {
 			dbmgr->filemgr()->nak(dentry);
 		}
-		if (r & USN_REASON_FILE_CREATE && !(r & USN_REASON_FILE_DELETE)) {
-			dbmgr->filemgr()->ack(dentry);
-		}
 		if (r & USN_REASON_HARD_LINK_CHANGE) {
 			dbmgr->filemgr()->existance_flip(dentry);
 		}
@@ -178,6 +179,11 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		}
 		if (r & USN_REASON_REPARSE_POINT_CHANGE) {
 			dbmgr->filemgr()->symlinkchange(dentry);
+		}
+
+		if (!(r & USN_REASON_FILE_DELETE) && !(r & USN_REASON_RENAME_OLD_NAME)) {
+			/* Replacement of witness */
+			dbmgr->filemgr()->ack(dentry);
 		}
 
 #if 0

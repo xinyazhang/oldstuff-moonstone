@@ -52,6 +52,12 @@ void filemgr_t::ack(const dentry_t& dentry)
 		stmt.bind(1, dentry.kpi);
 		stmt.bind(2, dentry.inode);
 		stmt.execute();
+	} else {
+		stmt = dbmgr_->create_stmt_ex(UT("UPDATE known_dentry SET checked=1 WHERE volid=$1 AND parent=$2 AND name=$3;"));
+		stmt.bind(1, dentry.kpi);
+		stmt.bind(2, dentry.pinode);
+		stmt.bind(3, dentry.fname);
+		stmt.execute();
 	}
 }
 
