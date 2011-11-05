@@ -9,6 +9,14 @@ VolumeModel::VolumeModel(Preferences* preference)
     :pref(preference)
 {
 	vol_list = pref->db_mgr->volmgr()->known_volumes();
+	for(std::vector<volume>::iterator iter = vol_list.begin();
+		iter != vol_list.end();
+		iter++)	{
+			if (iter->status & VOL_TRACING) {
+				pref->indexer->queue_volume(*iter);
+				FLAG_BITS(iter->status, VOL_UI_STILL_TRACING);
+			}
+	}
 }
 
 VolumeModel::~VolumeModel()
@@ -129,14 +137,15 @@ void VolumeModel::apply_changes()
 		iter++) {
 		volume& vol(*iter);
 		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
+			SET_BITS(vol.status, VOL_TRACING, !!(vol.status&VOL_UI_STILL_TRACING));
 			if (vol.status & VOL_UI_STILL_TRACING) {
 				/* Add */
 				pref->indexer->queue_volume(vol);
+				pref->db_mgr->volmgr()->update(vol);
 			} else {
 				/* Remove */
 				pref->indexer->remove_volume(vol);
 			}
-			SET_BITS(vol.status, VOL_TRACING, !!(vol.status&VOL_UI_STILL_TRACING));
 		}
 	}
 }
