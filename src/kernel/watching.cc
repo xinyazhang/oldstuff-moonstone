@@ -7,7 +7,7 @@
 #include "filemgr.h"
 #include "dentry.h"
 
-#define JOURNAL_BUFFER_SIZE 262144
+#define JOURNAL_BUFFER_SIZE 65536
 
 static HANDLE general_event_create()
 {
