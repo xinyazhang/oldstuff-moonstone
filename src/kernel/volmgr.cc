@@ -98,3 +98,19 @@ void volmgr_t::update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn)
 	stmt.bind(3, kpi);
 	stmt.execute();
 }
+
+unistr volmgr_t::hrid(int64_t kpi) const
+{
+	for (std::vector<volume>::const_iterator iter = known.begin();
+		iter != known.end();
+		iter++) {
+		if (iter->kpi == kpi) {
+			if (iter->mount_points.empty()) {
+				return uuid2unistr(iter->uuid);
+			} else {
+				return iter->mount_points.at(0);
+			}
+		}
+	}
+	return unistr();
+}

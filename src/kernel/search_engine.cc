@@ -4,9 +4,11 @@
 #include <queue>
 #include <algorithm>
 #include "Database.h"
+#include "volmgr.h"
 #include "notifier.h"
 #include "sql_stmt.h"
 using boost::mutex;
+#include <stdio.h>
 
 static void search(search_service* serv);
 
@@ -51,7 +53,7 @@ public:
 	boost::condition_variable cond;
 	boost::mutex lock; // protect thread_exit and task_queue
 	int thread_exit;
-	std::deque<unistr> task_queue;
+	std::vector<unistr> task_queue;
 
 	Database* db;
 	std::vector<line_data> *front; // UI thread
@@ -109,9 +111,10 @@ static void search(search_service* serv)
 				serv->cond.wait(lock);
 			thread_exit = serv->thread_exit;
 			search_req = serv->task_queue.back();
-			serv->task_queue.pop_back();
+			fprintf(stderr, "task queue size: %d\n", serv->task_queue.size());
 			serv->task_queue.clear();
 		}
+
 
 		if (thread_exit)
 			return ;
@@ -199,10 +202,9 @@ generate_fullpath(Database* db, line_data& ld)
 		stmt.col(2, parent);
 
 		db->begin_transaction();
-		unistr cur(ld.data[0]);
+		unistr cur;
 		unistr_list inversed_list;
 		do {
-			inversed_list.push_back(cur);
 			stmt = db->create_stmt_ex(UT("SELECT name,parent FROM known_dentry WHERE inode=$ AND volid=$2"));
 			stmt.bind(1, parent);
 			stmt.bind(2, ld.volid);
@@ -210,10 +212,12 @@ generate_fullpath(Database* db, line_data& ld)
 				break;
 			stmt.col(1, cur);
 			stmt.col(2, parent);
+			inversed_list.push_back(cur);
 		} while (true);
 		db->final_transaction();
 
 		ld.data[1].clear();
+		ld.data[1] += db->volmgr()->hrid(ld.volid);
 		if (!inversed_list.empty())
 			for(unistr_list::reverse_iterator iter = inversed_list.rbegin();
 				iter != inversed_list.rend();

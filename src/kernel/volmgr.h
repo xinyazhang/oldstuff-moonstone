@@ -16,6 +16,12 @@ public:
 	void update_lastjid(int64_t kpi, uint64_t jid);
 	void update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn);
 	std::vector<volume> known_volumes() const;
+
+	/* 
+	 * Human Readable IDentifier
+	 *  Mountpoint for online volume and UUID for offlined
+	 */
+	unistr hrid(int64_t kpi) const; 
 private:
 	class Database* dbmgr_;
 
