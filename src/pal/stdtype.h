@@ -2,6 +2,7 @@
 #define PLATFORM_ABSTRACTLAYER_STDTYPE_H
 
 #include "int_type.h"
+#include "ioinfo.h"
 #include "unistr.h"
 #include <boost/shared_ptr.hpp>
 
