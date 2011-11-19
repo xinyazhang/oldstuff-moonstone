@@ -1,93 +1,140 @@
-ipc_center						cancelled, privilege instead
+ipc_center							cancelled, privilege instead
 
-Database Initialization					done through change sqls
-Perference to build db					done
+Database Initialization						done through change sqls
+Perference to build db						done
 
-privilege						done
+privilege							done
 	- open_volume
 
-Database Reincarnation					done
-volmgr and filemgr's IMPL.				done
+Database Reincarnation						done
+volmgr and filemgr's IMPL.					done
 UI adjustment						
 	- List volume
-		- pal ls_volume				done
-		- a model				done, maybe
+		- pal ls_volume					done
+		- a model					done, maybe
 native event
-	- CreateEvent					done
-=COMPILE=						done
-=TEST=							done
+	- CreateEvent						done
+=COMPILE=							done
+=TEST=								done
 7cffc2e4ce31d0a798a3db9295ef20bd6e766299
-=CLEAN UP=						done
+=CLEAN UP=							done
 0b54218789cf74a60501160a1486cf32ab49dd12
 
 -STE.NEXT-
 Extend volume for wider usage
-	- KNOWN/ONLINE/TRACING/...			done
+	- KNOWN/ONLINE/TRACING/...				done
 	- UI calls volmgr instead of pal functions
-		- load from db				done
-		- call ls_volume			done
-	- detect_mount_points				done
-==C&T==							done
+		- load from db					done
+		- call ls_volume				done
+	- detect_mount_points					done
+==C&T==								done
 
-UI adjustment						done
-	- Add volume					done
-		- set bit				done
-	- Remove volume					done
-		- set bit 				done
-	- Apply						done
-		- emit changes				done
-	- Cancel					done
-		- revert changes			done
+UI adjustment							done
+	- Add volume						done
+		- set bit					done
+	- Remove volume						done
+		- set bit 					done
+	- Apply							done
+		- emit changes					done
+	- Cancel						done
+		- revert changes				done
 
-=C&T=							done
+=C&T=								done
 
 -STE.NEXT-
-Stop reading if all read				done
-Check SQL writes					done
-	- new vol					done
-	- new dentry					done
-	- new file					done
+Stop reading if all read					done
+Check SQL writes						done
+	- new vol						done
+	- new dentry						done
+	- new file						done
 Check JOURNAL analysis
-	- Duplicated files found in database, why?	done
-		+ CLOSE|CREATE|DELETE Reason...		comp
-Merge Vol from DB and the ONLINE one			done
-Search File						done
-=C&T=							done
+	- Duplicated files found in database, why?		done
+		+ CLOSE|CREATE|DELETE Reason...			done
+Merge Vol from DB and the ONLINE one				done
+Search File							done
+=C&T=								done
 
-dentry primary key=(volid, parent, name)		done
-rename divided into old and new				done
+dentry primary key=(volid, parent, name)			done
+rename divided into old and new					done
 	- merely move dentry, and don't touch inode
-SQL Speedup						done
-	- BEGIN TRANSACTION if not ReCheck		done
+SQL Speedup							done
+	- BEGIN TRANSACTION if not ReCheck			done
 
-=C&T=							done
+=C&T=								done
 
 -STE-
-Path generation						done
-Fix Bug of missing directories				done
+Path generation							done
+Fix Bug of missing directories					done
 	- e.g. directory "general" is missing, why?
 		ok i see, witness is useful!
-Fix Bug of extra directories				done
+Fix Bug of extra directories					done
 	- What's the "New folder"?
 		ok i see, do not witness on RENAME_OLD
-Volume ``STILL_TRACING'' BIT initialization
+Volume Info store to DB						done
+Volume ``STILL_TRACING'' BIT initialization			done
 	- i.e. Continue tracing after exited
-Volume Info store to DB
-Append Mount Point
+Append Mount Point						done
 
-=C&T=							
+=C&T=								done
+
 -STE.NEXT-
 Event Driven Engine
-Indexing Progress
+	- Architecture						done
+	- fdpool_t impl.					done
+		- It requires IOCP knowledge for the
+		whole arch....
+	- A Factory						done
+	- tasklet						done
+		- Template?
+		- NOT, base class provides a single evid
+		- other stuff is left for the subclasses
+	- tasklet queue						done
+		- rename for clearer name			done
+	- reform the vfp_queue system and tasklet system...
+		+ original design is correct
+		+ rich tasklet and poor tasklet_queue...
+		- tasklet_queue					done
+		- vol prepare tasklet				done
+	- watching_t: public pollablefd_t			done
+	- new "watching" impl.					done
+		- win32 only now				done
+	- global thread pool (globaltp())			done
+	- index_engine_t::volume_list
+		- and stat system
+
+ABANDONDED
+	x evqueue impl.						cancelled
+		- others except process(struct event_t) 	done
+	x fdpoolmgr impl. (MAYBE UNNECESSARY)			CANCELLED
+		- Unnecessary for IOCP and epoll
+	x vfp_queue_t impl.
+		- VFP=Volume Filedescriptor Preparition
+		- sig: ctor(Database*, fdpool_t)		done
+		- sig: process(event_t*) to insert
+			opened fd into the fdpool
+		- VOLFDPREP_ADD && VOLFDPREP_RMV
+			- data structure work			done
+			- do_add
+			- do_rmv
+Notify System
+	- Indexing Progress
+	- Error report.
 Bug in reading journal: 
 	- Why did the process write to D:/$LogFile?
 		but never if the db exists?
+Bug fix: Search would not update..
+	e.g. Type "FLV" (be fast), and it would only
+		show the results from "F"
+Bug fix: Search Engine
 
 =C&T=							
 
 -STE-
 Volume Change
 	- Event CB Facility
+MT tasklet queue and fdpool
+	- Hazard in OOE of RMV+ADD ?!
+	- cpu_number
 Volume ReCheck Mechanism
 Future Optimization
     - Stack Event for each query and eliminate the dump
