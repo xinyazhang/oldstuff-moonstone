@@ -1,6 +1,7 @@
 #ifndef WATCHING_H
 #define WATCHING_H
 
+#if 0
 #include <windows.h>
 #include <pal/stdtype.h>
 #include <pal/volume.h>
@@ -32,5 +33,21 @@ struct watching_t
 };
 
 inline bool operator==(const watching_t& w, const volume& v) { return w.vol == v;}
+#endif
+
+#include "pollable.h"
+#include <pal/stdtype.h>
+#include <pal/volume.h>
+
+class watching_t
+	:public pollablefd_t
+{
+public:
+	watching_t(const struct volume& vol, class Database* db);
+
+	virtual bool check() = 0;
+	virtual int init() = 0;
+	virtual int dispach_read() = 0;
+};
 
 #endif
