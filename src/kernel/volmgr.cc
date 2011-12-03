@@ -14,6 +14,7 @@ volmgr_t::volmgr_t(Database* dbmgr)
 		vol.uuid = unistr2uuid(voluuid);
 		stmt.col(3, vol.status);
 		stmt.col(4, vol.filesystem);
+		stmt.col(5, vol.label);
 
 		known.push_back(vol);
 	}
@@ -73,10 +74,11 @@ void volmgr_t::load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn)
 void volmgr_t::update(const volume& vol)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-		UT("UPDATE known_vols SET status=$1, filesystem=$2 WHERE id=$3;"));
+		UT("UPDATE known_vols SET status=$1, filesystem=$2, vollabel=$4 WHERE id=$3;"));
 	stmt.bind(1, MASK_BITS(vol.status, VOL_DB_MASK));
 	stmt.bind(2, vol.filesystem);
 	stmt.bind(3, vol.kpi);
+	stmt.bind(4, vol.label);
 	stmt.execute();
 }
 
@@ -106,7 +108,9 @@ unistr volmgr_t::hrid(int64_t kpi) const
 		iter++) {
 		if (iter->kpi == kpi) {
 			if (iter->mount_points.empty()) {
-				return uuid2unistr(iter->uuid);
+				if (iter->label.empty())
+					return uuid2unistr(iter->uuid);
+				return iter->label;
 			} else {
 				return iter->mount_points.at(0);
 			}
