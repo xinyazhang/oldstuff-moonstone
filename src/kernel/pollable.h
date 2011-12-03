@@ -11,7 +11,7 @@ public:
 	virtual int process(const ioinfo_t&) = 0;
 	virtual int status() const = 0;
 
-	enum stat {
+	enum fd_status {
 		terminated = 0,
 		last
 	};

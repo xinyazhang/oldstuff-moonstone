@@ -19,7 +19,7 @@
 #ifndef KENREL_FD_POOL_H
 #define KENREL_FD_POOL_H
 
-#include "pollablefd.h"
+#include "pollable.h"
 
 class fdpool_t
 {

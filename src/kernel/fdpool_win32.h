@@ -1,11 +1,12 @@
 #ifndef FDPOOL_WIN32_H
 #define FDPOOL_WIN32_H
 
+#include "fdpool.h"
 #include "threadpool.h"
 #include <pal/stdtype.h>
 
 class fdpool_win32
-	:public threadpool_worker_t, fdpool_t
+	:public fdpool_t, public threadpool_worker_t
 {
 public:
 	fdpool_win32();
@@ -15,7 +16,7 @@ public:
 	virtual int tp_working();
 private:
 	native_fd iocp_;
-	thread_group_t* tg_;
+	threadgroup_t* tg_;
 };
 
 

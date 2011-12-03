@@ -19,9 +19,7 @@ public:
 	int process(const ioinfo_t&);
 	int status()const;
 protected:
-	native_fd fd;
-	class Database* dbmgr;
-	volume vol;
+	native_fd fd_;
 
 	uint64_t lastjid;
 	uint64_t lastusn;

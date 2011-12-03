@@ -2,6 +2,7 @@
 #define THREAD_POOL_H
 
 #include <vector>
+#include <boost/thread.hpp>
 
 class tp_thread_t;
 class threadpool_t* globaltp();
@@ -34,7 +35,8 @@ public:
 	threadgroup_t(class threadpool_t*,
 			const std::vector<tp_thread_t*>&, 
 			class threadpool_worker_t*);
-	virtual ~threadgroup_t();
+	~threadgroup_t();
+	int size() const;
 private:
 	std::vector<tp_thread_t*> runs_;
 	class threadpool_t* tp_;

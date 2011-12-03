@@ -20,6 +20,9 @@ public:
 	std::vector<volume> volume_list() const;
 private:
 	class indexer_t* indexer_;
+	class Database* dbmgr_;
+	class fdpool_t* fdpool_;
+	class tasklet_queue_t* prep_queue_;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define VOLPREPLET_WIN32_H
 
 #include "tasklet.h"
+#include "volpreplet.h"
 #include <pal/volume.h>
 
 class volpreplet_win32
@@ -15,7 +16,8 @@ public:
 	bool terminated() const;
 private:
 	class fdpool_t* pool_;
+	class Database* db_;
 	volume vol_;
-}
+};
 
 #endif

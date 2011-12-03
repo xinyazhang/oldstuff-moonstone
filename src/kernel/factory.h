@@ -1,12 +1,20 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
+class fdpool_t;
+class tasklet_queue_t;
+class vfp_queue_t;
+class tasklet_t;
+class watching_t;
+struct volume;
+class Database;
+
 namespace factory {
-	class fdpool_t* fdpool();
-	class tasklet_queue_t* tasklet_queue();
-	class vfp_queue_t* vfp_queue(class Database* db, class fdpool_t* sink);
-	class tasklet_t* volpreplet(int, const struct volume&, class fdpool_t*, class Database* db);
-	class watching_t* watching(const struct volume&, class Database*);
+	fdpool_t* fdpool();
+	tasklet_queue_t* tasklet_queue();
+	vfp_queue_t* vfp_queue(Database* db, fdpool_t* sink);
+	tasklet_t* volpreplet(int, const volume&, fdpool_t*, Database* db);
+	watching_t* watching(const volume&, Database*);
 };
 
 #endif

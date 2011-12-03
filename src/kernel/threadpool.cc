@@ -1,4 +1,5 @@
 #include "threadpool.h"
+#include "tp_thread.h"
 
 /*
  * Singleton
@@ -33,15 +34,15 @@ threadpool_t::~threadpool_t()
 	}
 }
 
-threadgroup_t* threadpool_t::allocate_threads(int n, class threadpool_worker* worker)
+threadgroup_t* threadpool_t::allocate_threads(int n, threadpool_worker_t* worker)
 {
 	manlock.lock();
 	if (cans_.size() < n) {
-		inter_alloc(n - cans_.size());
+		inter_alloc(n - (int)cans_.size());
 	}
-	std::vector<boost::thread*> alloc;
+	std::vector<tp_thread_t*> alloc;
 	while (alloc.size() < n && !cans_.empty()) {
-		boost::thread* t = cans_.back();
+		tp_thread_t* t = cans_.back();
 		cans_.pop_back();
 		alloc.push_back(t);
 	}
@@ -57,10 +58,10 @@ void threadpool_t::recycle_threads(const std::vector<tp_thread_t*>& tps)
 	manlock.unlock();
 }
 
-void threadpool::inter_alloc(int n)
+void threadpool_t::inter_alloc(int n)
 {
 	for(int i = 0; i < n; i++) {
-		tp_thread_t* tpt = new tp_thread_t
+		tp_thread_t* tpt = new tp_thread_t;
 		cans_.push_back(tpt);
 		all_.push_back(tpt);
 	}
@@ -88,5 +89,14 @@ threadgroup_t::threadgroup_t(class threadpool_t* tp,
 
 threadgroup_t::~threadgroup_t()
 {
+	for(std::vector<tp_thread_t*>::iterator iter = runs_.begin();
+			iter != runs_.end();
+			iter++)
+		(*iter)->wait();
 	tp_->recycle_threads(runs_);
+}
+
+int threadgroup_t::size() const
+{
+	return (int)runs_.size();
 }

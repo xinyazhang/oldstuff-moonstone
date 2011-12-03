@@ -1,37 +1,48 @@
 #include "watching_win32.h"
 #include "privilege.h"
+#include "Database.h"
+#include "filemgr.h"
+#include "volmgr.h"
+#include "dentry.h"
+#include "privilege.h"
+
+#define JOURNAL_BUFFER_SIZE 16384
+
+static HANDLE general_event_create()
+{
+	return CreateEvent(NULL, TRUE, FALSE, NULL);
+}
 
 watching_win32::watching_win32(const struct volume& _vol, class Database* _db)
-	:vol(_vol), dbmgr(_db)
+	:watching_t(_vol, _db)
 {
-	fd = privilege::open_volume(vol.uuid);
+	fd_ = privilege::open_volume(vol.uuid);
 
 	dbmgr->volmgr()->witness(vol.uuid, &vol.kpi);
-	if (detect_fstype(fd) == FILESYSTEM_NTFS) {
+	if (detect_fstype(fd_) == FILESYSTEM_NTFS) {
 		dbmgr->volmgr()->load_ntfs(vol.kpi, &lastjid, &lastusn);
 	} else {
 		/* FB */
-		CloseHandle(fd);
-		fd = INVALID_HANDLE_VALUE;
+		CloseHandle(fd_);
+		fd_ = INVALID_HANDLE_VALUE;
 	}
 }
 
 watching_win32::~watching_win32()
 {
 	/* FB */
-	CancelIo(fd);
-	CloseHandle(fd);
-	CloseHandle(overlap.hEvent);
-	fd = INVALID_HANDLE_VALUE;
+	CancelIo(fd_);
+	CloseHandle(fd_);
+	fd_ = INVALID_HANDLE_VALUE;
 }
 
 bool watching_win32::check()
 {
-	if (fd == INVALID_HANDLE_VALUE)
+	if (fd_ == INVALID_HANDLE_VALUE)
 		return false;
 
 	DWORD ret_bytes;
-	BOOL bret = DeviceIoControl(fd,
+	BOOL bret = DeviceIoControl(fd_,
 			FSCTL_QUERY_USN_JOURNAL,
 			NULL,
 			0,
@@ -63,12 +74,12 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 	usn_param.UsnJournalID = lastjid;
 	usn_buffer = shared_ptr<char>(new char[JOURNAL_BUFFER_SIZE]);
 	memset(&overlap, 0, sizeof(overlap));
-	overlap.hEvent = general_event_create();
+	return 0;
 }
 
 int watching_win32::dispach_read()
 {
-	BOOL ret = DeviceIoControl(fd,
+	BOOL ret = DeviceIoControl(fd_,
 			FSCTL_READ_USN_JOURNAL, 
 			&usn_param,
 			sizeof(usn_param),
@@ -80,12 +91,13 @@ int watching_win32::dispach_read()
 		int err;
 		err = GetLastError();
 	}
+	return ret;
 }
 
 
 native_fd watching_win32::fd() const
 {
-	return fd;
+	return fd_;
 }
 
 int watching_win32::process(const ioinfo_t& io)
@@ -176,6 +188,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		dbmgr->final_transaction();
 	}
 	dispach_read();
+	return 0;
 }
 
 int watching_win32::status() const

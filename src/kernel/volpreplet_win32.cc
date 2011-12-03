@@ -1,4 +1,15 @@
+#include "volpreplet.h"
 #include "volpreplet_win32.h"
+#include "watching_win32.h"
+#include "stat.h"
+#include <algorithm>
+#include "factory.h"
+#include "fdpool.h"
+
+typedef std::vector<watching_t*> watching_container;
+static watching_container watchings;
+static boost::mutex wacthings_lock;
+static std::vector<volume> watching_volumes;
 
 volpreplet_win32::volpreplet_win32(int evid, 
 		const volume& vol, 
@@ -14,12 +25,12 @@ volpreplet_win32::~volpreplet_win32()
 
 int volpreplet_win32::doit()
 {
-	stat::watching_vol_lock.lock();
+	wacthings_lock.lock();
 	watching_container::iterator iter = 
-		std::find(stat::watching_volumes.begin(), stat::watching_volumes.end(), vol_);
+		std::find(watchings.begin(), watchings.end(), vol_);
 
 	if (evid() == VOLFDPREP_ADD) {
-		if (iter != stat::watching_volumes.end())
+		if (iter != watchings.end())
 			return -1; // already watching
 
 		watching_t* watch = factory::watching(vol_, db_);
@@ -27,20 +38,30 @@ int volpreplet_win32::doit()
 			return -1;
 		}
 		watch->init();
-		watch->dispach_read();
 
-		stat::watching_volumes.push_back(watch);
+		watchings.push_back(watch);
+		watching_volumes.push_back(vol_);
+
 		pool_->async_attach(watch);
-		stat::append(stat::watching_vol_content, vol_, stat::watching_vol_lock);
-	} else (evid() == VOLFDPREP_RMV) {
-		if (iter == stat::watching_volumes.end())
+		watch->dispach_read();
+	} else if (evid() == VOLFDPREP_RMV) {
+		if (iter == watchings.end())
 			return -1;
 		watching_t* watch = *iter;
-		stat::watching_volumes.erase(iter);
+		std::vector<volume>::iterator iter_v = iter - watchings.begin() + watching_volumes.begin();
+		watchings.erase(iter);
+		watching_volumes.erase(iter_v);
 		delete watch;
-		stat::remove(stat::watching_vol_content, vol_, stat::watching_vol_lock);
 	}
-	stat::watching_vol_lock.unlock();
+	wacthings_lock.unlock();
 	return 0;
 }
 
+namespace statistic {
+	void get_watching_volume(std::vector<struct volume>& ret)
+	{
+		wacthings_lock.lock();
+		ret = watching_volumes;
+		wacthings_lock.unlock();
+	}
+};

@@ -42,12 +42,21 @@ inline bool operator==(const watching_t& w, const volume& v) { return w.vol == v
 class watching_t
 	:public pollablefd_t
 {
+	friend inline bool operator==(const watching_t* wat, const volume& vol);
 public:
-	watching_t(const struct volume& vol, class Database* db);
+	watching_t(const struct volume& _vol, class Database* db);
 
 	virtual bool check() = 0;
 	virtual int init() = 0;
 	virtual int dispach_read() = 0;
+protected:
+	class Database* dbmgr;
+	volume vol;
 };
+
+inline bool operator==(const watching_t* wat, const volume& vol)
+{
+	return wat->vol == vol;
+}
 
 #endif
