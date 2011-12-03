@@ -66,7 +66,9 @@ bool stmt_sqlite_impl::step()
 
 void stmt_sqlite_impl::col(int c, unistr& value)
 {
-	value = (unichar*)sqlite3_column_native(stmt_, c - 1);
+	unichar* str = (unichar*)sqlite3_column_native(stmt_, c - 1);
+	if (str)
+		value = str;
 }
 
 void stmt_sqlite_impl::col(int c, idx_t& value)
