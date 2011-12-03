@@ -75,10 +75,11 @@ void append_online_volume(std::vector<volume>& vollist)
 
 	do
 	{
-/* extract UUID from \\?\Volume{4c1b02c1-d990-11dc-99ae-806e6f6e6963} */
+		/* extract UUID from \\?\Volume{4c1b02c1-d990-11dc-99ae-806e6f6e6963} */
 		std::wstring uuid_str(volname, 11, 36);
 		boost::uuids::string_generator gen;
 		uuids uuid = gen(uuid_str);
+
 		/* Add to list */
 		bool exist = false;
 		for(std::vector<volume>::iterator iter = vollist.begin();
@@ -114,9 +115,24 @@ void detect_mount_points(volume& vol)
 	if (GetVolumePathNamesForVolumeName(volname.native(),
 		buf, 65536, &len)) {
 			DWORD ptr = 0;
-			while (buf[ptr]) {
-				vol.mount_points.push_back(unistr(buf+ptr));
-				ptr += vol.mount_points.back().size()+1;
+			if (buf[ptr]) {
+				/* Add volume label */
+				wchar_t label[MAX_PATH+1];
+				label[0] = L'\0';
+				GetVolumeInformationW(buf,
+					label,
+					MAX_PATH+1,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL
+					);
+				vol.label = label;
+				do {
+					vol.mount_points.push_back(unistr(buf+ptr));
+					ptr += vol.mount_points.back().size()+1;
+				} while (buf[ptr]);
 			}
 	}
 }
