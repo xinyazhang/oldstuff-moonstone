@@ -39,13 +39,13 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
-	if (index.column() == 1)
+	if (index.column() == 2)
 		return uuid2unistr(vol_list[index.row()].uuid);
 	else if (index.column() == 0) {
 		if (!vol_list[index.row()].mount_points.empty()) {
 			return vol_list[index.row()].mount_points.front();
 		} 
-	} else if (index.column() == 2) {
+	} else if (index.column() == 3) {
 		unistr st;
 		const volume& vol(vol_list[index.row()]);
 		if (vol.kpi > 0)
@@ -61,6 +61,8 @@ QVariant VolumeModel::data(const QModelIndex &index, int role) const
 				st += UT(" Will not be tracing");
 		}
 		return st;
+	} else if (index.column() == 1) {
+		return vol_list[index.row()].label;
 	}
 	return QVariant();
 }
@@ -127,7 +129,7 @@ int VolumeModel::rowCount(const QModelIndex& index) const
 
 int VolumeModel::columnCount(const QModelIndex&) const
 {
-	return 3;
+	return 4;
 }
 
 void VolumeModel::apply_changes()
