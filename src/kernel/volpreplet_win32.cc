@@ -14,14 +14,15 @@ volpreplet_win32::~volpreplet_win32()
 
 int volpreplet_win32::doit()
 {
+	stat::watching_vol_lock.lock();
 	watching_container::iterator iter = 
-		std::find(stat::watching_volumes.begin(), stat::watching_volumes.end(), vol);
+		std::find(stat::watching_volumes.begin(), stat::watching_volumes.end(), vol_);
 
 	if (evid() == VOLFDPREP_ADD) {
 		if (iter != stat::watching_volumes.end())
 			return -1; // already watching
 
-		watching_t* watch = factory::watching(vol, db_);
+		watching_t* watch = factory::watching(vol_, db_);
 		if (!watch->check()) {
 			return -1;
 		}
@@ -29,14 +30,17 @@ int volpreplet_win32::doit()
 		watch->dispach_read();
 
 		stat::watching_volumes.push_back(watch);
-		fdpool_->async_attach(watch);
+		pool_->async_attach(watch);
+		stat::append(stat::watching_vol_content, vol_, stat::watching_vol_lock);
 	} else (evid() == VOLFDPREP_RMV) {
 		if (iter == stat::watching_volumes.end())
 			return -1;
 		watching_t* watch = *iter;
 		stat::watching_volumes.erase(iter);
 		delete watch;
+		stat::remove(stat::watching_vol_content, vol_, stat::watching_vol_lock);
 	}
+	stat::watching_vol_lock.unlock();
 	return 0;
 }
 

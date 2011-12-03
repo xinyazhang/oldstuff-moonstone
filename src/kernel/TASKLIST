@@ -99,8 +99,8 @@ Event Driven Engine
 	- new "watching" impl.					done
 		- win32 only now				done
 	- global thread pool (globaltp())			done
-	- index_engine_t::volume_list
-		- and stat system
+	- index_engine_t::volume_list				done
+		- and stat system				Postponded
 
 ABANDONDED
 	x evqueue impl.						cancelled
@@ -116,6 +116,10 @@ ABANDONDED
 			- data structure work			done
 			- do_add
 			- do_rmv
+
+=C&T=
+
+
 Notify System
 	- Indexing Progress
 	- Error report.

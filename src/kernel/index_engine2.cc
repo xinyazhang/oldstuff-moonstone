@@ -9,7 +9,8 @@
 #include <boost/thread/mutex.hpp>
 #include "watching.h"
 #include "factory.h"
-#include "vfp_queue.h"
+#include "tasklet_queue.h"
+#include "fdpool.h"
 
 index_engine_t::index_engine_t(Database* dbmgr)
 	:dbmgr_(dbmgr)
@@ -38,6 +39,9 @@ bool index_engine_t::remove_volume(const struct volume& vol)
 
 std::vector<volume> index_engine_t::volume_list() const
 {
-	return stat::watching_volumes();
+	stat::watching_vol_lock.lock();
+	std::vector<volume> ret = stat::watching_volumes;
+	stat::watching_vol_lock.unlock();
+	return ret;
 }
 
