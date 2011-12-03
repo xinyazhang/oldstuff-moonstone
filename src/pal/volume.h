@@ -54,6 +54,7 @@ struct volume
 	int64_t filesystem;
 	unistr device; // Partition's device
 	std::vector<unistr> mount_points;
+	unistr label;
 	volume_locator locators;
 };
 
