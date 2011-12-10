@@ -24,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -54,6 +54,13 @@
          <widget class="QDialogButtonBox" name="buttonBox">
           <property name="standardButtons">
            <set>QDialogButtonBox::Apply|QDialogButtonBox::Reset</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="index_prog">
+          <property name="value">
+           <number>0</number>
           </property>
          </widget>
         </item>
