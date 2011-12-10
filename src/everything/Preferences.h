@@ -14,6 +14,7 @@ public:
 	class Database* db_mgr;
 	class search_engine_t* search_engine;
 	class index_engine_t* indexer;
+	class logd* logd_;
 	
 	/*
 	 * Preferences

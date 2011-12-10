@@ -6,6 +6,7 @@
 #include <kernel/volmgr.h>
 #include <kernel/search_engine.h>
 #include <kernel/dal/supported_db.h>
+#include <kernel/logd.h>
 
 Preferences* Preferences::pref()
 {
@@ -15,6 +16,7 @@ Preferences* Preferences::pref()
 
 Preferences::Preferences()
 {
+	logd_ = new logd;
 	/*
 	 * Fixed function
 	 */
@@ -36,4 +38,5 @@ Preferences::~Preferences()
 	delete search_engine;
 	delete db_mgr;
 	delete db_engine;
+	delete logd_;
 }
