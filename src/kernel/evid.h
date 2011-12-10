@@ -14,7 +14,8 @@ enum EVENT_ID {
 	LOG_INFO,
 	LOG_DEBUG,
 	/** Interaction **/
-	/* */
+	/* INDEXING */
+	INDEX_PROGRESSED,
 };
 
 

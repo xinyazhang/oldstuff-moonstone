@@ -5,6 +5,7 @@
 #include "volmgr.h"
 #include "dentry.h"
 #include "privilege.h"
+#include "feedback.h"
 
 #define JOURNAL_BUFFER_SIZE 16384
 
@@ -63,7 +64,7 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 	if (usn_meta.UsnJournalID != lastjid) {
 		dbmgr->begin_transaction();
 		dbmgr->filemgr()->checkbegin(vol.kpi);
-		dbmgr->volmgr()->update_lastjid(vol.kpi, usn_meta.UsnJournalID);
+		dbmgr->volmgr()->update_lastjid(vol.kpi, usn_meta.UsnJournalID, usn_meta.NextUsn);
 		recheck = true;
 	} else {
 		recheck = false;
@@ -188,6 +189,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		dbmgr->final_transaction();
 	}
 	dispach_read();
+	proc().printf(INDEX_PROGRESSED, UT("KPI: %lld, USN: %lld\n"), vol.kpi, lastusn);
 	return 0;
 }
 

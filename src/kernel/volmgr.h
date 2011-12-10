@@ -13,9 +13,12 @@ public:
 	void witness(const uuids&, int64_t* kpi); 
 	void load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn);
 	void update(const volume&);
-	void update_lastjid(int64_t kpi, uint64_t jid);
+	void update_lastjid(int64_t kpi, uint64_t jid, uint64_t usn_next);
 	void update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn);
 	std::vector<volume> known_volumes() const;
+
+	/* progress */
+	float progress();
 
 	/* 
 	 * Human Readable IDentifier

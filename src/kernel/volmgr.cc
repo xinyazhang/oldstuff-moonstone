@@ -82,21 +82,27 @@ void volmgr_t::update(const volume& vol)
 	stmt.execute();
 }
 
-void volmgr_t::update_lastjid(int64_t kpi, uint64_t jid)
+void volmgr_t::update_lastjid(int64_t kpi, uint64_t jid, uint64_t usn_next)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_ntfs SET journal_id=$1 WHERE id=$2;"));
+			UT("UPDATE known_ntfs SET journal_id=$1, usn_next=$3 WHERE id=$2;"));
 	stmt.bind(1, jid);
 	stmt.bind(2, kpi);
+	stmt.bind(3, usn_next);
 	stmt.execute();
 }
 
 void volmgr_t::update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_ntfs SET journal_id=$1, usn_pointer=$2 WHERE id=$3;"));
+			UT("UPDATE known_ntfs SET journal_id=$1, usn_pointer=$2, usn_next=$4 WHERE id=$3;"));
 	stmt.bind(1, jid);
 	stmt.bind(2, usn);
+	stmt.bind(3, kpi);
+	stmt.execute();
+
+	stmt = dbmgr_->create_stmt_ex(
+			UT("UPDATE known_ntfs SET usn_next=MAX(usn_next, usn_pointer) WHERE id=$3;"));
 	stmt.bind(3, kpi);
 	stmt.execute();
 }
@@ -117,4 +123,20 @@ unistr volmgr_t::hrid(int64_t kpi) const
 		}
 	}
 	return unistr();
+}
+
+float volmgr_t::progress()
+{
+	int64_t usn_read, usn_next;	
+	int64_t sum_usn_read = 0, sum_usn_next = 0;	
+	sql_stmt stmt = dbmgr_->create_stmt_ex(
+		UT("SELECT usn_pointer, usn_next FROM known_ntfs;"));
+	while (stmt.step())
+	{
+		stmt.col(1, usn_read);
+		stmt.col(2, usn_next);
+		sum_usn_read += usn_read;
+		sum_usn_next += usn_next;
+	}
+	return (double)sum_usn_read/(double)sum_usn_next;
 }
