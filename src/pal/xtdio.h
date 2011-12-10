@@ -5,7 +5,7 @@
 
 #ifdef _MSC_VER
 #define xvsnprintf _vsnwprintf
-#define xfprintf _wfprintf
+#define xfprintf fwprintf
 #define XTDIO_WRITE_TEXT_FLAG L"ab+"
 #define xfopen(x, y) _wfopen(UT(x), (y))
 #else

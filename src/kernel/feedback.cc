@@ -1,4 +1,5 @@
 #include "feedback.h"
+#include <pal/xtdio.h>
 
 #define BUFLIMIT (1<<16)
 
@@ -33,10 +34,22 @@ feedback_event feedback_port::next()
 		cond_.wait(lock);
 	}
 
-	feedback_event le = evid_queue_.front();
+	feedback_event le = queue_.front();
 	/* Put this before pop makes one TASKLET_QUIT event exits all the
 	 * threads */
 	if (le.evid != TASKLET_QUIT)
 		queue_.pop();
 	return le;
+}
+
+feedback_port& log()
+{
+	static feedback_port thelog;
+	return thelog;
+}
+
+feedback_port& proc()
+{
+	static feedback_port theproc;
+	return theproc;
 }

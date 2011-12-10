@@ -1,10 +1,10 @@
 #include "volpreplet.h"
 #include "volpreplet_win32.h"
 #include "watching_win32.h"
-#include "stat.h"
 #include <algorithm>
 #include "factory.h"
 #include "fdpool.h"
+#include <boost/thread.hpp>
 
 typedef std::vector<watching_t*> watching_container;
 static watching_container watchings;

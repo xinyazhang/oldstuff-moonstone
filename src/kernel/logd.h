@@ -5,6 +5,7 @@
 #ifndef LOGD_H
 #define LOGD_H
 
+#include <stdio.h>
 #include <pal/int_type.h>
 #include "threadpool.h"
 
@@ -18,7 +19,7 @@ public:
 	int tp_working();
 private:
 	threadgroup_t* tg_;
-	struct FILE* journal;
+	FILE* journal;
 };
 
 #endif
