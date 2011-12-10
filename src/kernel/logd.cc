@@ -29,5 +29,7 @@ int logd::tp_working()
 			/* print immediately */
 			xfprintf(journal, UT("%s"), (unichar*)le.payload.get());
 		}
+		if (le.evid == TASKLET_QUIT)
+			return 0;
 	}
 }
