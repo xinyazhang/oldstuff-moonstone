@@ -6,8 +6,10 @@
 int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 {
 	va_list args;
+	va_start(args, fmt);
 	unichar buf[BUFLIMIT+1];
 	int charc = xvsnprintf(buf, BUFLIMIT, fmt, args);
+	va_end(args);
 	if (charc < 0)
 		return -1;
 	feedback_event le;
