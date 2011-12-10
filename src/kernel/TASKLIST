@@ -121,8 +121,15 @@ ABANDONDED
 
 
 Notify System
-	- Indexing Progress
+	- Foundation
+	x Extensible Ring Buffer
+Log System
 	- Error report.
+
+=C&T=
+Notify System
+	- Indexing Progress
+
 Bug in reading journal: 
 	- Why did the process write to D:/$LogFile?
 		but never if the db exists?
