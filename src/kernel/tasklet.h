@@ -13,10 +13,6 @@ private:
 	int evid_;
 };
 
-enum TASKLET_ID {
-	TASKLET_QUIT = 0,
-	VOLFDPREP_ADD,
-	VOLFDPREP_RMV
-};
+#include "evid.h"
 
 #endif
