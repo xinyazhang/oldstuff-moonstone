@@ -8,11 +8,13 @@
 #define xfprintf fwprintf
 #define XTDIO_WRITE_TEXT_FLAG L"ab+"
 #define xfopen(x, y) _wfopen(UT(x), (y))
+#define xsscanf swscanf
 #else
 #define xvsnprintf vsnprintf
 #define xprintf fprintf
 #define XTDIO_WRITE_TEXT_FLAG "a+"
 #define xfopen(x,y) fopen((x), (y))
+#define xsscanf sscanf
 #endif
 
 #endif

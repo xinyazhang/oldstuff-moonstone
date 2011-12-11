@@ -6,20 +6,18 @@
 #define LOGD_H
 
 #include <stdio.h>
-#include <pal/int_type.h>
-#include "threadpool.h"
+#include "eventd.h"
 
 class EXPORT_TO_DLL logd
-	:public threadpool_worker_t
+	:public eventd
 {
 public:
 	logd();
 	~logd();
 
-	int tp_working();
+	int dump(feedback_event);
 private:
-	threadgroup_t* tg_;
-	FILE* journal;
+	volatile FILE* journal;
 };
 
 #endif

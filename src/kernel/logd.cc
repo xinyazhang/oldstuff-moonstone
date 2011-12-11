@@ -3,7 +3,14 @@
 #include "feedback.h"
 #include "logd.h"
 
+static int logd_dump(void* cookie, feedback_event le)
+{
+	logd* plogd = (logd*)cookie;
+	return plogd->dump(le);
+}
+
 logd::logd()
+	:eventd(log())
 {
 	journal = xfopen("LOG.TXT", XTDIO_WRITE_TEXT_FLAG);
 	if (!journal) {
@@ -12,24 +19,21 @@ logd::logd()
 	if (ftell(journal) == 0) {
 		fwrite("\xFF\xFE", 2, 1, journal);
 	}
-	tg_ = globaltp()->allocate_threads(1, this);
+	register_receiver(logd_dump, this);
 }
 
 logd::~logd()
 {
-	log().printf(TASKLET_QUIT, UT(""));
-	delete tg_;
+	FILE* todel = journal;
+	journal = NULL;
+	fclose(todel);
 }
 
-int logd::tp_working()
+int logd::dump(feedback_event le)
 {
-	while(true) {
-		feedback_event le = log().next();
-		if (le.evid >= LOG_FATAL && le.evid <= LOG_DEBUG) {
-			/* print immediately */
+	if (le.evid >= LOG_FATAL && le.evid <= LOG_DEBUG) {
+		/* print immediately */
+		if (journal)
 			xfprintf(journal, UT("%s"), (unichar*)le.payload.get());
-		}
-		if (le.evid == TASKLET_QUIT)
-			return 0;
 	}
 }
