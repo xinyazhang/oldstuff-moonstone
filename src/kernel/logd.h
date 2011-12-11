@@ -17,7 +17,7 @@ public:
 
 	int dump(feedback_event);
 private:
-	volatile FILE* journal;
+	FILE* volatile journal;
 };
 
 #endif

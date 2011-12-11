@@ -36,4 +36,5 @@ int logd::dump(feedback_event le)
 		if (journal)
 			xfprintf(journal, UT("%s"), (unichar*)le.payload.get());
 	}
+	return 0;
 }

@@ -34,11 +34,12 @@ int eventd::tp_working()
 		for(std::vector<event_cb>::iterator iter = callbacks_.begin();
 				iter != callbacks_.end();
 				iter++)
-			iter->func(cookie, le);
+			iter->func(iter->cookie, le);
 	}
 }
 
 int eventd::register_receiver(eventd_cb_func_t cb, void* cookie)
 {
 	fb_.printf(EVENTD_REG, EVENTD_REG_FMT, this, cb, cookie);
+	return 0;
 }
