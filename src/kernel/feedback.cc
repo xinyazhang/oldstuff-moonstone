@@ -2,6 +2,7 @@
 #include <pal/xtdio.h>
 
 #define BUFLIMIT (1<<16)
+#define ARRAYLIMIT (1024)
 
 int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 {
@@ -25,6 +26,8 @@ int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 
 	lock_.lock();
 	queue_.push(le);
+	if (queue_.size() > ARRAYLIMIT)
+		queue_.pop();
 	lock_.unlock();
 	cond_.notify_one();
 }
