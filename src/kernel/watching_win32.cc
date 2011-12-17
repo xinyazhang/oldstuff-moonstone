@@ -179,9 +179,10 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	USN usn_next = *(USN *)usn_buffer.get();
 
 	usn_param.StartUsn = usn_next;
+
+	dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
 	if (recheck && usn_next >= lastusn) {
 		dbmgr->filemgr()->checkdone(vol.kpi);
-		dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
 		lastusn = usn_next;
 		dbmgr->final_transaction();
 	} else if (!recheck) {

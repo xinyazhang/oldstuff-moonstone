@@ -95,15 +95,15 @@ void volmgr_t::update_lastjid(int64_t kpi, uint64_t jid, uint64_t usn_next)
 void volmgr_t::update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_ntfs SET journal_id=$1, usn_pointer=$2, usn_next=$4 WHERE id=$3;"));
+			UT("UPDATE known_ntfs SET journal_id=$1, usn_pointer=$2 WHERE id=$3;"));
 	stmt.bind(1, jid);
 	stmt.bind(2, usn);
 	stmt.bind(3, kpi);
 	stmt.execute();
 
 	stmt = dbmgr_->create_stmt_ex(
-			UT("UPDATE known_ntfs SET usn_next=MAX(usn_next, usn_pointer) WHERE id=$3;"));
-	stmt.bind(3, kpi);
+			UT("UPDATE known_ntfs SET usn_next=MAX(usn_next, usn_pointer) WHERE id=$1;"));
+	stmt.bind(1, kpi);
 	stmt.execute();
 }
 
