@@ -1,11 +1,13 @@
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 #include "Preferences.h"
+#include <kernel/evid.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QEvent::registerEventType(EVENT_SEARCHDONE);
+    QEvent::registerEventType(QEvent::User + INDEX_PROGRESSED);
     MainWindow w;
     w.show();
 

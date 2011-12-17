@@ -4,6 +4,10 @@
 #include "volumemodel.h"
 #include "Preferences.h"
 #include <QtGui/QDialogButtonBox>
+#include <kernel/eventd.h>
+#include "QFeedbackEvent.h"
+
+static int volprog(void* cookie, feedback_event ev);
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	vol_model = new VolumeModel(pref());
 	ui->volume_list->setModel(vol_model);
 	setWindowState(Qt::WindowMaximized);
+
+	procd().register_receiver(volprog, this);
 }
 
 MainWindow::~MainWindow()
@@ -36,4 +42,23 @@ void MainWindow::on_buttonBox_clicked(QAbstractButton *button)
 		vol_model->apply_changes();
 	else if (sb == QDialogButtonBox::Reset)
 		vol_model->clear_changes();
+}
+
+bool MainWindow::event(QEvent* e)
+{
+	if (e->type()== CVT_QEVENT(INDEX_PROGRESSED)) {
+		double p = pref()->db_mgr->volmgr()->progress() * 100.0;
+		ui->index_prog->setValue((int)p);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+static int volprog(void* cookie, feedback_event ev)
+{
+	if (ev.evid != INDEX_PROGRESSED)
+		return FBEV_IGNORE;
+	MainWindow* mw = (MainWindow*)cookie;
+	QCoreApplication::postEvent(mw, new QFeedbackEvent(ev));
 }

@@ -19,6 +19,7 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+	bool event ( QEvent * e );
 private slots:
 	void on_searching_textChanged(const QString &arg1);
 	void on_buttonBox_clicked(QAbstractButton *button);
@@ -30,5 +31,7 @@ private:
 };
 
 static const int EVENT_SEARCHDONE = QEvent::User+1;
+
+#define CVT_QEVENT(x) (QEvent::User + x)
 
 #endif // MAINWINDOW_H
