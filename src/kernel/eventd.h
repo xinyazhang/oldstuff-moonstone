@@ -29,5 +29,12 @@ private:
 
 EXPORT_TO_DLL extern eventd& procd();
 
+enum EVENTD_RECEIVER
+{
+	FBEV_ACCEPT = 0,
+	FBEV_IGNORE = 1,
+	FBEV_SWALLOW = 2
+};
+
 
 #endif
