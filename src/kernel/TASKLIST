@@ -118,17 +118,27 @@ ABANDONDED
 			- do_rmv
 
 =C&T=
-
-
-Notify System
+Notify System							done
 	- Foundation
-	x Extensible Ring Buffer
+	x Extensible Ring Buffer				cancelled
 Log System
-	- Error report.
+	- Error report.						done
 
 =C&T=
-Notify System
-	- Indexing Progress
+Log and Notify Evolution					done
+	- event sink: feedback_port
+	- polling: eventd
+		- subclass for log: logd
+
+=C&T=
+Indexing progress feedback
+	- DB supporting						done
+	- Event flow
+		- watching_win32 got some journals
+		- watching_win32 tell proc() sink with
+			INDEX_PROGRESSED
+		- procd (a eventd) would dump it and deliver
+		- GUI would register the handler
 
 Bug in reading journal: 
 	- Why did the process write to D:/$LogFile?
