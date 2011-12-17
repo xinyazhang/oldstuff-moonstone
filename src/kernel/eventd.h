@@ -27,5 +27,7 @@ private:
 	std::vector<event_cb> callbacks_;
 };
 
+EXPORT_TO_DLL extern eventd& procd();
+
 
 #endif

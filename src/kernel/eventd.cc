@@ -43,3 +43,9 @@ int eventd::register_receiver(eventd_cb_func_t cb, void* cookie)
 	fb_.printf(EVENTD_REG, EVENTD_REG_FMT, this, cb, cookie);
 	return 0;
 }
+
+eventd& procd()
+{
+	static eventd e(proc());
+	return e;
+}
