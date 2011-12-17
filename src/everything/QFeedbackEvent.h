@@ -9,7 +9,7 @@ class QFeedbackEvent
 {
 public:
 	QFeedbackEvent(feedback_event& ev)
-		:ev_(ev), QEvent(ev.evid + QEvent::User)
+		:ev_(ev), QEvent((QEvent::Type)(ev.evid + QEvent::User))
 	{
 	}
 
@@ -17,6 +17,6 @@ public:
 	feedback_event& ev() { return ev_; }
 private:
 	feedback_event ev_;
-}
+};
 
 #endif

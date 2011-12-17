@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QEvent::registerEventType(EVENT_SEARCHDONE);
-    QEvent::registerEventType(QEvent::User + INDEX_PROGRESSED);
+	QEvent::registerEventType(CVT_QEVENT(INDEX_PROGRESSED));
     MainWindow w;
     w.show();
 

@@ -4,8 +4,10 @@
 #include "volumemodel.h"
 #include "Preferences.h"
 #include <QtGui/QDialogButtonBox>
-#include <kernel/eventd.h>
 #include "QFeedbackEvent.h"
+#include <kernel/eventd.h>
+#include <kernel/Database.h>
+#include <kernel/volmgr.h>
 
 static int volprog(void* cookie, feedback_event ev);
 
@@ -47,11 +49,11 @@ void MainWindow::on_buttonBox_clicked(QAbstractButton *button)
 bool MainWindow::event(QEvent* e)
 {
 	if (e->type()== CVT_QEVENT(INDEX_PROGRESSED)) {
-		double p = pref()->db_mgr->volmgr()->progress() * 100.0;
+		double p = pref()->db_mgr->volmgr()->progress() * 10000.0;
 		ui->index_prog->setValue((int)p);
 		return true;
 	} else {
-		return false;
+		return QMainWindow::event(e);
 	}
 }
 
@@ -61,4 +63,5 @@ static int volprog(void* cookie, feedback_event ev)
 		return FBEV_IGNORE;
 	MainWindow* mw = (MainWindow*)cookie;
 	QCoreApplication::postEvent(mw, new QFeedbackEvent(ev));
+	return FBEV_ACCEPT;
 }

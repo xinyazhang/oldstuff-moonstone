@@ -63,10 +63,11 @@ void volmgr_t::load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn)
 		*jid = 0;
 		*read_usn = 0;
 		sql_stmt instmt = dbmgr_->create_stmt_ex(
-				UT("INSERT INTO known_ntfs VALUES($1, $2, $3);"));
+				UT("INSERT INTO known_ntfs VALUES($1, $2, $3, $4);"));
 		instmt.bind(1, kpi);
 		instmt.bind(2, (int64_t)0);
 		instmt.bind(3, (int64_t)0);
+		instmt.bind(4, (int64_t)0);
 		instmt.execute();
 	}
 }

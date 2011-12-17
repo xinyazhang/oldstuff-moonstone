@@ -46,6 +46,6 @@ int eventd::register_receiver(eventd_cb_func_t cb, void* cookie)
 
 eventd& procd()
 {
-	static eventd e(proc());
-	return e;
+	static eventd* e = new eventd(proc());
+	return *e;
 }

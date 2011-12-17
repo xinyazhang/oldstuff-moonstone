@@ -7,7 +7,7 @@
 #include "privilege.h"
 #include "feedback.h"
 
-#define JOURNAL_BUFFER_SIZE 16384
+#define JOURNAL_BUFFER_SIZE 4096
 
 static HANDLE general_event_create()
 {

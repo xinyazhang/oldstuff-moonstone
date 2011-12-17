@@ -10,6 +10,8 @@ tp_thread_t::~tp_thread_t()
 {
 	quit = true;
 	cond_.notify_one();
+	done = true;
+	done_cond_.notify_one();
 	thread_->join();
 	delete thread_;
 }
@@ -53,7 +55,7 @@ void tp_thread_t::wake(class threadpool_worker_t* worker)
 void tp_thread_t::wait()
 {
 	boost::mutex::scoped_lock lock(done_lock_);
-	while (!done) {
+	while (!done && !quit) {
 		done_cond_.wait(lock);
 	}
 }
