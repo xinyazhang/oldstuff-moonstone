@@ -73,7 +73,7 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 
 	lastjid = usn_meta.UsnJournalID;
 	usn_param.UsnJournalID = lastjid;
-	usn_buffer = shared_ptr<char>(new char[JOURNAL_BUFFER_SIZE]);
+	usn_buffer = shared_array<char>(new char[JOURNAL_BUFFER_SIZE]);
 	memset(&overlap, 0, sizeof(overlap));
 	return 0;
 }

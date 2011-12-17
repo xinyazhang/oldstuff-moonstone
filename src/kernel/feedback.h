@@ -9,7 +9,6 @@
 
 #include "evid.h"
 #include <pal/stdtype.h>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <queue>
@@ -18,7 +17,7 @@ struct feedback_event
 {
 	uint32_t evid;
 	uint32_t pl_len;
-	boost::shared_ptr<char> payload;
+	shared_array<char> payload;
 };
 
 class EXPORT_TO_DLL feedback_port

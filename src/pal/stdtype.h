@@ -5,8 +5,10 @@
 #include "ioinfo.h"
 #include "unistr.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
 
 using boost::shared_ptr;
+using boost::shared_array;
 
 typedef int64_t idx_t;
 #define USE_INT64_INDEX

@@ -27,7 +27,7 @@ protected:
 	USN_JOURNAL_DATA usn_meta;
 	READ_USN_JOURNAL_DATA usn_param;
 	OVERLAPPED overlap;
-	shared_ptr<char> usn_buffer;
+	shared_array<char> usn_buffer;
 	DWORD usn_read_bytes;
 
 	bool recheck;

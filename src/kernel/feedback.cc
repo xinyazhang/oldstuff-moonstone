@@ -20,7 +20,7 @@ int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 		long size = (charc+1) * sizeof(unichar);
 		char* real_buf = new char[size];
 		memcpy(real_buf, buf, size);
-		le.payload = boost::shared_ptr<char>(real_buf);
+		le.payload = shared_array<char>(real_buf);
 	}
 
 	lock_.lock();
