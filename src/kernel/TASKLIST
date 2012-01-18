@@ -142,6 +142,10 @@ Indexing progress feedback
 
 =C&T=
 Finalize the procedure of prog feedback
+A proper contruction and destruction sequence...
+	- singleton didn't address the destruction
+
+=C&T=
 
 Bug in reading journal: 
 	- Why did the process write to D:/$LogFile?
