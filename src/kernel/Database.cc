@@ -47,7 +47,7 @@ void Database::begin_transaction()
 	{
 		breaked_ = false;
 		db_->begin_transaction(); // default: blocked if have another transaction...
-		log().printf(LOG_DEBUG, "Begin transaction\n");
+		log().printf(LOG_DEBUG, UT("Begin transaction\n"));
 	}
 	nest_++;
 	mutex_.unlock();
