@@ -17,6 +17,7 @@ public:
 
 	int tp_working();
 	int register_receiver(eventd_cb_func_t, void* cookie);
+	int supress_receiver(eventd_cb_funct_t, void* cookie);
 private:
 	feedback_port& fb_;
 	threadgroup_t* tg_;

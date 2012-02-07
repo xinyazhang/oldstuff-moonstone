@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	procd().supress_receiver(volprog, this);
 	delete vol_model;
 	delete search_model;
 	delete ui;
