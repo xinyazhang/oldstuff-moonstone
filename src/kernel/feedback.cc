@@ -72,6 +72,7 @@ feedback_event feedback_port::next()
 	feedback_event le;
 	if (oob_queue_.empty()) {
 		le = queue_.front();
+		queue_.pop();
 	} else {
 		le = oob_queue_.front();
 		/* Put this before pop makes one TASKLET_QUIT event exits all the
