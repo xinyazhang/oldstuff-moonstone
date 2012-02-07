@@ -111,7 +111,13 @@ static void search(search_service* serv)
 				serv->cond.wait(lock);
 			thread_exit = serv->thread_exit;
 			search_req = serv->task_queue.back();
-			fprintf(stderr, "task queue size: %d\n", serv->task_queue.size());
+			log().printf(LOG_DEBUG, UT("Task queue snapshot:\n"));
+			for(std::vector<unistr>::iterator iter =
+					serv->task_queue.begin();
+				iter != serv->task_queue.end();i
+				iter++) {
+				log().printf(LOG_DEBUG, UT("%s\n"), iter->c_str());
+			}
 			serv->task_queue.clear();
 		}
 
