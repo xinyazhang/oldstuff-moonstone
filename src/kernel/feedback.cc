@@ -32,7 +32,7 @@ int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 	cond_.notify_one();
 }
 
-int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
+int feedback_port::oob(EVENT_ID evid, const unichar* fmt, ...)
 {
 	/*
 	 * We have no other choices but copy...
