@@ -9,6 +9,7 @@
 #include "sql_stmt.h"
 using boost::mutex;
 #include <stdio.h>
+#include "feedback.h"
 
 static void search(search_service* serv);
 
@@ -56,9 +57,9 @@ public:
 	std::vector<unistr> task_queue;
 
 	Database* db;
-	std::vector<line_data> *front; // UI thread
-	std::vector<line_data> *read; // UI, working shared
-	std::vector<line_data> *reading; // working thread
+	std::vector<line_data> * volatile front; // UI thread
+	std::vector<line_data> * volatile read; // UI, working shared
+	std::vector<line_data> * volatile reading; // working thread
 	boost::mutex flip_lock; // protect read
 
 	void flip()
@@ -71,7 +72,6 @@ public:
 static sql_stmt prepare_search(search_service* serv, const unistr& pat)
 {
 	Database* db = serv->db;
-	unistr sql();
 	unistr where_sub;
 	native_sstream ss(pat);
 	std::vector<unistr> pats;
@@ -114,7 +114,7 @@ static void search(search_service* serv)
 			log().printf(LOG_DEBUG, UT("Task queue snapshot:\n"));
 			for(std::vector<unistr>::iterator iter =
 					serv->task_queue.begin();
-				iter != serv->task_queue.end();i
+				iter != serv->task_queue.end();
 				iter++) {
 				log().printf(LOG_DEBUG, UT("%s\n"), iter->c_str());
 			}
@@ -139,6 +139,7 @@ static void search(search_service* serv)
 		std::swap(serv->reading, serv->read);
 		serv->flip_lock.unlock();
 
+		log().printf(LOG_DEBUG, UT("Search \"%s\" done, stored at %p\n"), search_req.c_str(), serv->read);
 		serv->broadcast(SE_JOB_DONE);
 		// (*(serv->cb_func))(serv->cb_cookie, SE_JOB_DONE);
 	}while(true);
@@ -175,6 +176,7 @@ void
 search_engine_t::update_service_state(class search_service* serv)
 {
 	serv->flip();
+	log().printf(LOG_DEBUG, UT("search engine: switch front to %p\n"), serv->front);
 }
 
 int 
