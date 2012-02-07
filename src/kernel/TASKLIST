@@ -140,9 +140,10 @@ Indexing progress feedback					done
 		- procd (a eventd) would dump it and deliver
 		- GUI would register the handler
 
-=C&T=
-Finalize the procedure of prog feedback
-A proper contruction and destruction sequence...
+=C&T=								done
+
+Finalize the procedure of prog feedback				done
+A proper contruction and destruction sequence...		done
 	- singleton didn't address the destruction
 	- came out an idea, but I've forgotten singletons...
 	- List of singletons
@@ -150,7 +151,7 @@ A proper contruction and destruction sequence...
 		+ log()@feedback.h
 		+ proc()@feedback.h
 
-=C&T=
+=C&T=								done
 
 Bug in reading journal: 
 	- Why did the process write to D:/$LogFile?
