@@ -49,12 +49,12 @@ feedback_event feedback_port::next()
 
 feedback_port& log()
 {
-	static feedback_port thelog;
-	return thelog;
+	static feedback_port* thelog = new feedback_port;
+	return *thelog;
 }
 
 feedback_port& proc()
 {
-	static feedback_port theproc;
-	return theproc;
+	static feedback_port* theproc = new feedback_port;
+	return *theproc;
 }

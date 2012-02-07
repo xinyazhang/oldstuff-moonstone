@@ -2,16 +2,21 @@
 #include "mainwindow.h"
 #include "Preferences.h"
 #include <kernel/evid.h>
+#include <kernel/singleton.h>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QEvent::registerEventType(EVENT_SEARCHDONE);
+	QApplication a(argc, argv);
+	QEvent::registerEventType(EVENT_SEARCHDONE);
 	QEvent::registerEventType(CVT_QEVENT(INDEX_PROGRESSED));
-    MainWindow w;
-    w.show();
+	MainWindow w;
+	w.show();
 
-    return a.exec();
+	int ret = a.exec();
+
+	cleanup_singletons();
+
+	return ret;
 }
 
 #ifdef Q_WS_WIN

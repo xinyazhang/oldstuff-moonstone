@@ -131,9 +131,9 @@ Log and Notify Evolution					done
 		- subclass for log: logd
 
 =C&T=
-Indexing progress feedback
+Indexing progress feedback					done
 	- DB supporting						done
-	- Event flow
+	- Event flow						done
 		- watching_win32 got some journals
 		- watching_win32 tell proc() sink with
 			INDEX_PROGRESSED
@@ -144,6 +144,11 @@ Indexing progress feedback
 Finalize the procedure of prog feedback
 A proper contruction and destruction sequence...
 	- singleton didn't address the destruction
+	- came out an idea, but I've forgotten singletons...
+	- List of singletons
+		+ procd()@eventd.h
+		+ log()@feedback.h
+		+ proc()@feedback.h
 
 =C&T=
 
