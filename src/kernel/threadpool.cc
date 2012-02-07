@@ -6,8 +6,8 @@
  */
 class threadpool_t* globaltp()
 {
-	static threadpool_t tp;
-	return &tp;
+	static threadpool_t* tp = new threadpool_t;
+	return tp;
 }
 
 /*

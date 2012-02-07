@@ -9,11 +9,12 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	QEvent::registerEventType(EVENT_SEARCHDONE);
 	QEvent::registerEventType(CVT_QEVENT(INDEX_PROGRESSED));
-	MainWindow w;
-	w.show();
+	MainWindow *w = new MainWindow;
+	w->show();
 
 	int ret = a.exec();
 
+	delete w;
 	cleanup_singletons();
 
 	return ret;
