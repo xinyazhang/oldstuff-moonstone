@@ -16,6 +16,7 @@ logd::logd()
 	if (!journal) {
 		log().printf(LOG_ERROR, UT("COULD NOT OPEN LOG FILE\n"));
 	}
+	fseek(journal, 0, SEEK_END);
 	if (ftell(journal) == 0) {
 		fwrite("\xFF\xFE", 2, 1, journal);
 	}
