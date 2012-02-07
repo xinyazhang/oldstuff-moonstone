@@ -26,6 +26,8 @@ private:
 		void* cookie;
 	};
 	std::vector<event_cb> callbacks_;
+
+	void process_oob(feedback_event& );
 };
 
 EXPORT_TO_DLL extern eventd& procd();

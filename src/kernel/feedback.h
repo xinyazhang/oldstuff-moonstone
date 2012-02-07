@@ -25,10 +25,13 @@ class EXPORT_TO_DLL feedback_port
 public:
 	/* Log usage */
 	int printf(EVENT_ID evid, const unichar* fmt, ...);
+	/* Out of band information */
+	int oob(EVENT_ID evid, const unichar* fmt, ...);
 
 	feedback_event next();
 private:
 	std::queue<feedback_event> queue_;
+	std::queue<feedback_event> oob_queue_;
 	boost::condition_variable cond_;
 	boost::mutex lock_;
 };
