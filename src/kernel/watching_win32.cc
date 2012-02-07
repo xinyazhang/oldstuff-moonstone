@@ -65,7 +65,10 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 		dbmgr->begin_transaction();
 		dbmgr->filemgr()->checkbegin(vol.kpi);
 		dbmgr->volmgr()->update_lastjid(vol.kpi, usn_meta.UsnJournalID, usn_meta.NextUsn);
-		recheck = true;
+		if (lastjid != 0)
+			recheck = true;
+		else
+			recheck = false;
 	} else {
 		recheck = false;
 		usn_param.StartUsn = lastusn;
@@ -113,7 +116,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 		dbmgr->begin_transaction(); // Per buffer transaction if not re-checking, for performance
 
 	if (left > 0)
-		log.printf(LOG_DEBUG, UT("Begin write journal records\n"));
+		log().printf(LOG_DEBUG, UT("Begin write journal records\n"));
 	while (left > 0) {
 #if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
