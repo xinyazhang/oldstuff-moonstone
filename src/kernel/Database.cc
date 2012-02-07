@@ -3,6 +3,7 @@
 #include "volmgr.h"
 #include <kernel/dal/DatabaseInterface.h>
 #include "sql_stmt.h"
+#include "feedback.h"
 
 Database::Database(DatabaseInterface* i)
 	:db_(i), nest_(0)
@@ -46,6 +47,7 @@ void Database::begin_transaction()
 	{
 		breaked_ = false;
 		db_->begin_transaction(); // default: blocked if have another transaction...
+		log().printf(LOG_DEBUG, "Begin transaction\n");
 	}
 	nest_++;
 	mutex_.unlock();
@@ -56,8 +58,10 @@ void Database::abort_transaction()
 	mutex_.lock();
 	nest_--;
 	breaked_ = true;
-	if ( nest_ == 0 )
+	if ( nest_ == 0 ) {
 		db_->abort_transaction();
+		log().printf(LOG_DEBUG, UT("Abort transaction\n"));
+	}
 	mutex_.unlock();
 }
 
@@ -67,10 +71,13 @@ void Database::final_transaction()
 	nest_--;
 	if ( nest_ == 0 )
 	{
-		if ( breaked_ )
+		if ( breaked_ ) {
 			db_->abort_transaction();
-		else 
+			log().printf(LOG_DEBUG, UT("Abort transaction\n"));
+		} else {
 			db_->final_transaction();
+			log().printf(LOG_DEBUG, UT("Final transaction\n"));
+		}
 	}
 	mutex_.unlock();
 }

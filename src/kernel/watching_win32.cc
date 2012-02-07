@@ -112,6 +112,8 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	if (!recheck)
 		dbmgr->begin_transaction(); // Per buffer transaction if not re-checking, for performance
 
+	if (left > 0)
+		log.printf(LOG_DEBUG, UT("Begin write journal records\n"));
 	while (left > 0) {
 #if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
@@ -181,6 +183,7 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	usn_param.StartUsn = usn_next;
 
 	dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
+	log().printf(LOG_DEBUG, UT("Status: KPI: %lld, USN: %lld\n"), vol.kpi, lastusn);
 	if (recheck && usn_next >= lastusn) {
 		dbmgr->filemgr()->checkdone(vol.kpi);
 		lastusn = usn_next;
