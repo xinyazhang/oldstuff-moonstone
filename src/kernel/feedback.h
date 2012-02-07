@@ -23,6 +23,7 @@ struct feedback_event
 class EXPORT_TO_DLL feedback_port
 {
 public:
+	~feedback_port();
 	/* Log usage */
 	int printf(EVENT_ID evid, const unichar* fmt, ...);
 	/* Out of band information */

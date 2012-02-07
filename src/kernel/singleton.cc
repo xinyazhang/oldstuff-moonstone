@@ -5,8 +5,8 @@
 
 void cleanup_singletons()
 {
-	delete globaltp();
 	delete &procd();
 	delete &proc();
 	delete &log();
+	delete globaltp();
 }

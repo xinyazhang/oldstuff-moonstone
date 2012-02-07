@@ -4,6 +4,10 @@
 #define BUFLIMIT (1<<16)
 #define ARRAYLIMIT (1024)
 
+feedback_port::~feedback_port()
+{
+}
+
 int feedback_port::printf(EVENT_ID evid, const unichar* fmt, ...)
 {
 	va_list args;
