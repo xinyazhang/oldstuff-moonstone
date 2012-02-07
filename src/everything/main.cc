@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	int ret = a.exec();
 
 	delete w;
+	delete pref();
 	cleanup_singletons();
 
 	return ret;

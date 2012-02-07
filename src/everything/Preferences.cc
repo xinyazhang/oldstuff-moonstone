@@ -10,8 +10,8 @@
 
 Preferences* Preferences::pref()
 {
-    static Preferences pref;
-    return &pref;
+    static Preferences* pref = new Preferences;
+    return pref;
 }
 
 Preferences::Preferences()
