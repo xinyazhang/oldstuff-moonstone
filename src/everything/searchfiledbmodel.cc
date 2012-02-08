@@ -3,6 +3,7 @@
 #include <QtCore/QCoreApplication>
 #include <kernel/search_engine.h>
 #include "mainwindow.h"
+#include <kernel/feedback.h>
 
 SearchFileDBModel::SearchFileDBModel(Preferences* preference)
     :pref(preference)
@@ -83,18 +84,19 @@ int SearchFileDBModel::change_searching_text(const QString& str)
 int SearchFileDBModel::EventCallback(void* cookie, int ev, void*)
 {
 	SearchFileDBModel* model = (SearchFileDBModel*)cookie;
+	log().printf(LOG_DEBUG, UT("Post a search done event\n"));
 	QCoreApplication::postEvent(model, new QEvent((QEvent::Type)EVENT_SEARCHDONE));
 	return 0;
 }
 
 bool SearchFileDBModel::event(QEvent* e)
 {
-    if (e->type()==EVENT_SEARCHDONE)
-    {
+    if (e->type()==EVENT_SEARCHDONE) {
+		log().printf(LOG_DEBUG, UT("Search done acknowledged\n"));
         update_result();
+		log().printf(LOG_DEBUG, UT("Search results updated\n"));
         return true;
-    } else
-    {
+    } else {
         return false;
     }
 }
