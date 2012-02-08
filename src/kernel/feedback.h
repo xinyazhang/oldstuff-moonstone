@@ -37,7 +37,7 @@ private:
 	boost::mutex lock_;
 };
 
-extern feedback_port& log();
-extern feedback_port& proc();
+extern EXPORT_TO_DLL feedback_port& log();
+extern EXPORT_TO_DLL feedback_port& proc();
 
 #endif
