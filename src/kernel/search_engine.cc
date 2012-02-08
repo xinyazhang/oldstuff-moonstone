@@ -29,7 +29,7 @@ class search_service
 {
 public:
 	search_service(void* cookie, cb_func_t func, Database* _db)
-		:thread_exit(0), db(_db)
+		:thread_exit(0), db(_db), read_is_new(false)
 	{
 		thread = new boost::thread(boost::bind(&search, this));
 		front = new std::vector<line_data>;
@@ -59,13 +59,17 @@ public:
 	Database* db;
 	std::vector<line_data> * volatile front; // UI thread
 	std::vector<line_data> * volatile read; // UI, working shared
+	bool read_is_new;
 	std::vector<line_data> * volatile reading; // working thread
 	boost::mutex flip_lock; // protect read
 
 	void flip()
 	{
 		mutex::scoped_lock sl(flip_lock);
-		std::swap(read, front);
+		if (read_is_new) {
+			std::swap(read, front);
+			read_is_new = false;
+		}
 	}
 };
 
@@ -137,6 +141,7 @@ static void search(search_service* serv)
 		}
 		serv->flip_lock.lock();
 		std::swap(serv->reading, serv->read);
+		serv->read_is_new = true;
 		serv->flip_lock.unlock();
 
 		log().printf(LOG_DEBUG, UT("Search \"%s\" done, stored at %p\n"), search_req.c_str(), serv->read);
