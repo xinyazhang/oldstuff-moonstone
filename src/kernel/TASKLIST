@@ -1,179 +1,21 @@
-ipc_center							cancelled, privilege instead
+CONSTITIUTION
 
-Database Initialization						done through change sqls
-Perference to build db						done
+Stability, and then functions; Rarely seen situations thridly; Performance is the last.
 
-privilege							done
-	- open_volume
-
-Database Reincarnation						done
-volmgr and filemgr's IMPL.					done
-UI adjustment						
-	- List volume
-		- pal ls_volume					done
-		- a model					done, maybe
-native event
-	- CreateEvent						done
-=COMPILE=							done
-=TEST=								done
-7cffc2e4ce31d0a798a3db9295ef20bd6e766299
-=CLEAN UP=							done
-0b54218789cf74a60501160a1486cf32ab49dd12
-
--STE.NEXT-
-Extend volume for wider usage
-	- KNOWN/ONLINE/TRACING/...				done
-	- UI calls volmgr instead of pal functions
-		- load from db					done
-		- call ls_volume				done
-	- detect_mount_points					done
-==C&T==								done
-
-UI adjustment							done
-	- Add volume						done
-		- set bit					done
-	- Remove volume						done
-		- set bit 					done
-	- Apply							done
-		- emit changes					done
-	- Cancel						done
-		- revert changes				done
-
-=C&T=								done
-
--STE.NEXT-
-Stop reading if all read					done
-Check SQL writes						done
-	- new vol						done
-	- new dentry						done
-	- new file						done
-Check JOURNAL analysis
-	- Duplicated files found in database, why?		done
-		+ CLOSE|CREATE|DELETE Reason...			done
-Merge Vol from DB and the ONLINE one				done
-Search File							done
-=C&T=								done
-
-dentry primary key=(volid, parent, name)			done
-rename divided into old and new					done
-	- merely move dentry, and don't touch inode
-SQL Speedup							done
-	- BEGIN TRANSACTION if not ReCheck			done
-
-=C&T=								done
-
--STE-
-Path generation							done
-Fix Bug of missing directories					done
-	- e.g. directory "general" is missing, why?
-		ok i see, witness is useful!
-Fix Bug of extra directories					done
-	- What's the "New folder"?
-		ok i see, do not witness on RENAME_OLD
-Volume Info store to DB						done
-Volume ``STILL_TRACING'' BIT initialization			done
-	- i.e. Continue tracing after exited
-Append Mount Point						done
-
-=C&T=								done
-
--STE.NEXT-
-Event Driven Engine
-	- Architecture						done
-	- fdpool_t impl.					done
-		- It requires IOCP knowledge for the
-		whole arch....
-	- A Factory						done
-	- tasklet						done
-		- Template?
-		- NOT, base class provides a single evid
-		- other stuff is left for the subclasses
-	- tasklet queue						done
-		- rename for clearer name			done
-	- reform the vfp_queue system and tasklet system...
-		+ original design is correct
-		+ rich tasklet and poor tasklet_queue...
-		- tasklet_queue					done
-		- vol prepare tasklet				done
-	- watching_t: public pollablefd_t			done
-	- new "watching" impl.					done
-		- win32 only now				done
-	- global thread pool (globaltp())			done
-	- index_engine_t::volume_list				done
-		- and stat system				Postponded
-
-ABANDONDED
-	x evqueue impl.						cancelled
-		- others except process(struct event_t) 	done
-	x fdpoolmgr impl. (MAYBE UNNECESSARY)			CANCELLED
-		- Unnecessary for IOCP and epoll
-	x vfp_queue_t impl.
-		- VFP=Volume Filedescriptor Preparition
-		- sig: ctor(Database*, fdpool_t)		done
-		- sig: process(event_t*) to insert
-			opened fd into the fdpool
-		- VOLFDPREP_ADD && VOLFDPREP_RMV
-			- data structure work			done
-			- do_add
-			- do_rmv
-
-=C&T=
-Notify System							done
-	- Foundation
-	x Extensible Ring Buffer				cancelled
-Log System
-	- Error report.						done
-
-=C&T=
-Log and Notify Evolution					done
-	- event sink: feedback_port
-	- polling: eventd
-		- subclass for log: logd
-
-=C&T=
-Indexing progress feedback					done
-	- DB supporting						done
-	- Event flow						done
-		- watching_win32 got some journals
-		- watching_win32 tell proc() sink with
-			INDEX_PROGRESSED
-		- procd (a eventd) would dump it and deliver
-		- GUI would register the handler
-
-=C&T=								done
-
-Finalize the procedure of prog feedback				done
-A proper contruction and destruction sequence...		done
-	- singleton didn't address the destruction
-	- came out an idea, but I've forgotten singletons...
-	- List of singletons
-		+ procd()@eventd.h
-		+ log()@feedback.h
-		+ proc()@feedback.h
-
-=C&T=								done
-
-Bug in reading journal: 
-	- Why did the process write to D:/$LogFile?
-		but never if the db exists?
-Bug fix: Search would not update..
-	e.g. Type "FLV" (be fast), and it would only
-		show the results from "F"
-Bug fix: Search Engine
-
-=C&T=							
-
--STE-
 Volume Change
-	- Event CB Facility
-MT tasklet queue and fdpool
-	- Hazard in OOE of RMV+ADD ?!
-	- cpu_number
+	- feedback_port devfp
+	- eventd devd
 Volume ReCheck Mechanism
-Future Optimization
-    - Stack Event for each query and eliminate the dump
+
+=C&T=
+
+-STE-
+Hashing file
+	+ maybe duplication check
 
 -MTE-
+Bug fix: Search Engine
+	- I've forgotten what's this...
 NOT Trigger UAC, using Daemon
 	- IPC for handle
 USN Journal Version Check.
@@ -184,6 +26,11 @@ String Improvement
 	sqlite3_bind_text16
 
 -LTE-
+MT tasklet queue and fdpool
+	- Hazard in OOE of RMV+ADD ?!
+	- cpu_number
+Future Optimization
+    - Stack Event for each query and eliminate the dump
 blob and hash
 	- filemgr_t::blobchange
 symlink support
