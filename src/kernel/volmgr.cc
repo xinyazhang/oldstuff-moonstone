@@ -41,7 +41,7 @@ void volmgr_t::witness(const uuids& uuid, int64_t* kpi)
 	if (stmt.step()) {
 		stmt.col(1, *kpi);
 	} else {
-		unistr insql(UT("INSERT INTO known_vols(uuid,status,filesystem) VALUES($1,0,0);"));
+		unistr insql(UT("INSERT INTO known_vols(uuid,status,filesystem, machine_id) VALUES($1,0,0,0);"));
 		sql_stmt instmt = dbmgr_->create_stmt_ex(insql);
 		instmt.bind(1, uuid2unistr(uuid));
 		if (!instmt.execute()) {
