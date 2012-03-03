@@ -2,9 +2,35 @@ CONSTITIUTION
 
 Stability, and then functions; Rarely seen situations thridly; Performance is the last.
 
+Index files on different machines
+	- A table of machines
+		- Machine name
+	- A table of access point of machines
+		- protocol (<scheme>), 
+		- port (optional)
+		- authority
+		- root path
+
+JOBS TO DO
+
+Add a table of machines
+	- (id, name)
+Add GUI to manipulate them
+Add a table of access points
+	- (protocol, port, auth, root)
+Add GUI to manipulate them
+
+Bug fix:
+	- Progress skipped to 60% immedately for an old volume, 
+		as the old journals are deleted.
+	- Crash if remove while loading journals.
+
+
 Volume Change
 	- feedback_port devfp
 	- eventd devd
+	- RegisterDeviceNotification
+	- an assistant window, or hack the application.
 Volume ReCheck Mechanism
 
 =C&T=
