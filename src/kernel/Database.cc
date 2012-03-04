@@ -1,6 +1,7 @@
 #include "Database.h"
 #include "filemgr.h"
 #include "volmgr.h"
+#include "macmgr.h"
 #include <kernel/dal/DatabaseInterface.h>
 #include "sql_stmt.h"
 #include "feedback.h"
@@ -10,12 +11,14 @@ Database::Database(DatabaseInterface* i)
 {
 	filemgr_ = new filemgr_t(this);
 	volmgr_ = new volmgr_t(this);
+	macmgr_ = new macmgr_t(this);
 }
 
 Database::~Database()
 {
 	delete volmgr_;
 	delete filemgr_;
+	delete macmgr_;
 }
 
 bool Database::initialized() const
@@ -95,4 +98,9 @@ filemgr_t* Database::filemgr()
 volmgr_t* Database::volmgr()
 {
 	return volmgr_;
+}
+
+macmgr_t* Database::macmgr()
+{
+	return macmgr_;
 }
