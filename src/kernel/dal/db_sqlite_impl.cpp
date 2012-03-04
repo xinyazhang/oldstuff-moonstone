@@ -90,7 +90,10 @@ void db_sqlite_impl::check_version() // would modify initialized_
 static const unistr sql_template[] =
 {
 	UT("PRAGMA encoding = \"UTF-16\";"), 
-	UT("CREATE TABLE IF NOT EXISTS machine_list(id INTEGER PRIMARY KEY ASC AUTOINCREMENT, name TEXT);"),
+	UT("CREATE TABLE IF NOT EXISTS")\
+		UT("machine_list(")\
+		UT("id INTEGER PRIMARY KEY ASC AUTOINCREMENT")\
+		UT(", name TEXT, comment TEXT);"),
 	UT("INSERT INTO machine_list(0, \"localhost\");"),
 	UT("CREATE TABLE IF NOT EXISTS known_vols(id INTEGER PRIMARY KEY ASC AUTOINCREMENT, uuid TEXT UNIQUE, status INTEGER, filesystem INTEGER, vollabel TEXT);"),
 	UT("CREATE TABLE IF NOT EXISTS known_dentry(volid INTEGER REFERENCES known_vols(id), inode INTEGER, parent INTEGER, name TEXT, checked INTEGER, PRIMARY KEY(volid, parent, name));"),
