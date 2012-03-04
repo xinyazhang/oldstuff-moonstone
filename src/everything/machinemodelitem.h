@@ -42,6 +42,9 @@ public:
 protected:
 	/* return NULL as no children for APs */
 	virtual TreeItem* spawnChild(int position, int columns) { return NULL; }
+	virtual int removeAtBackend();
+	virtual int addAtBackend();
+	virtual int updateAtBackend():
 };
 
 #endif
