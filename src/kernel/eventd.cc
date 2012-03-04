@@ -80,9 +80,3 @@ eventd& procd()
 	static eventd* e = new eventd(proc());
 	return *e;
 }
-
-eventd& procd()
-{
-	static eventd* e = new eventd(devfp());
-	return *e;
-}
