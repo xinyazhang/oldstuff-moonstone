@@ -96,6 +96,10 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS known_dentry(volid INTEGER REFERENCES known_vols(id), inode INTEGER, parent INTEGER, name TEXT, checked INTEGER, PRIMARY KEY(volid, parent, name));"),
 	UT("CREATE TABLE IF NOT EXISTS known_file(volid INTERGER REFERENCES known_vols(id), inode INTEGER, refc INTEGER, PRIMARY KEY(volid, inode));"),
 	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER, usn_next INTEGER);"),
+	UT("CREATE TABLE IF NOT EXISTS access_point("\
+	   "id INTEGER ASC AUTOINCREMENT, host INTEGER REFERENCES machine_list(id), "\
+	   "protocol TEXT, port INTEGER, auth TEXT, root TEXT, url TEXT",\
+	   "PRIMARY KEY(host, id));"),
 		/* More items like hashing would be added later*/
 #if 0
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_META(version INTEGER);"),
