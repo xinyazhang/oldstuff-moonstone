@@ -25,6 +25,7 @@ Bug fix:
 		as the old journals are deleted.
 	- Crash if remove while loading journals.
 
+Rewrite volumemodel.cc
 
 Volume Change
 	- feedback_port devfp
@@ -52,6 +53,7 @@ String Improvement
 	sqlite3_bind_text16
 
 -LTE-
+Lazy children generation of TreeItem
 MT tasklet queue and fdpool
 	- Hazard in OOE of RMV+ADD ?!
 	- cpu_number
