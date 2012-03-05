@@ -48,9 +48,8 @@
 #include "treeitem.h"
 
 TreeItem::TreeItem(TreeItem *parent)
+	:parentItem(parent), status(NoChange)
 {
-	parentItem = parent;
-	itemData = data;
 }
 
 TreeItem::~TreeItem()
@@ -110,7 +109,7 @@ bool TreeItem::insertChildren(int position, int count, int columns)
 	return true;
 }
 
-virtual TreeItem* TreeItem::spawnChild(int position, int columns)
+virtual TreeItem* TreeItem::spawnChild(int, int columns)
 {
 	QVector<QVariant> data(columns);
 	TreeItem *item = new TreeItem(data, this);
