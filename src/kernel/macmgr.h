@@ -18,16 +18,15 @@ public:
 	void update_ap(const access_point&);
 	void rm_ap(const access_point&);
 
-	int macnum();
+	//int macnum();
 	machine_t macfirst();
 	machine_t macthis(idx_t);
 	machine_t macnext(const machint_t&);
 
-	int apnum(const machine_t&);
-	access_point apfirst(const machine_t&);
+	//int apnum(const machine_t&);
+	access_point apfirst();
 	access_point apthis(idx_t);
 	access_point apnext(const access_point&);
-	machine_t aphost(const access_point&);
 private:
 	class Database* dbmgr_;
 };
