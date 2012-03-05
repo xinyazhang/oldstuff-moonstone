@@ -101,7 +101,7 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER, usn_next INTEGER);"),
 	UT("CREATE TABLE IF NOT EXISTS access_point(")\
 		UT("id INTEGER ASC AUTOINCREMENT, host INTEGER REFERENCES machine_list(id), ")\
-		UT("protocol TEXT, port INTEGER, auth TEXT, root TEXT, url TEXT")\
+		UT("url TEXT, comment TEXT")\
 		UT("PRIMARY KEY(host, id));"),
 		/* More items like hashing would be added later*/
 #if 0
