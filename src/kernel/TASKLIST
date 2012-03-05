@@ -13,12 +13,17 @@ Index files on different machines
 
 JOBS TO DO
 
-Add a table of machines
+Add a table of machines								DONE
 	- (id, name)
-Add GUI to manipulate them
-Add a table of access points
+Add a table of access points							DONE
 	- (protocol, port, auth, root)
 Add GUI to manipulate them
+	- TreeItem infrastructure						DONE
+	- MachineItem								DONE
+	- APItem								DONE
+	- MachineModel								DONE
+	- Set Model to View
+Add implementation in macmgr
 
 Bug fix:
 	- Progress skipped to 60% immedately for an old volume, 

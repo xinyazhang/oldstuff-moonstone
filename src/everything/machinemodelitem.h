@@ -3,8 +3,8 @@
 
 #include "treeitem.h"
 
-struct machine_t;
-struct access_point;
+class machine_t;
+class access_point;
 struct volume;
 
 class MachineRoot
@@ -23,9 +23,10 @@ class MachineItem
 	:public TreeItem
 {
 public:
-	MachineItem(const machine_t&);
+	MachineItem(MachineRoot*, const machine_t&);
 	~MachineItem();
 protected:
+	machine_t mac_;
 	/* To create new APItem */
 	virtual TreeItem* spawnChild(int position, int columns);
 	virtual int removeAtBackend();
@@ -40,6 +41,7 @@ public:
 	APItem(MachineItem*, const access_point&);
 	~APItem();
 protected:
+	access_point ap_;
 	/* return NULL as no children for APs */
 	virtual TreeItem* spawnChild(int position, int columns) { return NULL; }
 	virtual int removeAtBackend();

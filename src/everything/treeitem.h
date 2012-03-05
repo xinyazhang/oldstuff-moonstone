@@ -41,6 +41,10 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
+#include <QtCore/QList>
+#include <QtCore/Qvariant>
+#include <QtCore/QVector>
+
 class TreeItem
 {
 public:
@@ -69,7 +73,7 @@ public:
 	int changeStatus() const;
 	int discardChanges() const;
 	int applyChanges() const;
-private:
+protected:
 	/* Immutables */
 	TreeItem* parentItem;
 	/* state-of-the-art */
@@ -81,6 +85,9 @@ private:
 	QList<TreeItem*> removedItems;
 	QVector<QVariant> initData;
 protected:
+	/* columns are used for the size of QVector
+	 * position may be used but not such common 
+	 */
 	virtual TreeItem* spawnChild(int position, int columns);
 	virtual int removeAtBackend();
 	virtual int addAtBackend();

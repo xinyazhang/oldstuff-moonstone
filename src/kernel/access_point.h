@@ -3,14 +3,15 @@
 
 #include "machine.h"
 
-struct access_point {
+class access_point {
+public:
 	idx_t host;
 	idx_t id;
-	unistr protocol;
-	int port;
-	unistr auth;
-	unistr root;
 	unistr url;
+	unistr comment;
+
+	bool valid() const;
+	access_point();
 };
 
 #endif
