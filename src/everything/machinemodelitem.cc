@@ -45,11 +45,19 @@ MachineItem::MachineItem(MachineRoot* root, const macmgr_t& mac)
 	itemData.resize(display_items);
 	itemData[0] = mac_.name;
 	itemData[1] = mac_.comment;
+
+	access_point ap = macmgr->apfirst();
+	while (ap.valid()) {
+		ap.phost = &mac_;
+		APItem *child = new APItem(this, ap);
+		childItems.append(child);
+		ap = macmgr->apnext(ap);
+	}
 }
 
 TreeItem* MachineItem::spawnChild(int, int columns)
 {
-	return new APItem(this, access_point());
+	return new APItem(this, access_point(&mac));
 }
 
 int MachineItem::removeAtBackend()
