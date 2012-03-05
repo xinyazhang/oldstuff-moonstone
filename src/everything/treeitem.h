@@ -71,8 +71,8 @@ public:
 		Added = 3,
 	};
 	int changeStatus() const;
-	int discardChanges() const;
-	int applyChanges() const;
+	int discardChanges();
+	int applyChanges();
 protected:
 	/* Immutables */
 	TreeItem* parentItem;
@@ -91,7 +91,7 @@ protected:
 	virtual TreeItem* spawnChild(int position, int columns);
 	virtual int removeAtBackend();
 	virtual int addAtBackend();
-	virtual int updateAtBackend():
+	virtual int updateAtBackend();
 };
 
 #endif

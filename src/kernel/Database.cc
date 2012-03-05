@@ -56,6 +56,11 @@ void Database::begin_transaction()
 	mutex_.unlock();
 }
 
+idx_t Database::last_serial()
+{
+	return db_->last_insert();
+}
+
 void Database::abort_transaction()
 {
 	mutex_.lock();

@@ -6,7 +6,7 @@ FILE(GLOB GUI_HEADER *.h)
 QT4_WRAP_UI(UI_H mainwindow.ui)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-QT4_WRAP_CPP(MOC_SRC mainwindow.h searchfiledbmodel.h volumemodel.h)
+QT4_WRAP_CPP(MOC_SRC mainwindow.h searchfiledbmodel.h volumemodel.h machinemodel.h)
 
 ADD_EXECUTABLE(everything WIN32 ${UI_H} ${GUI_SRC} ${MOC_SRC} ${GUI_HEADER})
 TARGET_LINK_LIBRARIES(everything pal kernel QtCore4 QtGui4)

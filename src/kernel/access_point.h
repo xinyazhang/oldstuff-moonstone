@@ -3,7 +3,7 @@
 
 #include "machine.h"
 
-class access_point {
+class EXPORT_TO_DLL access_point {
 public:
 	machine_t* phost;
 	idx_t host;

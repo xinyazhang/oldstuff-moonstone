@@ -3,7 +3,7 @@
 
 #include <pal/stdtype.h>
 
-class machine_t {
+class EXPORT_TO_DLL machine_t {
 public:
 	int64_t id;
 	unistr name;

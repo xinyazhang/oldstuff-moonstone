@@ -1,9 +1,10 @@
-#ifndef VOLUMEMODE_H
-#define VOLUMEMODE_H
+#ifndef MACHINEMODE_H
+#define MACHINEMODE_H
 
 #include <QtCore/QAbstractItemModel>
 #include <pal/volume.h>
 #include <kernel/machine.h>
+#include "treeitem.h"
 
 class MachineRoot;
 
@@ -26,7 +27,14 @@ public:
 	QModelIndex parent(const QModelIndex &index) const;
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
-
+	bool insertColumns(int position, int columns,
+					const QModelIndex &parent = QModelIndex());
+	bool removeColumns(int position, int columns,
+					const QModelIndex &parent = QModelIndex());
+	bool insertRows(int position, int rows,
+					const QModelIndex &parent = QModelIndex());
+	bool removeRows(int position, int rows,
+					const QModelIndex &parent = QModelIndex());
 	void applyChanges();
 	void discardChanges();
 	/* Machine list management */

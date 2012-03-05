@@ -17,7 +17,7 @@ void macmgr_t::add_machine(machine_t& mac)
 	stmt.bind(1, mac.name);
 	stmt.bind(2, mac.comment);
 	if (stmt.execute()) {
-		mac.id = db_->last_serial();
+		mac.id = dbmgr_->last_serial();
 	}
 }
 
@@ -46,14 +46,17 @@ void macmgr_t::rm_machine(const machine_t& mac)
 
 void macmgr_t::add_ap(access_point& ap)
 {
+	if (!ap.completed())
+		return ;
+
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 		UT("INSERT INTO ")\
 		UT("access_point(host, url, comment) VALUES($1, $2, $3);"));
-	stmt.bind(1, ap.host->id);
-	stmt.bind(2, ap.host->url);
-	stmt.bind(3, ap.host->comment);
+	stmt.bind(1, ap.phost->id);
+	stmt.bind(2, ap.url);
+	stmt.bind(3, ap.comment);
 	if (stmt.execute()) {
-		ap.id = db_->last_serial();
+		ap.id = dbmgr_->last_serial();
 	}
 }
 
@@ -105,12 +108,12 @@ machine_t macmgr_t::macthis(idx_t id)
 	return mac;
 }
 
-machine_t macmgr_t::macnext(const machint_t& m)
+machine_t macmgr_t::macnext(const machine_t& curmac)
 {
 	machine_t mac;
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 		UT("SELECT * FROM machine_list WHERE id > $1 ORDER BY id ASC"));
-	stmt.bind(1, m.id);
+	stmt.bind(1, curmac.id);
 	if (stmt.step()) {
 		stmt.col(1, mac.id);
 		stmt.col(2, mac.name);
@@ -121,7 +124,7 @@ machine_t macmgr_t::macnext(const machint_t& m)
 
 access_point macmgr_t::apfirst()
 {
-	access_point ap;
+	access_point ap(NULL);
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 		UT("SELECT * FROM access_point ORDER BY id ASC"));
 	if (stmt.step()) {
@@ -135,7 +138,7 @@ access_point macmgr_t::apfirst()
 
 access_point macmgr_t::apthis(idx_t id)
 {
-	access_point ap;
+	access_point ap(NULL);
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 		UT("SELECT * FROM access_point WHERE id=$1"));
 	stmt.bind(1, id);
@@ -148,16 +151,17 @@ access_point macmgr_t::apthis(idx_t id)
 	return ap;
 }
 
-access_point macmgr_t::apnext(const access_point&)
+access_point macmgr_t::apnext(const access_point& curap)
 {
-	access_point ap;
+	access_point ap(NULL);
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
 		UT("SELECT * FROM access_point WHERE id>$1 ORDER BY id ASC"));
-	stmt.bind(1, id);
+	stmt.bind(1, curap.id);
 	if (stmt.step()) {
 		stmt.col(1, ap.id);
 		stmt.col(2, ap.host);
 		stmt.col(3, ap.url);
 		stmt.col(4, ap.comment);
 	}
+	return ap;
 }

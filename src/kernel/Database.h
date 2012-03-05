@@ -26,6 +26,7 @@ public:
 	void begin_transaction();
 	void final_transaction();
 	void abort_transaction();
+	idx_t last_serial();
 
 	sql_stmt create_stmt_ex(const unistr& );
 
@@ -36,6 +37,7 @@ private:
 	class DatabaseInterface* db_;
 	class filemgr_t* filemgr_;
 	class volmgr_t* volmgr_;
+	class macmgr_t* macmgr_;
 
 	/*
 	 * Transaction

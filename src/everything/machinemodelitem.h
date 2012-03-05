@@ -2,10 +2,8 @@
 #define MACHINE_MODEL_ITEM_H
 
 #include "treeitem.h"
-
-class machine_t;
-class access_point;
-struct volume;
+#include <kernel/access_point.h>
+#include <kernel/machine.h>
 
 class MachineRoot
 	:public TreeItem
@@ -31,7 +29,7 @@ protected:
 	virtual TreeItem* spawnChild(int position, int columns);
 	virtual int removeAtBackend();
 	virtual int addAtBackend();
-	virtual int updateAtBackend():
+	virtual int updateAtBackend();
 };
 
 class APItem
@@ -46,7 +44,7 @@ protected:
 	virtual TreeItem* spawnChild(int position, int columns) { return NULL; }
 	virtual int removeAtBackend();
 	virtual int addAtBackend();
-	virtual int updateAtBackend():
+	virtual int updateAtBackend();
 };
 
 #endif

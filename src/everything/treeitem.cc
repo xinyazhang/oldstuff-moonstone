@@ -44,11 +44,11 @@
    Base class of all tree item
    */
 
-#include <QStringList>
+#include <QtCore/QStringList>
 #include "treeitem.h"
 
 TreeItem::TreeItem(TreeItem *parent)
-	:parentItem(parent), status(NoChange)
+	:parentItem(parent), currentChangeStatus(NoChange)
 {
 }
 
@@ -109,10 +109,9 @@ bool TreeItem::insertChildren(int position, int count, int columns)
 	return true;
 }
 
-virtual TreeItem* TreeItem::spawnChild(int, int columns)
+TreeItem* TreeItem::spawnChild(int, int columns)
 {
-	QVector<QVariant> data(columns);
-	TreeItem *item = new TreeItem(data, this);
+	TreeItem *item = new TreeItem(this);
 	return item;
 }
 
@@ -127,7 +126,7 @@ bool TreeItem::removeChildren(int position, int count)
 			removedItems.append(takenItem);
 			takenItem->currentChangeStatus = Removed;
 			/* Cascade */
-			takeItem->removeChildren(0, takenItem->childCount());
+			takenItem->removeChildren(0, takenItem->childCount());
 		}
 	}
 
@@ -174,32 +173,33 @@ bool TreeItem::setData(int column, const QVariant &value)
 
 	itemData[column] = value;
 
-	if (status != Added)
-		status = Updated;
+	if (currentChangeStatus != Added)
+		currentChangeStatus = Updated;
 	return true;
 }
 
 int TreeItem::changeStatus() const
 {
-	return status;
+	return currentChangeStatus;
 }
 
-int TreeItem::discardChanges() const
+int TreeItem::discardChanges()
 {
 	itemData = initData;
 	foreach(TreeItem* item, childItems) {
-		if (item->changeStatus() == Added)
+		if (item->changeStatus() == Added) {
+			item->discardChanges();
 			delete item;
+		} else
+			item->discardChanges();
 	}
 	childItems = initItems;
-	foreach(TreeItem* item, childItems) {
-		item->discardChanges();
-	}
 	removedItems.clear();
-	status = NoChange;
+	currentChangeStatus = NoChange;
+	return 0;
 }
 
-int TreeItem::applyChanges() const
+int TreeItem::applyChanges()
 {
 	initData = itemData;
 	foreach(TreeItem* item, childItems) {
@@ -216,9 +216,25 @@ int TreeItem::applyChanges() const
 	foreach(TreeItem* item, removedItems) {
 		item->applyChanges();
 		item->removeAtBackend();
+		delete item;
 	}
+	removedItems.clear();
+	initItems = childItems;
+	currentChangeStatus = NoChange;
+	return 0;
 }
 
-virtual int TreeItem::removeAtBackend();
-virtual int TreeItem::addAtBackend();
-virtual int TreeItem::updateAtBackend():
+int TreeItem::removeAtBackend()
+{
+	return -1;
+}
+
+int TreeItem::addAtBackend()
+{
+	return -1;
+}
+
+int TreeItem::updateAtBackend()
+{
+	return -1;
+}

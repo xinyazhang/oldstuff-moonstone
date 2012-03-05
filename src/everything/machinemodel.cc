@@ -1,6 +1,7 @@
 #include "volumemodel.h"
 #include "Preferences.h"
 #include "machinemodel.h"
+#include "machinemodelitem.h"
 #include <kernel/Database.h>
 #include <kernel/volmgr.h>
 #include <kernel/index_engine.h>
@@ -8,23 +9,17 @@
 
 MachineModel::MachineModel()
 {
-#if 0
-	vol_list = pref()->db_mgr->volmgr()->known_volumes();
-	for(std::vector<volume>::iterator iter = vol_list.begin();
-		iter != vol_list.end();
-		iter++)	{
-			if (iter->status & VOL_TRACING) {
-				pref()->indexer->queue_volume(*iter);
-				FLAG_BITS(iter->status, VOL_UI_STILL_TRACING);
-			}
-	}
-#endif
 	rootItem = new MachineRoot;
 }
 
 MachineModel::~MachineModel()
 {
 	delete rootItem;
+}
+
+int MachineModel::columnCount(const QModelIndex & /* parent */) const
+{
+	return rootItem->columnCount();
 }
 
 QVariant MachineModel::data(const QModelIndex &index, int role) const
@@ -35,50 +30,6 @@ QVariant MachineModel::data(const QModelIndex &index, int role) const
 	TreeItem* item = getItem(index);
 
 	return item->data(index.column(), role);
-
-#if 0
-	====MOVE TO VolItem====
-	/* Volume state */
-	if (role == Qt::CheckStateRole && index.column() == 0) {
-		int64_t st = vol_list[index.row()].status;
-		if (st & (VOL_UI_STILL_TRACING))
-			return QVariant(Qt::Checked);
-		else
-			return QVariant(Qt::Unchecked);
-	}
-
-	====Move To TreeItem as default====
-	if (role != Qt::DisplayRole && role != Qt::EditRole)
-		return QVariant();
-
-	====Move To VolItem====
-	if (index.column() == 2)
-		return uuid2unistr(vol_list[index.row()].uuid);
-	else if (index.column() == 0) {
-		if (!vol_list[index.row()].mount_points.empty()) {
-			return vol_list[index.row()].mount_points.front();
-		} 
-	} else if (index.column() == 3) {
-		unistr st;
-		const volume& vol(vol_list[index.row()]);
-		if (vol.kpi > 0)
-			st += UT("KNOWN");
-		if (vol.status & VOL_ONLINE)
-			st += UT(" ONLINE");
-		if (vol.status & VOL_TRACING)
-			st += UT(" TRACING");
-		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
-			if (vol.status & VOL_UI_STILL_TRACING)
-				st += UT(" Will be tracing");
-			else
-				st += UT(" Will not be tracing");
-		}
-		return st;
-	} else if (index.column() == 1) {
-		return vol_list[index.row()].label;
-	}
-	return QVariant();
-#endif
 }
 
 TreeItem* MachineModel::getItem(const QModelIndex& index) const
@@ -89,18 +40,6 @@ TreeItem* MachineModel::getItem(const QModelIndex& index) const
 			return item;
 	}
 	return rootItem;
-}
-
-bool MachineModel::setData(const QModelIndex & index, const QVariant & value, int role)
-{
-	if (role == Qt::CheckStateRole && index.column() == 0) {
-		volume& vol(vol_list[index.row()]);
-		bool still = vol.status & VOL_UI_STILL_TRACING;
-		SET_BITS(vol.status, VOL_UI_STILL_TRACING, !still);
-		emit dataChanged(index, index);
-		return true;
-	}
-	return false;
 }
 
 QVariant MachineModel::headerData(int section,
@@ -213,20 +152,6 @@ bool MachineModel::setData(const QModelIndex &index, const QVariant &value,
 	return result;
 }
 
-bool MachineModel::setHeaderData(int section, Qt::Orientation orientation,
-		const QVariant &value, int role)
-{
-	if (role != Qt::EditRole || orientation != Qt::Horizontal)
-		return false;
-
-	bool result = rootItem->setData(section, value);
-
-	if (result)
-		emit headerDataChanged(orientation, section, section);
-
-	return result;
-}
-
 Qt::ItemFlags MachineModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
@@ -240,32 +165,12 @@ Qt::ItemFlags MachineModel::flags(const QModelIndex &index) const
 	return flags;
 }
 
-void MachineModel::apply_changes()
+void MachineModel::applyChanges()
 {
-	for(std::vector<volume>::iterator iter = vol_list.begin();
-		iter != vol_list.end();
-		iter++) {
-		volume& vol(*iter);
-		if (!!(vol.status & VOL_TRACING) != !!(vol.status & VOL_UI_STILL_TRACING)) {
-			SET_BITS(vol.status, VOL_TRACING, !!(vol.status&VOL_UI_STILL_TRACING));
-			if (vol.status & VOL_UI_STILL_TRACING) {
-				/* Add */
-				pref()->indexer->queue_volume(vol);
-				pref()->db_mgr->volmgr()->update(vol);
-			} else {
-				/* Remove */
-				pref()->indexer->remove_volume(vol);
-			}
-		}
-	}
+	rootItem->applyChanges();
 }
 
-void MachineModel::clear_changes()
+void MachineModel::discardChanges()
 {
-	for(std::vector<volume>::iterator iter = vol_list.begin();
-		iter != vol_list.end();
-		iter++)
-	{
-		SET_BITS(iter->status, VOL_UI_STILL_TRACING, !!(iter->status & VOL_TRACING));
-	}
+	rootItem->discardChanges();
 }
