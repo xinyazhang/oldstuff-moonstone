@@ -2,17 +2,21 @@
 
 bool access_point::valid() const
 {
-	if (host < 0 || id < 0 || url.empty())
+	if (id < 0)
 		return false;
 	return true;
 }
 
 bool access_point::completed() const
 {
-	return !phost && valid();
+	return phost;
 }
 
 access_point::access_point(machine_t* mac)
-	:phost(mac), host(-1), id(-1)
+	:phost(mac), id(-1)
 {
+	if (phost)
+		host = phost->id;
+	else
+		host = -1;
 }

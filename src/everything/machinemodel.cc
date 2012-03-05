@@ -157,11 +157,7 @@ Qt::ItemFlags MachineModel::flags(const QModelIndex &index) const
 	if (!index.isValid())
 		return Qt::ItemIsEnabled;
 
-	Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-
-	if (index.column() == 0)
-		flags |= Qt::ItemIsUserCheckable;
-
+	Qt::ItemFlags flags = Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	return flags;
 }
 
@@ -172,5 +168,7 @@ void MachineModel::applyChanges()
 
 void MachineModel::discardChanges()
 {
+	beginResetModel();
 	rootItem->discardChanges();
+	endResetModel();
 }

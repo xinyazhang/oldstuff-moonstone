@@ -2,7 +2,7 @@
 
 bool machine_t::valid() const
 {
-	if (id < 0 || name.empty())
+	if (id < 0)
 		return false;
 	return true;
 }

@@ -24,7 +24,7 @@ public:
 	machine_t macnext(const machine_t&);
 
 	//int apnum(const machine_t&);
-	access_point apfirst();
+	access_point apfirst(const machine_t&);
 	access_point apthis(idx_t);
 	access_point apnext(const access_point&);
 private:

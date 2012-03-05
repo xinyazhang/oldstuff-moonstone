@@ -16,7 +16,7 @@ void macmgr_t::add_machine(machine_t& mac)
 		UT("machine_list(name, comment) VALUES($1, $2);"));
 	stmt.bind(1, mac.name);
 	stmt.bind(2, mac.comment);
-	if (stmt.execute()) {
+	if (!stmt.execute()) {
 		mac.id = dbmgr_->last_serial();
 	}
 }
@@ -55,7 +55,7 @@ void macmgr_t::add_ap(access_point& ap)
 	stmt.bind(1, ap.phost->id);
 	stmt.bind(2, ap.url);
 	stmt.bind(3, ap.comment);
-	if (stmt.execute()) {
+	if (!stmt.execute()) {
 		ap.id = dbmgr_->last_serial();
 	}
 }
@@ -75,7 +75,7 @@ void macmgr_t::update_ap(const access_point& ap)
 void macmgr_t::rm_ap(const access_point& ap)
 {
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-		UT("DELETE FROM access_point")\
+		UT("DELETE FROM access_point ")\
 		UT("WHERE id=$1;"));
 	stmt.bind(1, ap.id);
 	stmt.execute();
@@ -122,11 +122,12 @@ machine_t macmgr_t::macnext(const machine_t& curmac)
 	return mac;
 }
 
-access_point macmgr_t::apfirst()
+access_point macmgr_t::apfirst(const machine_t& mac)
 {
 	access_point ap(NULL);
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-		UT("SELECT * FROM access_point ORDER BY id ASC"));
+		UT("SELECT * FROM access_point WHERE host=$1 ORDER BY id ASC "));
+	stmt.bind(1, mac.id);
 	if (stmt.step()) {
 		stmt.col(1, ap.id);
 		stmt.col(2, ap.host);
@@ -155,8 +156,9 @@ access_point macmgr_t::apnext(const access_point& curap)
 {
 	access_point ap(NULL);
 	sql_stmt stmt = dbmgr_->create_stmt_ex(
-		UT("SELECT * FROM access_point WHERE id>$1 ORDER BY id ASC"));
+		UT("SELECT * FROM access_point WHERE id>$1 AND host=$2 ORDER BY id ASC"));
 	stmt.bind(1, curap.id);
+	stmt.bind(2, curap.host);
 	if (stmt.step()) {
 		stmt.col(1, ap.id);
 		stmt.col(2, ap.host);

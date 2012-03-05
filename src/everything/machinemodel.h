@@ -35,10 +35,9 @@ public:
 					const QModelIndex &parent = QModelIndex());
 	bool removeRows(int position, int rows,
 					const QModelIndex &parent = QModelIndex());
+public slots:
 	void applyChanges();
 	void discardChanges();
-	/* Machine list management */
-	void add_machine(const machine_t&);
 private:
 	/** State tracking **/
 	/* volume state */

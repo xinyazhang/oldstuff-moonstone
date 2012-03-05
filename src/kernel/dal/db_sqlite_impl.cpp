@@ -90,19 +90,18 @@ void db_sqlite_impl::check_version() // would modify initialized_
 static const unistr sql_template[] =
 {
 	UT("PRAGMA encoding = \"UTF-16\";"), 
-	UT("CREATE TABLE IF NOT EXISTS")\
+	UT("CREATE TABLE IF NOT EXISTS ")\
 		UT("machine_list(")\
 		UT("id INTEGER PRIMARY KEY ASC AUTOINCREMENT")\
 		UT(", name TEXT, comment TEXT);"),
-	UT("INSERT INTO machine_list(0, \"localhost\");"),
+	//UT("INSERT INTO machine_list(0, \"localhost\");"),
 	UT("CREATE TABLE IF NOT EXISTS known_vols(id INTEGER PRIMARY KEY ASC AUTOINCREMENT, uuid TEXT UNIQUE, status INTEGER, filesystem INTEGER, vollabel TEXT);"),
 	UT("CREATE TABLE IF NOT EXISTS known_dentry(volid INTEGER REFERENCES known_vols(id), inode INTEGER, parent INTEGER, name TEXT, checked INTEGER, PRIMARY KEY(volid, parent, name));"),
 	UT("CREATE TABLE IF NOT EXISTS known_file(volid INTERGER REFERENCES known_vols(id), inode INTEGER, refc INTEGER, PRIMARY KEY(volid, inode));"),
 	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER, usn_next INTEGER);"),
 	UT("CREATE TABLE IF NOT EXISTS access_point(")\
-		UT("id INTEGER ASC AUTOINCREMENT, host INTEGER REFERENCES machine_list(id), ")\
-		UT("url TEXT, comment TEXT, ")\
-		UT("PRIMARY KEY(id));"),
+		UT("id INTEGER PRIMARY KEY ASC AUTOINCREMENT, host INTEGER REFERENCES machine_list(id), ")\
+		UT("url TEXT, comment TEXT);"),
 		/* More items like hashing would be added later*/
 #if 0
 	UT("CREATE TABLE IF NOT EXISTS $PREFIX_META(version INTEGER);"),
@@ -119,7 +118,7 @@ static const unistr sql_template[] =
 
 int db_sqlite_impl::initialize_sql_number() const
 {
-	return 5; // magical number, but it doesn't matter
+	return sizeof(sql_template)/sizeof(sql_template[0]); // magical number, but it doesn't matter
 }
 
 void db_sqlite_impl::build_sqls()

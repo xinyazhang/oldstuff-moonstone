@@ -29,6 +29,7 @@ MachineRoot::MachineRoot()
 	itemData.resize(display_items);
 	itemData[0] = QObject::tr(TR[0]);
 	itemData[1] = QObject::tr(TR[1]);
+	initData = itemData;
 }
 
 MachineRoot::~MachineRoot()
@@ -46,14 +47,16 @@ MachineItem::MachineItem(MachineRoot* root, const machine_t& mac)
 	itemData.resize(display_items);
 	itemData[0] = QString(mac_.name);
 	itemData[1] = QString(mac_.comment);
+	initData = itemData;
 
-	access_point ap = MACMGR->apfirst();
+	access_point ap = MACMGR->apfirst(mac);
 	while (ap.valid()) {
 		ap.phost = &mac_;
 		APItem *child = new APItem(this, ap);
 		childItems.append(child);
 		ap = MACMGR->apnext(ap);
 	}
+	initItems = childItems;
 }
 
 MachineItem::~MachineItem()
@@ -73,12 +76,16 @@ int MachineItem::removeAtBackend()
 
 int MachineItem::addAtBackend()
 {
+	mac_.name = itemData[0].toString();
+	mac_.comment = itemData[1].toString();
 	MACMGR->add_machine(mac_);
 	return 0;
 }
 
 int MachineItem::updateAtBackend()
 {
+	mac_.name = itemData[0].toString();
+	mac_.comment = itemData[1].toString();
 	MACMGR->update_machine(mac_);
 	return 0;
 }
@@ -89,6 +96,7 @@ APItem::APItem(MachineItem* root, const access_point& ap)
 	itemData.resize(display_items);
 	itemData[0] = QString(ap_.url);
 	itemData[1] = QString(ap_.comment);
+	initData = itemData;
 }
 
 APItem::~APItem() { }
@@ -101,12 +109,16 @@ int APItem::removeAtBackend()
 
 int APItem::addAtBackend()
 {
+	ap_.url = itemData[0].toString();
+	ap_.comment = itemData[1].toString();
 	MACMGR->add_ap(ap_);
 	return 0;
 }
 
 int APItem::updateAtBackend()
 {
+	ap_.url = itemData[0].toString();
+	ap_.comment = itemData[1].toString();
 	MACMGR->update_ap(ap_);
 	return 0;
 }
