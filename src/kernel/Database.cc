@@ -50,7 +50,7 @@ void Database::begin_transaction()
 	{
 		breaked_ = false;
 		db_->begin_transaction(); // default: blocked if have another transaction...
-		//log().printf(LOG_DEBUG, UT("Begin transaction\n"));
+		log().printf(LOG_DEBUG, UT("Begin transaction\n"));
 	}
 	nest_++;
 	mutex_.unlock();
@@ -68,7 +68,7 @@ void Database::abort_transaction()
 	breaked_ = true;
 	if ( nest_ == 0 ) {
 		db_->abort_transaction();
-		//log().printf(LOG_DEBUG, UT("Abort transaction\n"));
+		log().printf(LOG_DEBUG, UT("Abort transaction\n"));
 	}
 	mutex_.unlock();
 }
@@ -81,10 +81,10 @@ void Database::final_transaction()
 	{
 		if ( breaked_ ) {
 			db_->abort_transaction();
-			//log().printf(LOG_DEBUG, UT("Abort transaction\n"));
+			log().printf(LOG_DEBUG, UT("Abort transaction\n"));
 		} else {
 			db_->final_transaction();
-			//log().printf(LOG_DEBUG, UT("Final transaction\n"));
+			log().printf(LOG_DEBUG, UT("Final transaction\n"));
 		}
 	}
 	mutex_.unlock();

@@ -32,6 +32,7 @@ protected:
 
 	bool recheck;
 	int st;
+	bool first_blood_;
 };
 
 #endif

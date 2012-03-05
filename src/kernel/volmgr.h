@@ -10,11 +10,12 @@ public:
 
 	/* witness a volume
 	 */
-	void witness(const uuids&, int64_t* kpi); 
+	bool witness(const uuids&, int64_t* kpi); 
 	void load_ntfs(int64_t kpi, uint64_t* jid, uint64_t* read_usn);
 	void update(const volume&);
 	void update_lastjid(int64_t kpi, uint64_t jid, uint64_t usn_next);
-	void update_ntfsext(int64_t kpi, uint64_t jid, uint64_t usn);
+	void set_initusn(int64_t kpi, uint64_t usn);
+	void update_ntfsext(int64_t kpi, uint64_t lastusn);
 	std::vector<volume> known_volumes() const;
 
 	/* progress */

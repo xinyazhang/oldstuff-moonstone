@@ -98,7 +98,7 @@ static const unistr sql_template[] =
 	UT("CREATE TABLE IF NOT EXISTS known_vols(id INTEGER PRIMARY KEY ASC AUTOINCREMENT, uuid TEXT UNIQUE, status INTEGER, filesystem INTEGER, vollabel TEXT);"),
 	UT("CREATE TABLE IF NOT EXISTS known_dentry(volid INTEGER REFERENCES known_vols(id), inode INTEGER, parent INTEGER, name TEXT, checked INTEGER, PRIMARY KEY(volid, parent, name));"),
 	UT("CREATE TABLE IF NOT EXISTS known_file(volid INTERGER REFERENCES known_vols(id), inode INTEGER, refc INTEGER, PRIMARY KEY(volid, inode));"),
-	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER, usn_next INTEGER);"),
+	UT("CREATE TABLE IF NOT EXISTS known_ntfs(id INTEGER PRIMARY KEY REFERENCES known_vols(id), journal_id INTEGER, usn_pointer INTEGER, usn_next INTEGER, init_usn INTEGER);"),
 	UT("CREATE TABLE IF NOT EXISTS access_point(")\
 		UT("id INTEGER PRIMARY KEY ASC AUTOINCREMENT, host INTEGER REFERENCES machine_list(id), ")\
 		UT("url TEXT, comment TEXT);"),
