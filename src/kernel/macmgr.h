@@ -19,7 +19,7 @@ public:
 	int64_t macnum();
 	machine_t macfirst();
 	machine_t macthis(idx_t);
-	machine_t macnext(const machint_t&);
+	machine_t macnext(const machine_t&);
 
 	int64_t apnum(const machine_t&);
 	access_point apfirst(const machine_t&);
