@@ -13,3 +13,4 @@ lib
 
 *.ui.autosave
 .session
+/3rd/
