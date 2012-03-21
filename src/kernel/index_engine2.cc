@@ -23,8 +23,8 @@ index_engine_t::index_engine_t(Database* dbmgr)
 
 index_engine_t::~index_engine_t()
 {
-	delete prep_queue_;
 	delete fdpool_;
+	delete prep_queue_;
 }
 
 bool index_engine_t::queue_volume(const struct volume& vol)

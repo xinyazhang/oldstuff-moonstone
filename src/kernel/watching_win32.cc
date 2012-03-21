@@ -19,7 +19,7 @@ watching_win32::watching_win32(const struct volume& _vol, class Database* _db)
 {
 	fd_ = privilege::open_volume(vol.uuid);
 
-	dbmgr->volmgr()->witness(vol.uuid, &vol.kpi);
+	first_blood_ = dbmgr->volmgr()->witness(vol.uuid, &vol.kpi);
 	if (detect_fstype(fd_) == FILESYSTEM_NTFS) {
 		dbmgr->volmgr()->load_ntfs(vol.kpi, &lastjid, &lastusn);
 	} else {
@@ -59,10 +59,9 @@ bool watching_win32::check()
 
 int watching_win32::init()
 {
-static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 8, 0};
+static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0, 0, 0};
 	usn_param = default_read_data;
 	if (usn_meta.UsnJournalID != lastjid) {
-		dbmgr->begin_transaction();
 		dbmgr->filemgr()->checkbegin(vol.kpi);
 		dbmgr->volmgr()->update_lastjid(vol.kpi, usn_meta.UsnJournalID, usn_meta.NextUsn);
 		if (lastjid != 0)
@@ -73,6 +72,8 @@ static const READ_USN_JOURNAL_DATA default_read_data = {0, 0xFFFFFFFF, FALSE, 0,
 		recheck = false;
 		usn_param.StartUsn = lastusn;
 	}
+
+	dbmgr->begin_transaction(); /* A large trans. would benefit the performance */
 
 	lastjid = usn_meta.UsnJournalID;
 	usn_param.UsnJournalID = lastjid;
@@ -112,11 +113,20 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 	size_t left = io.size - sizeof(USN);
 	PUSN_RECORD record_ptr = (PUSN_RECORD)(usn_buffer.get() + sizeof(USN));
 
+#if 0
 	if (!recheck)
 		dbmgr->begin_transaction(); // Per buffer transaction if not re-checking, for performance
+#endif
 
 	if (left > 0)
 		log().printf(LOG_DEBUG, UT("Begin write journal records\n"));
+	if (left == 0) {
+		/* done, complete the trans. and using blocking calling */
+		dbmgr->final_transaction();
+		usn_param.BytesToWaitFor = 8;
+		dispach_read();
+		return 0;
+	}
 	while (left > 0) {
 #if 0
 		printf("USN: %I64x\n", record_ptr->Usn );
@@ -182,20 +192,22 @@ static const DWORD USN_BLOB_CHANGE = (USN_REASON_DATA_EXTEND|
 				record_ptr->RecordLength); 
 	}
 	USN usn_next = *(USN *)usn_buffer.get();
+	if (first_blood_) {
+		dbmgr->volmgr()->set_initusn(vol.kpi, usn_next);
+		first_blood_ = false;
+	}
 
 	usn_param.StartUsn = usn_next;
 
-	dbmgr->volmgr()->update_ntfsext(vol.kpi, lastjid, lastusn);
-	log().printf(LOG_DEBUG, UT("Status: KPI: %lld, USN: %lld\n"), vol.kpi, lastusn);
 	if (recheck && usn_next >= lastusn) {
 		dbmgr->filemgr()->checkdone(vol.kpi);
 		lastusn = usn_next;
-		dbmgr->final_transaction();
 	} else if (!recheck) {
 		lastusn = usn_next;
-		dbmgr->final_transaction();
 	}
 	dispach_read();
+	dbmgr->volmgr()->update_ntfsext(vol.kpi, lastusn);
+	log().printf(LOG_DEBUG, UT("Status: KPI: %lld, USN: %lld\n"), vol.kpi, lastusn);
 	proc().printf(INDEX_PROGRESSED, UT("KPI: %lld, USN: %lld\n"), vol.kpi, lastusn);
 	return 0;
 }
