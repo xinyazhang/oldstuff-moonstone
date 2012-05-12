@@ -114,7 +114,8 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
     TYPE_SFIXED64       = 16,
     TYPE_SINT32         = 17,
     TYPE_SINT64         = 18,
-    MAX_FIELD_TYPE      = 18,
+    TYPE_UNISTR         = 19,
+    MAX_FIELD_TYPE      = 19,
   };
 
   // Lite alternative to FieldDescriptor::CppType.  Must be kept in sync.
@@ -129,7 +130,8 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
     CPPTYPE_ENUM        = 8,
     CPPTYPE_STRING      = 9,
     CPPTYPE_MESSAGE     = 10,
-    MAX_CPPTYPE         = 10,
+    CPPTYPE_UNISTR      = 11,
+    MAX_CPPTYPE         = 11,
   };
 
   // Helper method to get the CppType for a particular Type.
@@ -289,6 +291,7 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
                                      RepeatedField<int>* value);
 
   static bool ReadString(input, string* value);
+  static bool ReadUnistr(input, unistr* value);
   static bool ReadBytes (input, string* value);
 
   static inline bool ReadGroup  (field_number, input, MessageLite* value);
@@ -341,6 +344,7 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
   static void WriteEnum    (field_number,    int value, output);
 
   static void WriteString(field_number, const string& value, output);
+  static void WriteUnistr(field_number, const unistr& value, output);
   static void WriteBytes (field_number, const string& value, output);
 
   static void WriteGroup(
@@ -418,6 +422,8 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
 
   static inline uint8* WriteStringToArray(
     field_number, const string& value, output) INL;
+  static inline uint8* WriteUnistrToArray(
+    field_number, const unistr& value, output) INL;
   static inline uint8* WriteBytesToArray(
     field_number, const string& value, output) INL;
 
@@ -464,6 +470,7 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
   static const int kBoolSize     = 1;
 
   static inline int StringSize(const string& value);
+  static inline int UnistrSize(const string& value);
   static inline int BytesSize (const string& value);
 
   static inline int GroupSize  (const MessageLite& value);
