@@ -1,7 +1,7 @@
 #ifndef TASKLET_H
 #define TASKLET_H
 
-class tasklet_t 
+class EXPORT_TO_DLL tasklet_t 
 {
 public:
 	tasklet_t(int evid):evid_(evid) {}

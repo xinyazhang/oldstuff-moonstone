@@ -8,7 +8,7 @@
 #include <boost/thread.hpp>
 #include "threadpool.h"
 
-class tp_thread_t
+class EXPORT_TO_DLL tp_thread_t
 {
 public:
 	tp_thread_t();

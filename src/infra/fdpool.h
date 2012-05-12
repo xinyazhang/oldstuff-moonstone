@@ -21,7 +21,7 @@
 
 #include "pollable.h"
 
-class fdpool_t
+class EXPORT_TO_DLL fdpool_t
 {
 public:
 	virtual ~fdpool_t() {}

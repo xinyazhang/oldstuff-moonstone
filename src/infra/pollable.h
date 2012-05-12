@@ -3,7 +3,7 @@
 
 #include <pal/stdtype.h>
 
-class pollablefd_t
+class EXPORT_TO_DLL pollablefd_t
 {
 public:
 	virtual ~pollablefd_t() {};

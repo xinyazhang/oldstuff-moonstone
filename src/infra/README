@@ -1,0 +1,56 @@
+Usage of various infrastructures
+
+
+		Event system
+				Designed for message tranmission and
+				processing.
+
+Event system contains two components:
+	- feedback ports
+	- event daemons
+
+Feedback ports are nexuses which isolate the writer and reader.
+It is a data-orinted class and the events are consumed by event daemons
+("eventd" class)
+
+evend class is computing-orinted, it could create at least one thread and call
+registered receivers in turns. From this one message could be accepted and
+processed by multiple receivers, for example, one log message could be written
+to file as well as shown on the console.
+
+Typical usage 1: log
+	1. prepare a logd object to write logs to file
+	2. when needing logs, call log()->printf(LOG_LEVEL, "Error: %d\n")
+
+There are these log levels:
+	LOG_FATAL,
+	LOG_ERROR,
+	LOG_WARNING,
+	LOG_NOTE,
+	LOG_INFO,
+	LOG_DEBUG,
+
+Typical usage 2: searching done!
+	1. prepare a feedback_port object known to the seach engine
+	2. prepare a eventd to handle the messages from the feedback_port
+	3. write an eventd_cb_func_t function
+	4. register the function to the eventd
+	5. Write codes to fill the feedback_port the event when searching is
+	done
+
+		
+		Polling System
+				Designed for Asynchronized I/O
+
+Polling system contains these components:
+	- pollable file descriptor (pollablefd_t) interface
+	- file descriptor pool (fdpoll) interface
+		+ as well as its implementations
+
+pollablefd_t is interface that users shall implement their own processing
+routines by implementing "process(const ioinfo_t)"
+
+Typical usage 1: IPC
+	<TBC>
+
+		Threading System

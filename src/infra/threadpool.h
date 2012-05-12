@@ -5,9 +5,9 @@
 #include <boost/thread.hpp>
 
 class tp_thread_t;
-class threadpool_t* globaltp();
+EXPORT_TO_DLL class threadpool_t* globaltp();
 
-class threadpool_t
+class EXPORT_TO_DLL threadpool_t
 {
 public:
 	threadpool_t();
@@ -22,14 +22,14 @@ private:
 	void inter_alloc(int n);
 };
 
-class threadpool_worker_t
+class EXPORT_TO_DLL threadpool_worker_t
 {
 public:
 	virtual ~threadpool_worker_t() {}
 	virtual int tp_working() = 0;
 };
 
-class threadgroup_t
+class EXPORT_TO_DLL threadgroup_t
 {
 public:
 	threadgroup_t(class threadpool_t*,

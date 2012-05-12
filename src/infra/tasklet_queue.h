@@ -11,7 +11,7 @@
 #include <boost/thread.hpp>
 #include "threadpool.h"
 
-class tasklet_queue_t
+class EXPORT_TO_DLL tasklet_queue_t
 	:public threadpool_worker_t
 {
 public:
