@@ -1,5 +1,5 @@
-SET(UNIX_SRC )
-SET(WIN32_SRC ipc_win.cc volume_win32.cc native_event_win32.cc)
+SET(UNIX_SRC whoami_unix.cc)
+SET(WIN32_SRC ipc_win.cc volume_win32.cc native_event_win32.cc whoami_win32.cc daemon_win32.cc)
 SET(COMMON_SRC unistr.cpp ipc.cc)
 
 FILE(GLOB PAL_HEADER *.h)
