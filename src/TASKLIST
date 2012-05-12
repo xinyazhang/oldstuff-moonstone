@@ -2,36 +2,91 @@ CONSTITIUTION
 
 Stability, and then functions; Rarely seen situations thridly; Performance is the last.
 
-Index files on different machines
-	- A table of machines
-		- Machine name
-	- A table of access point of machines
-		- protocol (<scheme>), 
-		- port (optional)
-		- authority
-		- root path
-
-JOBS TO DO
-
-Add a table of machines								DONE
+Add a table of machines							DONE
 	- (id, name)
-Add a table of access points							DONE
-	- (protocol, port, auth, root)
+Add a table of access points						DONE
+	- (protocol, port, auth, root)					SWITCH
+	- using (url, comment for simple)				DONE
 Add GUI to manipulate them
-	- TreeItem infrastructure						DONE
-	- MachineItem								DONE
-	- APItem								DONE
-	- MachineModel								DONE
+	- TreeItem infrastructure					DONE
+	- MachineItem							DONE
+	- APItem							DONE
+	- MachineModel							DONE
 	- Set Model to View
-Add implementation in macmgr
+Add implementation in macmgr						DONE
+
+=C&T=									DONE
 
 Bug fix:
-	- Progress skipped to 60% immedately for an old volume, 
+	- Progress skipped to 60% immedately for an old volume, 	FIXED
 		as the old journals are deleted.
-	- Crash if remove while loading journals.
+	- Crash if remove while loading journals.			FIXED
 
-Rewrite volumemodel.cc
+Improve machinemodelitems.cc for load and save.				CANCEL
+Rewrite volumemodel.cc							CANCEL
 
+=C&T=									DONE
+
+Revolution of file system management
+	- split into ray and tracer
+	- "ray" for scan the whole volume and find files
+	- "tracer" for record the changes
+	- Use case: 
+		* volumemodel launch a call to 
+		  index_engine_t::queue_volume
+		* index_engine_t check the schedule,
+			- if other VOL on the same disk are WIP, pending
+			+ if no VOL in the same disk are WIP, launch one
+		* a ray object is created, with a tracer
+		* ray is a tasklet
+		* tracer is a pollable fd
+		* ray would not start before the tracer launched
+		* ray would scan files and add/update to Database
+		* after scanned the volume, tracer would acknowledge changes
+		  to Database
+
+SO, THE TASKS ARE:
+
+Write the ray infra. 							DONE
+Write the tracer infra.  						PEND
+Migrate watching_t to tracer						PEND
+Write the ray for NTFS							PEND
+
+-WIP-
+
+Infra reincarnation
+	- split into multiple components, each one is a standalone 
+	  processes
+	- event driven
+	- ``kernel'' becomes the ``infra'' library, containing
+		+ thread management
+		+ epoll/IOCP abstraction
+		+ event infrastructure
+		+ convient facilities to create new components
+	- ``pal'' is kept but provides various abstractions across plat.s
+	- The database are maintained by ``nexus''
+		+ ``dal'' is a part of ``nexus'' after that
+		+ ``ray'' and ``tracer'' are still part of the nexus
+			* overhead considerations
+			* security issue
+	- We needs ``proto'' lib to handling various problems
+		+ UTF-16 and UTF-8 support at the same time
+			* No one has made this because they perfer one
+			  speficied codec
+		+ Blob support
+		+ fd transmission support
+			* dbus made this but it is too complex and
+			  not suitable for windows
+		+ (potential) sharing memory support
+
+Nexus:
+	- Start components
+	- Start named pipes to listen
+
+-STE-
+Rework on search engine
+
+-MTE-
 Volume Change
 	- feedback_port devfp
 	- eventd devd
@@ -41,11 +96,13 @@ Volume ReCheck Mechanism
 
 =C&T=
 
--STE-
 Hashing file
 	+ maybe duplication check
 
--MTE-
+Portable last_insert_id
+
+=C&T=
+
 Bug fix: Search Engine
 	- I've forgotten what's this...
 NOT Trigger UAC, using Daemon
