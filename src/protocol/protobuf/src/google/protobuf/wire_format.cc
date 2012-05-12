@@ -577,6 +577,20 @@ bool WireFormat::ParseAndMergeField(
         break;
       }
 
+      case FieldDescriptor::TYPE_UNISTR: {
+        unistr value;
+        if (!WireFormatLite::ReadUnistr(input, &value)) return false;
+#if 0 /* Do not verify the string */
+        VerifyUTF8String(value.data(), value.length(), PARSE);
+#endif
+        if (field->is_repeated()) {
+          message_reflection->AddUnistr(message, field, value);
+        } else {
+          message_reflection->SetUnistr(message, field, value);
+        }
+        break;
+      }
+
       case FieldDescriptor::TYPE_BYTES: {
         string value;
         if (!WireFormatLite::ReadBytes(input, &value)) return false;
@@ -839,6 +853,19 @@ void WireFormat::SerializeFieldWithCachedSizes(
         break;
       }
 
+      case FieldDescriptor::TYPE_UNISTR: {
+        unistr scratch;
+        const unistr& value = field->is_repeated() ?
+          message_reflection->GetRepeatedUnistrReference(
+            message, field, j, &scratch) :
+          message_reflection->GetUnistrReference(message, field, &scratch);
+#if 0
+        VerifyUTF8String(value.data(), value.length(), SERIALIZE);
+#endif
+        WireFormatLite::WriteUnistr(field->number(), value, output);
+        break;
+      }
+
       case FieldDescriptor::TYPE_BYTES: {
         string scratch;
         const string& value = field->is_repeated() ?
@@ -1015,6 +1042,16 @@ int WireFormat::FieldDataOnlyByteSize(
             message, field, j, &scratch) :
           message_reflection->GetStringReference(message, field, &scratch);
         data_size += WireFormatLite::StringSize(value);
+      }
+      break;
+    case FieldDescriptor::TYPE_UNISTR: {
+      for (int j = 0; j < count; j++) {
+        unistr scratch;
+        const unistr& value = field->is_repeated() ?
+          message_reflection->GetRepeatedUnistrReference(
+            message, field, j, &scratch) :
+          message_reflection->GetUnistrReference(message, field, &scratch);
+        data_size += WireFormatLite::UnistrSize(value);
       }
       break;
     }
