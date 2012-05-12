@@ -83,6 +83,7 @@ FieldDescriptor::kTypeToCppTypeMap[MAX_TYPE + 1] = {
   CPPTYPE_INT64,    // TYPE_SFIXED64
   CPPTYPE_INT32,    // TYPE_SINT32
   CPPTYPE_INT64,    // TYPE_SINT64
+  CPPTYPE_UNISTR,   // TYPE_UNISTR
 };
 
 const char * const FieldDescriptor::kTypeToName[MAX_TYPE + 1] = {
@@ -106,6 +107,7 @@ const char * const FieldDescriptor::kTypeToName[MAX_TYPE + 1] = {
   "sfixed64",  // TYPE_SFIXED64
   "sint32",    // TYPE_SINT32
   "sint64",    // TYPE_SINT64
+  "unistr",    // TYPE_UNISTR
 };
 
 const char * const FieldDescriptor::kLabelToName[MAX_LABEL + 1] = {
@@ -125,6 +127,7 @@ const int FieldDescriptor::kLastReservedNumber;
 namespace {
 
 const string kEmptyString;
+const unistr kEmptyUnistr;
 
 string ToCamelCase(const string& input) {
   bool capitalize_next = false;
@@ -1329,6 +1332,9 @@ string FieldDescriptor::DefaultValueAsString(bool quote_string_type) const {
       break;
     case CPPTYPE_MESSAGE:
       GOOGLE_LOG(DFATAL) << "Messages can't have default values!";
+      break;
+    case CPPTYPE_UNISTR:
+      GOOGLE_LOG(DFATAL) << "For codec reasons, unistr can't have default values!";
       break;
   }
   GOOGLE_LOG(FATAL) << "Can't get here: failed to get default value as string";
@@ -3068,6 +3074,12 @@ void DescriptorBuilder::BuildFieldOrExtension(const FieldDescriptorProto& proto,
               tables_->AllocateString(proto.default_value());
           }
           break;
+        case FieldDescriptor::CPPTYPE_UNISTR:
+          AddError(result->full_name(), proto,
+                   DescriptorPool::ErrorCollector::DEFAULT_VALUE,
+                   "Unistr can't have default values.");
+          result->has_default_value_ = false;
+          break;
         case FieldDescriptor::CPPTYPE_MESSAGE:
           AddError(result->full_name(), proto,
                    DescriptorPool::ErrorCollector::DEFAULT_VALUE,
@@ -3116,6 +3128,9 @@ void DescriptorBuilder::BuildFieldOrExtension(const FieldDescriptorProto& proto,
           break;
         case FieldDescriptor::CPPTYPE_STRING:
           result->default_value_string_ = &kEmptyString;
+          break;
+        case FieldDescriptor::CPPTYPE_UNISTR:
+          result->default_value_string_ = &kEmptyUnistr;
           break;
         case FieldDescriptor::CPPTYPE_MESSAGE:
           break;
@@ -4324,6 +4339,16 @@ bool DescriptorBuilder::OptionInterpreter::SetOptionValue(
       // The string has already been unquoted and unescaped by the parser.
       unknown_fields->AddLengthDelimited(option_field->number(),
           uninterpreted_option_->string_value());
+      break;
+
+    case FieldDescriptor::CPPTYPE_STRING:
+      if (!uninterpreted_option_->has_unistr_value()) {
+        return AddValueError("Value must be quoted string for unistr option "
+                             "\"" + option_field->full_name() + "\".");
+      }
+      // The string has already been unquoted and unescaped by the parser.
+      unknown_fields->AddLengthDelimited(option_field->number(),
+          uninterpreted_option_->unistr_value());
       break;
 
     case FieldDescriptor::CPPTYPE_MESSAGE:
