@@ -42,6 +42,7 @@
 #include <google/protobuf/wire_format_lite_inl.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/stubs/map-util.h>
+#include <google/protobuf/string/unistr.h>
 
 namespace google {
 namespace protobuf {
@@ -412,6 +413,65 @@ string* ExtensionSet::AddString(int number, FieldType type,
 }
 
 // -------------------------------------------------------------------
+// Unistrs
+
+const unistr& ExtensionSet::GetUnistr(int number,
+                                      const unistr& default_value) const {
+  map<int, Extension>::const_iterator iter = extensions_.find(number);
+  if (iter == extensions_.end() || iter->second.is_cleared) {
+    // Not present.  Return the default value.
+    return default_value;
+  } else {
+    GOOGLE_DCHECK_TYPE(iter->second, OPTIONAL, UNISTR);
+    return *iter->second.unistr_value;
+  }
+}
+
+unistr* ExtensionSet::MutableUnistr(int number, FieldType type,
+                                    const FieldDescriptor* descriptor) {
+  Extension* extension;
+  if (MaybeNewExtension(number, descriptor, &extension)) {
+    extension->type = type;
+    GOOGLE_DCHECK_EQ(cpp_type(extension->type), WireFormatLite::CPPTYPE_UNISTR);
+    extension->is_repeated = false;
+    extension->unistr_value = new unistr;
+  } else {
+    GOOGLE_DCHECK_TYPE(*extension, OPTIONAL, UNISTR);
+  }
+  extension->is_cleared = false;
+  return extension->unistr_value;
+}
+
+const unistr& ExtensionSet::GetRepeatedUnistr(int number, int index) const {
+  map<int, Extension>::const_iterator iter = extensions_.find(number);
+  GOOGLE_CHECK(iter != extensions_.end()) << "Index out-of-bounds (field is empty).";
+  GOOGLE_DCHECK_TYPE(iter->second, REPEATED, UNISTR);
+  return iter->second.repeated_unistr_value->Get(index);
+}
+
+unistr* ExtensionSet::MutableRepeatedUnistr(int number, int index) {
+  map<int, Extension>::iterator iter = extensions_.find(number);
+  GOOGLE_CHECK(iter != extensions_.end()) << "Index out-of-bounds (field is empty).";
+  GOOGLE_DCHECK_TYPE(iter->second, REPEATED, UNISTR);
+  return iter->second.repeated_unistr_value->Mutable(index);
+}
+
+unistr* ExtensionSet::AddUnistr(int number, FieldType type,
+                                const FieldDescriptor* descriptor) {
+  Extension* extension;
+  if (MaybeNewExtension(number, descriptor, &extension)) {
+    extension->type = type;
+    GOOGLE_DCHECK_EQ(cpp_type(extension->type), WireFormatLite::CPPTYPE_UNISTR);
+    extension->is_repeated = true;
+    extension->is_packed = false;
+    extension->repeated_unistr_value = new RepeatedPtrField<unistr>();
+  } else {
+    GOOGLE_DCHECK_TYPE(*extension, REPEATED, UNISTR);
+  }
+  return extension->repeated_unistr_value->Add();
+}
+
+// -------------------------------------------------------------------
 // Messages
 
 const MessageLite& ExtensionSet::GetMessage(
@@ -534,6 +594,9 @@ void ExtensionSet::RemoveLast(int number) {
     case WireFormatLite::CPPTYPE_STRING:
       extension->repeated_string_value->RemoveLast();
       break;
+    case WireFormatLite::CPPTYPE_UNISTR:
+      extension->repeated_unistr_value->RemoveLast();
+      break;
     case WireFormatLite::CPPTYPE_MESSAGE:
       extension->repeated_message_value->RemoveLast();
       break;
@@ -574,6 +637,9 @@ void ExtensionSet::SwapElements(int number, int index1, int index2) {
       break;
     case WireFormatLite::CPPTYPE_STRING:
       extension->repeated_string_value->SwapElements(index1, index2);
+      break;
+    case WireFormatLite::CPPTYPE_UNISTR:
+      extension->repeated_unistr_value->SwapElements(index1, index2);
       break;
     case WireFormatLite::CPPTYPE_MESSAGE:
       extension->repeated_message_value->SwapElements(index1, index2);
@@ -628,6 +694,7 @@ void ExtensionSet::MergeFrom(const ExtensionSet& other) {
         HANDLE_TYPE(   BOOL,    bool, RepeatedField   <   bool>);
         HANDLE_TYPE(   ENUM,    enum, RepeatedField   <    int>);
         HANDLE_TYPE( STRING,  string, RepeatedPtrField< string>);
+        HANDLE_TYPE( UNISTR,  unistr, RepeatedPtrField< unistr>);
 #undef HANDLE_TYPE
 
         case WireFormatLite::CPPTYPE_MESSAGE:
@@ -673,6 +740,11 @@ void ExtensionSet::MergeFrom(const ExtensionSet& other) {
           case WireFormatLite::CPPTYPE_STRING:
             SetString(iter->first, other_extension.type,
                       *other_extension.string_value,
+                      other_extension.descriptor);
+            break;
+          case WireFormatLite::CPPTYPE_UNISTR:
+            SetString(iter->first, other_extension.type,
+                      *other_extension.unistr_value,
                       other_extension.descriptor);
             break;
           case WireFormatLite::CPPTYPE_MESSAGE:
@@ -785,6 +857,7 @@ bool ExtensionSet::ParseField(uint32 tag, io::CodedInputStream* input,
       case WireFormatLite::TYPE_BYTES:
       case WireFormatLite::TYPE_GROUP:
       case WireFormatLite::TYPE_MESSAGE:
+      case WireFormatLite::TYPE_UNISTR:
         GOOGLE_LOG(FATAL) << "Non-primitive types can't be packed.";
         break;
     }
@@ -847,6 +920,15 @@ bool ExtensionSet::ParseField(uint32 tag, io::CodedInputStream* input,
           MutableString(number, WireFormatLite::TYPE_STRING,
                         extension.descriptor);
         if (!WireFormatLite::ReadString(input, value)) return false;
+        break;
+      }
+
+      case WireFormatLite::TYPE_UNISTR:  {
+        unistr* value = extension.is_repeated ?
+          AddUnistr(number, WireFormatLite::TYPE_UNISTR, extension.descriptor) :
+          MutableUnistr(number, WireFormatLite::TYPE_UNISTR,
+                        extension.descriptor);
+        if (!WireFormatLite::ReadUnistr(input, value)) return false;
         break;
       }
 
@@ -1084,6 +1166,7 @@ void ExtensionSet::Extension::Clear() {
       HANDLE_TYPE(   BOOL,    bool);
       HANDLE_TYPE(   ENUM,    enum);
       HANDLE_TYPE( STRING,  string);
+      HANDLE_TYPE( UNISTR,  unistr);
       HANDLE_TYPE(MESSAGE, message);
 #undef HANDLE_TYPE
     }
@@ -1092,6 +1175,9 @@ void ExtensionSet::Extension::Clear() {
       switch (cpp_type(type)) {
         case WireFormatLite::CPPTYPE_STRING:
           string_value->clear();
+          break;
+        case WireFormatLite::CPPTYPE_UNISTR:
+          unistr_value->clear();
           break;
         case WireFormatLite::CPPTYPE_MESSAGE:
           message_value->Clear();
@@ -1148,6 +1234,7 @@ void ExtensionSet::Extension::SerializeFieldWithCachedSizes(
         case WireFormatLite::TYPE_BYTES:
         case WireFormatLite::TYPE_GROUP:
         case WireFormatLite::TYPE_MESSAGE:
+        case WireFormatLite::TYPE_UNISTR:
           GOOGLE_LOG(FATAL) << "Non-primitive types can't be packed.";
           break;
       }
@@ -1175,6 +1262,7 @@ void ExtensionSet::Extension::SerializeFieldWithCachedSizes(
         HANDLE_TYPE(  DOUBLE,   Double,  double);
         HANDLE_TYPE(    BOOL,     Bool,    bool);
         HANDLE_TYPE(  STRING,   String,  string);
+        HANDLE_TYPE(  UNISTR,   Unistr,  unistr);
         HANDLE_TYPE(   BYTES,    Bytes,  string);
         HANDLE_TYPE(    ENUM,     Enum,    enum);
         HANDLE_TYPE(   GROUP,    Group, message);
@@ -1203,6 +1291,7 @@ void ExtensionSet::Extension::SerializeFieldWithCachedSizes(
       HANDLE_TYPE(  DOUBLE,   Double,   double_value);
       HANDLE_TYPE(    BOOL,     Bool,     bool_value);
       HANDLE_TYPE(  STRING,   String,  *string_value);
+      HANDLE_TYPE(  UNISTR,   Unistr,  *unistr_value);
       HANDLE_TYPE(   BYTES,    Bytes,  *string_value);
       HANDLE_TYPE(    ENUM,     Enum,     enum_value);
       HANDLE_TYPE(   GROUP,    Group, *message_value);
@@ -1279,6 +1368,7 @@ int ExtensionSet::Extension::ByteSize(int number) const {
 #undef HANDLE_TYPE
 
         case WireFormatLite::TYPE_STRING:
+        case WireFormatLite::TYPE_UNISTR:
         case WireFormatLite::TYPE_BYTES:
         case WireFormatLite::TYPE_GROUP:
         case WireFormatLite::TYPE_MESSAGE:
@@ -1313,6 +1403,7 @@ int ExtensionSet::Extension::ByteSize(int number) const {
         HANDLE_TYPE(  SINT32,   SInt32,   int32);
         HANDLE_TYPE(  SINT64,   SInt64,   int64);
         HANDLE_TYPE(  STRING,   String,  string);
+        HANDLE_TYPE(  UNISTR,   Unistr,  unistr);
         HANDLE_TYPE(   BYTES,    Bytes,  string);
         HANDLE_TYPE(    ENUM,     Enum,    enum);
         HANDLE_TYPE(   GROUP,    Group, message);
@@ -1350,6 +1441,7 @@ int ExtensionSet::Extension::ByteSize(int number) const {
       HANDLE_TYPE(  SINT32,   SInt32,    int32_value);
       HANDLE_TYPE(  SINT64,   SInt64,    int64_value);
       HANDLE_TYPE(  STRING,   String,  *string_value);
+      HANDLE_TYPE(  UNISTR,   Unistr,  *unistr_value);
       HANDLE_TYPE(   BYTES,    Bytes,  *string_value);
       HANDLE_TYPE(    ENUM,     Enum,     enum_value);
       HANDLE_TYPE(   GROUP,    Group, *message_value);
@@ -1414,6 +1506,7 @@ int ExtensionSet::Extension::GetSize() const {
     HANDLE_TYPE(   BOOL,    bool);
     HANDLE_TYPE(   ENUM,    enum);
     HANDLE_TYPE( STRING,  string);
+    HANDLE_TYPE( UNISTR,  unistr);
     HANDLE_TYPE(MESSAGE, message);
 #undef HANDLE_TYPE
   }
@@ -1439,6 +1532,7 @@ void ExtensionSet::Extension::Free() {
       HANDLE_TYPE(   BOOL,    bool);
       HANDLE_TYPE(   ENUM,    enum);
       HANDLE_TYPE( STRING,  string);
+      HANDLE_TYPE( UNISTR,  unistr);
       HANDLE_TYPE(MESSAGE, message);
 #undef HANDLE_TYPE
     }
@@ -1446,6 +1540,9 @@ void ExtensionSet::Extension::Free() {
     switch (cpp_type(type)) {
       case WireFormatLite::CPPTYPE_STRING:
         delete string_value;
+        break;
+      case WireFormatLite::CPPTYPE_UNISTR:
+        delete unistr_value;
         break;
       case WireFormatLite::CPPTYPE_MESSAGE:
         delete message_value;

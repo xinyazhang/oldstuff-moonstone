@@ -42,6 +42,7 @@
 #include <map>
 #include <utility>
 #include <string>
+#include <google/protobuf/string/unistr.h>
 
 
 #include <google/protobuf/stubs/common.h>
@@ -228,6 +229,7 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
   bool   GetBool  (int number, bool   default_value) const;
   int    GetEnum  (int number, int    default_value) const;
   const string & GetString (int number, const string&  default_value) const;
+  const unistr & GetUnistr (int number, const unistr&  default_value) const;
   const MessageLite& GetMessage(int number,
                                 const MessageLite& default_value) const;
   const MessageLite& GetMessage(int number, const Descriptor* message_type,
@@ -246,7 +248,9 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
   void SetBool  (int number, FieldType type, bool   value, desc);
   void SetEnum  (int number, FieldType type, int    value, desc);
   void SetString(int number, FieldType type, const string& value, desc);
+  void SetUnistr(int number, FieldType type, const unistr& value, desc);
   string * MutableString (int number, FieldType type, desc);
+  unistr * MutableUnistr (int number, FieldType type, desc);
   MessageLite* MutableMessage(int number, FieldType type,
                               const MessageLite& prototype, desc);
   MessageLite* MutableMessage(const FieldDescriptor* decsriptor,
@@ -264,6 +268,7 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
   bool   GetRepeatedBool  (int number, int index) const;
   int    GetRepeatedEnum  (int number, int index) const;
   const string & GetRepeatedString (int number, int index) const;
+  const unistr & GetRepeatedUnistr (int number, int index) const;
   const MessageLite& GetRepeatedMessage(int number, int index) const;
 
   void SetRepeatedInt32 (int number, int index, int32  value);
@@ -275,7 +280,9 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
   void SetRepeatedBool  (int number, int index, bool   value);
   void SetRepeatedEnum  (int number, int index, int    value);
   void SetRepeatedString(int number, int index, const string& value);
+  void SetRepeatedUnistr(int number, int index, const unistr& value);
   string * MutableRepeatedString (int number, int index);
+  unistr * MutableRepeatedUnistr (int number, int index);
   MessageLite* MutableRepeatedMessage(int number, int index);
 
 #define desc const FieldDescriptor* descriptor  // avoid line wrapping
@@ -288,7 +295,9 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
   void AddBool  (int number, FieldType type, bool packed, bool   value, desc);
   void AddEnum  (int number, FieldType type, bool packed, int    value, desc);
   void AddString(int number, FieldType type, const string& value, desc);
+  void AddUnistr(int number, FieldType type, const unistr& value, desc);
   string * AddString (int number, FieldType type, desc);
+  unistr * AddUnistr (int number, FieldType type, desc);
   MessageLite* AddMessage(int number, FieldType type,
                           const MessageLite& prototype, desc);
   MessageLite* AddMessage(const FieldDescriptor* descriptor,
@@ -393,6 +402,7 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
       bool         bool_value;
       int          enum_value;
       string*      string_value;
+      unistr*      unistr_value;
       MessageLite* message_value;
 
       RepeatedField   <int32      >* repeated_int32_value;
@@ -404,6 +414,7 @@ class LIBPROTOBUF_EXPORT ExtensionSet {
       RepeatedField   <bool       >* repeated_bool_value;
       RepeatedField   <int        >* repeated_enum_value;
       RepeatedPtrField<string     >* repeated_string_value;
+      RepeatedPtrField<unistr     >* repeated_unistr_value;
       RepeatedPtrField<MessageLite>* repeated_message_value;
     };
 
@@ -500,6 +511,22 @@ inline void ExtensionSet::AddString(int number, FieldType type,
                                     const string& value,
                                     const FieldDescriptor* descriptor) {
   AddString(number, type, descriptor)->assign(value);
+}
+
+// May the Force be with me...
+inline void ExtensionSet::SetUnistr(int number, FieldType type,
+                                    const unistr& value,
+                                    const FieldDescriptor* descriptor) {
+  MutableUnistr(number, type, descriptor)->assign(value);
+}
+inline void ExtensionSet::SetRepeatedUnistr(int number, int index,
+                                            const unistr& value) {
+  MutableRepeatedUnistr(number, index)->assign(value);
+}
+inline void ExtensionSet::AddUnistr(int number, FieldType type,
+                                    const unistr& value,
+                                    const FieldDescriptor* descriptor) {
+  AddUnistr(number, type, descriptor)->assign(value);
 }
 
 // ===================================================================
@@ -654,6 +681,56 @@ class LIBPROTOBUF_EXPORT RepeatedStringTypeTraits {
   static inline string* Add(int number, FieldType field_type,
                             ExtensionSet* set) {
     return set->AddString(number, field_type, NULL);
+  }
+};
+
+// -------------------------------------------------------------------
+// UnistrTypeTraits
+
+// Unistrs support both Set() and Mutable().
+class LIBPROTOBUF_EXPORT StringTypeTraits {
+ public:
+  typedef const unistr& ConstType;
+  typedef unistr* MutableType;
+
+  static inline const unistr& Get(int number, const ExtensionSet& set,
+                                  ConstType default_value) {
+    return set.GetUnistr(number, default_value);
+  }
+  static inline void Set(int number, FieldType field_type,
+                         const unistr& value, ExtensionSet* set) {
+    set->SetUnistr(number, field_type, value, NULL);
+  }
+  static inline unistr* Mutable(int number, FieldType field_type,
+                                ExtensionSet* set) {
+    return set->MutableUnistr(number, field_type, NULL);
+  }
+};
+
+class LIBPROTOBUF_EXPORT RepeatedStringTypeTraits {
+ public:
+  typedef const unistr& ConstType;
+  typedef unistr* MutableType;
+
+  static inline const unsitr& Get(int number, const ExtensionSet& set,
+                                  int index) {
+    return set.GetRepeatedUnistr(number, index);
+  }
+  static inline void Set(int number, int index,
+                         const unistr& value, ExtensionSet* set) {
+    set->SetRepeatedUnistr(number, index, value);
+  }
+  static inline unistr* Mutable(int number, int index, ExtensionSet* set) {
+    return set->MutableRepeatedUnistr(number, index);
+  }
+  static inline void Add(int number, FieldType field_type,
+                         bool /*is_packed*/, const unistr& value,
+                         ExtensionSet* set) {
+    set->AddUnistr(number, field_type, value, NULL);
+  }
+  static inline unistr* Add(int number, FieldType field_type,
+                            ExtensionSet* set) {
+    return set->AddUnistr(number, field_type, NULL);
   }
 };
 
