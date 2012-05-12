@@ -268,6 +268,7 @@ int ExtensionSet::Extension::SpaceUsedExcludingSelf() const {
       HANDLE_TYPE(   BOOL,    bool);
       HANDLE_TYPE(   ENUM,    enum);
       HANDLE_TYPE( STRING,  string);
+      HANDLE_TYPE( UNISTR,  unistr);
 #undef HANDLE_TYPE
 
       case FieldDescriptor::CPPTYPE_MESSAGE:
@@ -284,6 +285,10 @@ int ExtensionSet::Extension::SpaceUsedExcludingSelf() const {
       case FieldDescriptor::CPPTYPE_STRING:
         total_size += sizeof(*string_value) +
                       StringSpaceUsedExcludingSelf(*string_value);
+        break;
+      case FieldDescriptor::CPPTYPE_UNISTR:
+        total_size += sizeof(*unistr_value) +
+                      UnistrSpaceUsedExcludingSelf(*unistr_value);
         break;
       case FieldDescriptor::CPPTYPE_MESSAGE:
         total_size += down_cast<Message*>(message_value)->SpaceUsed();
@@ -357,6 +362,7 @@ uint8* ExtensionSet::Extension::SerializeFieldWithCachedSizesToArray(
 #undef HANDLE_TYPE
 
         case WireFormatLite::TYPE_STRING:
+        case WireFormatLite::TYPE_UNISTR:
         case WireFormatLite::TYPE_BYTES:
         case WireFormatLite::TYPE_GROUP:
         case WireFormatLite::TYPE_MESSAGE:
@@ -387,6 +393,7 @@ uint8* ExtensionSet::Extension::SerializeFieldWithCachedSizesToArray(
         HANDLE_TYPE(  DOUBLE,   Double,  double);
         HANDLE_TYPE(    BOOL,     Bool,    bool);
         HANDLE_TYPE(  STRING,   String,  string);
+        HANDLE_TYPE(  UNISTR,   Unistr,  unistr);
         HANDLE_TYPE(   BYTES,    Bytes,  string);
         HANDLE_TYPE(    ENUM,     Enum,    enum);
         HANDLE_TYPE(   GROUP,    Group, message);
@@ -416,6 +423,7 @@ uint8* ExtensionSet::Extension::SerializeFieldWithCachedSizesToArray(
       HANDLE_TYPE(  DOUBLE,   Double,   double_value);
       HANDLE_TYPE(    BOOL,     Bool,     bool_value);
       HANDLE_TYPE(  STRING,   String,  *string_value);
+      HANDLE_TYPE(  UNISTR,   Unistr,  *unistr_value);
       HANDLE_TYPE(   BYTES,    Bytes,  *string_value);
       HANDLE_TYPE(    ENUM,     Enum,     enum_value);
       HANDLE_TYPE(   GROUP,    Group, *message_value);
