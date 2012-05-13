@@ -83,6 +83,7 @@ WireFormatLite::kFieldTypeToCppTypeMap[MAX_FIELD_TYPE + 1] = {
   CPPTYPE_INT64,    // TYPE_SFIXED64
   CPPTYPE_INT32,    // TYPE_SINT32
   CPPTYPE_INT64,    // TYPE_SINT64
+  CPPTYPE_UNISTR,   // TYPE_UNISTR
 };
 
 const WireFormatLite::WireType
@@ -106,6 +107,7 @@ WireFormatLite::kWireTypeForFieldType[MAX_FIELD_TYPE + 1] = {
   WireFormatLite::WIRETYPE_FIXED64,           // TYPE_SFIXED64
   WireFormatLite::WIRETYPE_VARINT,            // TYPE_SINT32
   WireFormatLite::WIRETYPE_VARINT,            // TYPE_SINT64
+  WireFormatLite::WIRETYPE_LENGTH_DELIMITED,  // TYPE_UNISTR
 };
 
 bool WireFormatLite::SkipField(
@@ -284,6 +286,12 @@ void WireFormatLite::WriteString(int field_number, const string& value,
   output->WriteVarint32(value.size());
   output->WriteString(value);
 }
+void WireFormatLite::WriteUnistr(int field_number, const unistr& value,
+                                 io::CodedOutputStream* output) {
+  WriteTag(field_number, WIRETYPE_LENGTH_DELIMITED, output);
+  output->WriteVarint32((1+value.size())*sizeof(unistr::basic_format));
+  output->WriteUnistr(value);
+}
 void WireFormatLite::WriteBytes(int field_number, const string& value,
                                 io::CodedOutputStream* output) {
   WriteTag(field_number, WIRETYPE_LENGTH_DELIMITED, output);
@@ -345,6 +353,13 @@ bool WireFormatLite::ReadString(io::CodedInputStream* input,
   uint32 length;
   if (!input->ReadVarint32(&length)) return false;
   if (!input->InternalReadStringInline(value, length)) return false;
+  return true;
+}
+bool WireFormatLite::ReadUnistr(io::CodedInputStream* input,
+                                unistr* value) {
+  uint32 length;
+  if (!input->ReadVarint32(&length)) return false;
+  if (!input->InternalReadUnistrInline(value, length)) return false;
   return true;
 }
 bool WireFormatLite::ReadBytes(io::CodedInputStream* input,

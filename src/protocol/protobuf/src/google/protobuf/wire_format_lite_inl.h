@@ -664,6 +664,14 @@ inline uint8* WireFormatLite::WriteStringToArray(int field_number,
   target = io::CodedOutputStream::WriteVarint32ToArray(value.size(), target);
   return io::CodedOutputStream::WriteStringToArray(value, target);
 }
+inline uint8* WireFormatLite::WriteUnistrToArray(int field_number,
+                                                 const unistr& value,
+                                                 uint8* target) {
+  target = WriteTagToArray(field_number, WIRETYPE_LENGTH_DELIMITED, target);
+  target = io::CodedOutputStream::WriteVarint32ToArray(
+		  (1+value.size())*sizeof(unistr::basic_format), target);
+  return io::CodedOutputStream::WriteUnistrToArray(value, target);
+}
 inline uint8* WireFormatLite::WriteBytesToArray(int field_number,
                                                 const string& value,
                                                 uint8* target) {
@@ -738,6 +746,10 @@ inline int WireFormatLite::EnumSize(int value) {
 inline int WireFormatLite::StringSize(const string& value) {
   return io::CodedOutputStream::VarintSize32(value.size()) +
          value.size();
+}
+inline int WireFormatLite::UnistrSize(const string& value) {
+  return io::CodedOutputStream::VarintSize32(value.size()) +
+         (1+value.size())*sizeof(unistr::basic_format);
 }
 inline int WireFormatLite::BytesSize(const string& value) {
   return io::CodedOutputStream::VarintSize32(value.size()) +
