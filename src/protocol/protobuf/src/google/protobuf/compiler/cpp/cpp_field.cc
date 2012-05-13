@@ -101,6 +101,12 @@ FieldGenerator* FieldGeneratorMap::MakeGenerator(const FieldDescriptor* field) {
           case FieldOptions::STRING:
             return new RepeatedStringFieldGenerator(field);
         }
+      case FieldDescriptor::CPPTYPE_UNISTR:
+        switch (field->options().ctype()) {
+          default:  // RepeatedStringFieldGenerator handles unknown ctypes.
+          case FieldOptions::UNISTR:
+            return new RepeatedUnistrFieldGenerator(field);
+        }
       case FieldDescriptor::CPPTYPE_ENUM:
         return new RepeatedEnumFieldGenerator(field);
       default:
@@ -114,6 +120,12 @@ FieldGenerator* FieldGeneratorMap::MakeGenerator(const FieldDescriptor* field) {
         switch (field->options().ctype()) {
           default:  // StringFieldGenerator handles unknown ctypes.
           case FieldOptions::STRING:
+            return new UnistrFieldGenerator(field);
+        }
+      case FieldDescriptor::CPPTYPE_UNISTR:
+        switch (field->options().ctype()) {
+          default:  // StringFieldGenerator handles unknown ctypes.
+          case FieldOptions::UNISTR:
             return new StringFieldGenerator(field);
         }
       case FieldDescriptor::CPPTYPE_ENUM:

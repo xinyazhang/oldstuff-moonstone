@@ -79,6 +79,8 @@ TypeNameMap MakeTypeNameTable() {
   result["sint32"  ] = FieldDescriptorProto::TYPE_SINT32;
   result["sint64"  ] = FieldDescriptorProto::TYPE_SINT64;
 
+  result["unistr"  ] = FieldDescriptorProto::TYPE_UNISTR;
+
   return result;
 }
 
@@ -779,6 +781,10 @@ bool Parser::ParseDefaultAssignment(FieldDescriptorProto* field,
       DO(ConsumeString(default_value, "Expected string."));
       break;
 
+    case FieldDescriptorProto::TYPE_UNISTR:
+      AddError("Unistrs can't have default values due to codec issues.");
+      break;
+
     case FieldDescriptorProto::TYPE_BYTES:
       DO(ConsumeString(default_value, "Expected string."));
       *default_value = CEscape(*default_value);
@@ -962,6 +968,12 @@ bool Parser::ParseOptionAssignment(Message* options,
       string value;
       DO(ConsumeString(&value, "Expected string."));
       uninterpreted_option->set_string_value(value);
+      break;
+    }
+
+    case io::Tokenizer::TYPE_UNISTR: {
+      AddError("Unistr do not have option values.");
+      return false
       break;
     }
 

@@ -1148,7 +1148,8 @@ GenerateClear(io::Printer* printer) {
       // TODO(kenton):  Let the CppFieldGenerator decide this somehow.
       bool should_check_bit =
         field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE ||
-        field->cpp_type() == FieldDescriptor::CPPTYPE_STRING;
+        field->cpp_type() == FieldDescriptor::CPPTYPE_STRING  ||
+        field->cpp_type() == FieldDescriptor::CPPTYPE_UNISTR;
 
       if (should_check_bit) {
         printer->Print(

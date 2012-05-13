@@ -68,6 +68,7 @@ int FixedSize(FieldDescriptor::Type type) {
     case FieldDescriptor::TYPE_ENUM    : return -1;
 
     case FieldDescriptor::TYPE_STRING  : return -1;
+    case FieldDescriptor::TYPE_UNISTR  : return -1;
     case FieldDescriptor::TYPE_BYTES   : return -1;
     case FieldDescriptor::TYPE_GROUP   : return -1;
     case FieldDescriptor::TYPE_MESSAGE : return -1;

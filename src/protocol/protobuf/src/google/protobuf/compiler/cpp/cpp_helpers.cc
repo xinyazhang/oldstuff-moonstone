@@ -201,6 +201,7 @@ const char* PrimitiveTypeName(FieldDescriptor::CppType type) {
     case FieldDescriptor::CPPTYPE_ENUM   : return "int";
     case FieldDescriptor::CPPTYPE_STRING : return "::std::string";
     case FieldDescriptor::CPPTYPE_MESSAGE: return NULL;
+    case FieldDescriptor::CPPTYPE_UNISTR : return "unistr";
 
     // No default because we want the compiler to complain if any new
     // CppTypes are added.
@@ -232,6 +233,7 @@ const char* DeclaredTypeMethodName(FieldDescriptor::Type type) {
     case FieldDescriptor::TYPE_BYTES   : return "Bytes";
     case FieldDescriptor::TYPE_GROUP   : return "Group";
     case FieldDescriptor::TYPE_MESSAGE : return "Message";
+    case FieldDescriptor::TYPE_UNISTR  : return "Unistr";
 
     // No default because we want the compiler to complain if any new
     // types are added.
@@ -294,6 +296,8 @@ string DefaultValue(const FieldDescriptor* field) {
     case FieldDescriptor::CPPTYPE_STRING:
       return "\"" + EscapeTrigraphs(CEscape(field->default_value_string())) +
              "\"";
+    case FieldDescriptor::CPPTYPE_STRING:
+      return unistr::empty_in_string;
     case FieldDescriptor::CPPTYPE_MESSAGE:
       return FieldMessageTypeName(field) + "::default_instance()";
   }

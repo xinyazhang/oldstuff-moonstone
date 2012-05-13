@@ -76,6 +76,9 @@ ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
     case FieldDescriptor::CPPTYPE_STRING:
       type_traits_.append("StringTypeTraits");
       break;
+    case FieldDescriptor::CPPTYPE_UNISTR:
+      type_traits_.append("UnistrTypeTraits");
+      break;
     case FieldDescriptor::CPPTYPE_MESSAGE:
       type_traits_.append("MessageTypeTraits< ");
       type_traits_.append(ClassName(descriptor_->message_type(), true));
@@ -151,6 +154,7 @@ void ExtensionGenerator::GenerateDefinition(io::Printer* printer) {
     // Update the default to refer to the string global.
     vars["default"] = global_name + "_default";
   }
+  // Unistr do no need this as we do not support default values
 
   // Likewise, class members need to declare the field constant variable.
   if (descriptor_->extension_scope() != NULL) {
