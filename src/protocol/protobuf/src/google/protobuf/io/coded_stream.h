@@ -204,6 +204,8 @@ class LIBPROTOBUF_EXPORT CodedInputStream {
   // by the protobuf implementation.
   inline bool InternalReadStringInline(string* buffer,
                                        int size) GOOGLE_ATTRIBUTE_ALWAYS_INLINE;
+  inline bool InternalReadUnistrInline(string* buffer,
+                                       int size) GOOGLE_ATTRIBUTE_ALWAYS_INLINE;
 
 
   // Read a 32-bit little-endian integer.
@@ -532,6 +534,7 @@ class LIBPROTOBUF_EXPORT CodedInputStream {
   uint32 ReadTagFallback();
   uint32 ReadTagSlow();
   bool ReadStringFallback(string* buffer, int size);
+  bool ReadUnistrFallback(unistr* buffer, int size);
 
   // Return the size of the buffer.
   int BufferSize() const;
@@ -632,8 +635,11 @@ class LIBPROTOBUF_EXPORT CodedOutputStream {
 
   // Equivalent to WriteRaw(str.data(), str.size()).
   void WriteString(const string& str);
+
   // Like WriteString()  but writing directly to the target array.
   static uint8* WriteStringToArray(const string& str, uint8* target);
+
+  static uint8* WriteUnistrToArray(const string& str, uint8* target);
 
 
   // Write a 32-bit little-endian integer.
@@ -996,6 +1002,14 @@ inline void CodedOutputStream::WriteString(const string& str) {
 inline uint8* CodedOutputStream::WriteStringToArray(
     const string& str, uint8* target) {
   return WriteRawToArray(str.data(), static_cast<int>(str.size()), target);
+}
+
+inline uint8* CodedOutputStream::WriteUnistrToArray(
+    const unistr& str, uint8* target) {
+  WriteRawToArray(unistr::leading_tag, sizeof(unistr::basic_format), target);
+  return WriteRawToArray(str.data(), 
+            static_cast<int>((1+str.size())*sizeof(unistr::basic_format)),
+	    target);
 }
 
 inline int CodedOutputStream::ByteCount() const {

@@ -38,6 +38,7 @@
 
 #include <google/protobuf/io/coded_stream.h>
 #include <string>
+#include <unistr.h>
 #include <google/protobuf/stubs/stl_util-inl.h>
 
 namespace google {
@@ -56,6 +57,28 @@ inline bool CodedInputStream::InternalReadStringInline(string* buffer,
   }
 
   return ReadStringFallback(buffer, size);
+}
+
+inline bool CodedInputStream::InternalReadUnistrInline(unistr* buffer,
+                                                       int size) {
+  if (size < 0) return false;  // security: size is often user-supplied
+
+  if (BufferSize() >= size) {
+	  char codec_flag = *buffer_;
+	  int leading_size = unistr::leading_size(codec_flag);
+	  uint8* data_start = buffer_ + leading_size;
+	  size -= leading_size;
+	  if (unistr::is_local_codec(codec_flag)) {
+		  STLStringResizeUninitialized(buffer, size);
+		  memcpy(string_as_array(buffer), data_start, size);
+	  } else {
+		  buffer->load_with_codec(codec_flag, data_start, size);
+	  }
+	  Advance(size+leading_size);
+	  return true;
+  }
+
+  return ReadUnistrFallback(buffer, size);
 }
 
 }  // namespace io

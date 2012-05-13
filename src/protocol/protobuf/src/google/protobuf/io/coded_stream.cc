@@ -253,6 +253,65 @@ bool CodedInputStream::ReadStringFallback(string* buffer, int size) {
 }
 
 
+bool CodedInputStream::ReadUnistrFallback(unistr* buffer, int size) {
+  if (!buffer->empty()) {
+    buffer->clear();
+  }
+  /* Leading part */
+  char code_flag;
+  if (BufferSize() < 1) {
+	  if (!Refresh()) return false;
+	  code_flag = *buffer_;
+	  if (BufferSize() < unistr::leading_size(codec_flag)) {
+		  if (!Refresh())
+			  return false;
+	  }
+  }
+  int leading_size = unistr::leading_size(codec_flag);
+  Advance(leading_size);
+  size -= leading_size;
+  if (unistr::is_local_codec(codec_flag)) {
+	  int current_buffer_size;
+	  while ((current_buffer_size = BufferSize()) < size) {
+		  // Some STL implementations "helpfully" crash on buffer->append(NULL, 0).
+		  if (current_buffer_size != 0) {
+			  // Note:  string1.append(string2) is O(string2.size()) (as opposed to
+			  //   O(string1.size() + string2.size()), which would be bad).
+			  buffer->append(
+				reinterpret_cast<const unistr::basic_format*>(buffer_),
+				current_buffer_size);
+		  }
+		  size -= current_buffer_size;
+		  Advance(current_buffer_size);
+		  if (!Refresh()) return false;
+	  }
+	  buffer->append(reinterpret_cast<const unistr::basic_format>(buffer_), size);
+	  Advance(size);
+  } else {
+	  unistr::codec_tail tail;
+	  int current_buffer_size;
+	  while ((current_buffer_size = BufferSize()) < size) {
+		  // Some STL implementations "helpfully" crash on buffer->append(NULL, 0).
+		  if (current_buffer_size != 0) {
+			  buffer->append_with_codec(code_flag,
+					  buffer_,
+					  current_buffer_size,
+					  tail);
+		  }
+		  size -= current_buffer_size;
+		  Advance(current_buffer_size);
+		  if (!Refresh()) return false;
+		  data_start = buffer_;
+	  }
+	  buffer->append_with_codec(code_flag,
+			  data_start,
+			  size,
+			  tail);
+	  Advance(size);
+  }
+  return true;
+}
+
 bool CodedInputStream::ReadLittleEndian32Fallback(uint32* value) {
   uint8 bytes[sizeof(*value)];
 
