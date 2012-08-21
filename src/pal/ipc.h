@@ -15,6 +15,11 @@ struct ipc_packet_header
 	uint32_t payload_size;
 };
 
+struct fd_reloc
+{
+	native_fd fd;
+};
+
 struct ipc_packet
 {
 	ipc_packet_header header;
@@ -49,26 +54,14 @@ EXPORT_TO_DLL native_fd ipc_connect_to_sp(const unistr&); /* used in client */
 EXPORT_TO_DLL void ipc_close_connect(native_fd);
 EXPORT_TO_DLL void ipc_close_sp(native_fd);
 
+EXPORT_TO_DLL int ipc_local_send(native_fd, ipc_packet*, fd_reloc*, int count);
+EXPORT_TO_DLL int ipc_local_recv(native_fd, char* buf, int buf_len, fd_reloc*, int reloc_len);
+
+/* Should only be used on INET */
 EXPORT_TO_DLL int ipc_write(native_fd, const void*, size_t);
 EXPORT_TO_DLL int ipc_read(native_fd, void*, size_t);
               
-EXPORT_TO_DLL int ipc_write_packet(native_fd, ipc_packet* );
-EXPORT_TO_DLL int ipc_direct_write_packet(native_fd,
-	   	uint32_t type, const void* payload, uint32_t payload_size);
-EXPORT_TO_DLL ipc_packet* ipc_read_packet(native_fd);
-
-EXPORT_TO_DLL ipc_packet* ipc_allocate_packet(size_t payload);
-EXPORT_TO_DLL void ipc_recycle_packet(ipc_packet*);
-              
 EXPORT_TO_DLL bool ipc_valid_native_fd(native_fd);
 EXPORT_TO_DLL bool ipc_multiple_sp_support();
-
-/*
- * fd transmission routines
- * NOTE: 
- * 	1. Unix Socket do not require an additional ''Process Handle''
- */
-EXPORT_TO_DLL void ipc_send_fd(native_fd target, native_fd sent);
-EXPORT_TO_DLL native_fd ipc_recv_fd(native_fd source);
 
 #endif
