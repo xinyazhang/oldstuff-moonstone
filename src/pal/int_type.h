@@ -10,6 +10,8 @@ typedef int64_t i64;
 
 #ifdef _WIN32
 #define EXPORT_TO_DLL __declspec(dllexport)
+#else
+#define EXPORT_TO_DLL 
 #endif
 
 #endif
