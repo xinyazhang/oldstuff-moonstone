@@ -3,6 +3,6 @@
 
 /* Architecture an micro-architecture related function */
 
-int cpu_number() {return 1;}
+inline int cpu_number() {return 1;}
 
 #endif
