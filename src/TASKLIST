@@ -27,6 +27,37 @@ Rewrite volumemodel.cc							CANCEL
 
 =C&T=									DONE
 
+Use Linux As Our Primary Platform
+	- whoami							DONE
+	- daemon							DONE
+	- EXPORT_TO_DLL							DONE
+	- strut ioinfo_t						DONE
+	- ipc								DONE
+	- xtdio								DONE
+	- libop								PP
+	- native_event
+		+ eventfd
+	- unistr
+		+ std::wstring > std::string
+	- volume
+		+ findmnt
+
+Reform CMakeLists.txt
+
+=Compile infra=
+
+Serial (how? syntax?)
+	- Database
+		- meta
+		- volume
+		- dentry
+		- fentry
+		- tag
+		- attribute
+		- relation
+	- Wire (IPC)
+
+
 Revolution of file system management
 	- split into ray and tracer
 	- "ray" for scan the whole volume and find files
