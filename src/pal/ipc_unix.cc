@@ -141,19 +141,12 @@ int ipc_local_recv(native_fd fd, char* buf, int buf_len, fd_reloc* reloc, int re
 
 int ipc_write(native_fd fd, const void* data, size_t bytes)
 {
-	DWORD written = 0;
-	WriteFile(fd, data, (DWORD)bytes, &written, NULL);
-	return written;
+	return write(fd, data, bytes);
 }
 
 int ipc_read(native_fd fd, void* data, size_t bytes)
 {
-	if (bytes <= 0)
-		return 0;
-
-	DWORD read = 0;
-	ReadFile(fd, data, (DWORD)bytes, &read, NULL);
-	return read;
+	return read(fd, data, bytes, &read);
 }
 
 bool ipc_valid_native_fd(native_fd fd)
