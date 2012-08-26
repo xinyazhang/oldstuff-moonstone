@@ -7,7 +7,7 @@ struct ioinfo_t {
 	struct _OVERLAPPED* poverlapped;
 };
 #else
-#error "NOT FULLY SUPPORTED PLATFORM: LACKING ioinfo_t"
+typedef struct epoll_event ioinfo_t;
 #endif
 
 #endif
